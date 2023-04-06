@@ -1,4 +1,6 @@
+import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/login_page.dart';
+import 'package:color_blast/Page/signup_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,6 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: LoginPage(),
     );
   }
