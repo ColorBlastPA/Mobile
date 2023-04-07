@@ -1,3 +1,4 @@
+import 'package:color_blast/Page/service_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -41,9 +42,7 @@ class _HomePageState extends State<HomePage> {
         ),
         body: TabBarView(
           children: [
-            Container(
-              child: Text("Test"),
-            ),
+            ServiceListPage(),
             Container(
               child: Text("Test2"),
             ),

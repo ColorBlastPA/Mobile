@@ -1,3 +1,4 @@
+import 'package:color_blast/Model/data_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
