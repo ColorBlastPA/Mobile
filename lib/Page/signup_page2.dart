@@ -1,17 +1,16 @@
-import 'package:color_blast/Page/forgot_password_page.dart';
-import 'package:color_blast/Page/home_page.dart';
-import 'package:color_blast/Page/signup_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../Animation/animation.dart';
 
+class SignupPage2 extends StatefulWidget {
+  const SignupPage2({Key? key}) : super(key: key);
 
-class LoginPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  State<SignupPage2> createState() => _SignupPage2State();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPage2State extends State<SignupPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +35,9 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ElementAnimation(1, Text("Connexion", style: TextStyle(color: Colors.white, fontSize: 40),)),
+                  ElementAnimation(1, Text("Inscription", style: TextStyle(color: Colors.white, fontSize: 40),)),
                   SizedBox(height: 10,),
-                  ElementAnimation(1.3, Text("Bienvenue", style: TextStyle(color: Colors.white, fontSize: 18),)),
+                  ElementAnimation(1.3, Text("Etape 2/2", style: TextStyle(color: Colors.white, fontSize: 18),)),
                 ],
               ),
             ),
@@ -51,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: EdgeInsets.all(30),
+                    padding: EdgeInsets.all(40),
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: 60,),
@@ -74,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 child: TextField(
                                   decoration: InputDecoration(
-                                      hintText: "Email",
+                                      hintText: "Pays",
                                       hintStyle: TextStyle(color: Colors.grey),
                                       border: InputBorder.none
                                   ),
@@ -83,58 +82,68 @@ class _LoginPageState extends State<LoginPage> {
                               Container(
                                 padding: EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                    //border: Border(bottom: BorderSide(color: Colors.grey))
+                                    border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
                                   decoration: InputDecoration(
-                                      hintText: "Mot de passe",
+                                      hintText: "Département",
+                                      hintStyle: TextStyle(color: Colors.grey),
+                                      border: InputBorder.none
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: Colors.grey))
+                                ),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                      hintText: "Code postal",
+                                      hintStyle: TextStyle(color: Colors.grey),
+                                      border: InputBorder.none
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  border: Border(bottom: BorderSide(color: Colors.grey))
+                                ),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                      hintText: "Ville",
+                                      hintStyle: TextStyle(color: Colors.grey),
+                                      border: InputBorder.none
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  //border: Border(bottom: BorderSide(color: Colors.grey))
+                                ),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                      hintText: "Adresse",
                                       hintStyle: TextStyle(color: Colors.grey),
                                       border: InputBorder.none
                                   ),
                                 ),
                               ),
                             ],
-
                           ),
                         )),
                         SizedBox(height: 40,),
-                        ElementAnimation(1.5,GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-                              );
-                            },
-                            child:Text("Mot de passe oublié ?", style: TextStyle(color: Colors.grey),)),
-                        ),
-                          SizedBox(height: 10,),
-                        ElementAnimation(1.5, GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => SignupPage()),
-                            );
-                          },
-                          child: Text("Vous n'avez pas de compte ?", style: TextStyle(color: Colors.grey)),
-                        )),
-                        SizedBox(height: 40,),
-                        ElementAnimation(1.6,GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
-                            );
-                          },
-                          child: Container(
-                            height: 50,
-                            margin: EdgeInsets.symmetric(horizontal: 50),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                color: Colors.orange[900]
-                            ),
-                            child: Center(
-                              child: Text("Valider", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                            ),
+                        ElementAnimation(1.6, Container(
+                          height: 50,
+                          margin: EdgeInsets.symmetric(horizontal: 50),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.orange[900]
+                          ),
+                          child: Center(
+                            child: Text("Valider", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
                           ),
                         )),
                         SizedBox(height: 50,),

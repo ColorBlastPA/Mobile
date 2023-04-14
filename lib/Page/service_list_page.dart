@@ -72,13 +72,20 @@ class _ServiceListPageState extends State<ServiceListPage> {
               itemCount: filteredData.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
+                  leading: CircleAvatar(
+                      child: Text(filteredData[index].nom[0]+ filteredData[index].prenom[0])
+                  ),
                   title: Text('${filteredData[index].nom} ${filteredData[index].prenom}'),
                   subtitle: Text('${filteredData[index].pays}, ${filteredData[index].ville}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.star, color: Colors.yellow),
-                      Text('${filteredData[index].note}/5'),
+                      Column(
+                        children: [
+                          Icon(Icons.star, color: Colors.yellow),
+                          Text('${filteredData[index].note}/5'),
+                        ],
+                      ),
                     ],
                   ),
                 );

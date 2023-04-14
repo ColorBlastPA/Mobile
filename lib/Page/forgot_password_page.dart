@@ -70,7 +70,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  FadeAnimation(1, Text("Password", style: TextStyle(color: Colors.white, fontSize: 40),)),
+                  ElementAnimation(1, Text("Changement de mot de passe", style: TextStyle(color: Colors.white, fontSize: 40),)),
                 ],
               ),
             ),
@@ -87,7 +87,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     child: Column(
                       children: <Widget>[
                         SizedBox(height: 60,),
-                        FadeAnimation(1.4, Container(
+                        ElementAnimation(1.4, Container(
                           decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(10),
@@ -98,7 +98,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               )]
                           ),
                         )),
-                        Container(
+                        ElementAnimation(1.5,  Container(
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                               border: Border(bottom: BorderSide(color: Colors.grey))
@@ -110,9 +110,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 border: InputBorder.none
                             ),
                           ),
-                        ),
+                        ),) ,
+
                         SizedBox(height: 40,),
-                        FadeAnimation(1.6, Container(
+                        ElementAnimation(1.6, Container(
                           height: 50,
                           margin: EdgeInsets.symmetric(horizontal: 50),
                           decoration: BoxDecoration(

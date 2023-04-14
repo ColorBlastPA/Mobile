@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:simple_animations/simple_animations.dart';
-class FadeAnimation extends StatelessWidget {
+class ElementAnimation extends StatelessWidget {
   final double delay;
   final Widget child;
 
-  FadeAnimation(this.delay, this.child);
+  ElementAnimation(this.delay, this.child);
 
   @override
   Widget build(BuildContext context) {
