@@ -1,5 +1,6 @@
 import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/home_page.dart';
+import 'package:color_blast/Page/navigation_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
 import 'package:flutter/material.dart';
 
@@ -122,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
+                              MaterialPageRoute(builder: (context) => NavigationPage()),
                             );
                           },
                           child: Container(

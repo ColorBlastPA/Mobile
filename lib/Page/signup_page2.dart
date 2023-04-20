@@ -1,5 +1,9 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../Animation/animation.dart';
 
@@ -10,7 +14,57 @@ class SignupPage2 extends StatefulWidget {
   State<SignupPage2> createState() => _SignupPage2State();
 }
 
+
+
 class _SignupPage2State extends State<SignupPage2> {
+
+  Future<void> _getCurrentLocation() async {
+    // Demander la permission de localisation
+    PermissionStatus status = await Permission.location.request();
+    if (status != PermissionStatus.granted) {
+      // La permission a été refusée, vous devez demander à l'utilisateur de l'autoriser manuellement dans les paramètres de l'application
+      return;
+    }
+
+    // La permission a été accordée, vous pouvez maintenant récupérer la localisation de l'appareil
+    try {
+      // Récupérer la position actuelle
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+
+      // Récupérer les informations de localisation (pays/ville/région) à partir de la position
+      List<Placemark> placemarks =
+      await placemarkFromCoordinates(position.latitude, position.longitude);
+
+      // Récupérer les informations de localisation de la première marque de place
+      Placemark place = placemarks[0];
+
+      // Afficher les informations de localisation
+      pays = place.country;
+      departement = place.administrativeArea;
+      codePostal = place.postalCode;
+      ville = place.locality;
+      adresse = place.thoroughfare + ' ' + place.subThoroughfare;
+
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  String? pays;
+  String? departement;
+  String? codePostal;
+  String? ville;
+  String? adresse;
+
+  final TextEditingController textPaysController = TextEditingController();
+  final TextEditingController textDepartementController = TextEditingController();
+  final TextEditingController textCodePostalController = TextEditingController();
+  final TextEditingController textVilleController = TextEditingController();
+  final TextEditingController textAdresseController = TextEditingController();
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,10 +92,24 @@ class _SignupPage2State extends State<SignupPage2> {
                   ElementAnimation(1, Text("Inscription", style: TextStyle(color: Colors.white, fontSize: 40),)),
                   SizedBox(height: 10,),
                   ElementAnimation(1.3, Text("Etape 2/2", style: TextStyle(color: Colors.white, fontSize: 18),)),
+                  SizedBox(height: 20,),
+                  ElementAnimation(1.3,GestureDetector(
+                    onTap: () async{
+                      await _getCurrentLocation();
+                      setState(() {
+                      textPaysController.text = pays ?? '';
+                      textDepartementController.text = departement ?? '';
+                      textCodePostalController.text = codePostal ?? '';
+                      textVilleController.text = ville ?? '';
+                      textAdresseController.text = adresse ?? '';
+                      });
+                    },
+                    child: Text("Géolocalise moi",style: TextStyle(color: Colors.white, fontSize: 15)),
+                  )),
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -72,6 +140,7 @@ class _SignupPage2State extends State<SignupPage2> {
                                     border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: textPaysController,
                                   decoration: InputDecoration(
                                       hintText: "Pays",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -85,6 +154,7 @@ class _SignupPage2State extends State<SignupPage2> {
                                     border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: textDepartementController,
                                   decoration: InputDecoration(
                                       hintText: "Département",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -98,6 +168,7 @@ class _SignupPage2State extends State<SignupPage2> {
                                     border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: textCodePostalController,
                                   decoration: InputDecoration(
                                       hintText: "Code postal",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -111,6 +182,7 @@ class _SignupPage2State extends State<SignupPage2> {
                                   border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: textVilleController,
                                   decoration: InputDecoration(
                                       hintText: "Ville",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -124,6 +196,7 @@ class _SignupPage2State extends State<SignupPage2> {
                                   //border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: textAdresseController,
                                   decoration: InputDecoration(
                                       hintText: "Adresse",
                                       hintStyle: TextStyle(color: Colors.grey),
