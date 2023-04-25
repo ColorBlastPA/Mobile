@@ -1,10 +1,15 @@
 import 'dart:io';
 
+import 'package:color_blast/Page/details_profile.dart';
+import 'package:color_blast/Page/signup_page.dart';
+import 'package:color_blast/Page/update_password_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../Animation/animation.dart';
+import 'forgot_password_page.dart';
+import 'navigation_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -117,7 +122,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           IconButton(
                             onPressed: () {
-                              print("je tape sur le stylo");
+                                Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ProfileDetails()));
                             },
                             icon: Icon(Icons.edit),
                           ),
@@ -136,7 +143,49 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Colors.white,
                     borderRadius: BorderRadius.only(topLeft: Radius.circular(60), topRight: Radius.circular(60))
                 ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 60,),
+                        ElementAnimation(1.4, Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [BoxShadow(
+                                  color: Color.fromRGBO(225, 95, 27, .3),
+                                  blurRadius: 20,
+                                  offset: Offset(0, 10)
+                              )]
+                          ),
+                          child: Column(
+                            children: <Widget>[
 
+
+                            ],
+
+                          ),
+                        )),
+                        SizedBox(height: 40,),
+                        ElementAnimation(1.5,GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => UpdatePasswordPage()),
+                              );
+                            },
+                            child:Text("Changer de mot de passe", style: TextStyle(color: Colors.grey),)),
+                        ),
+
+
+                        SizedBox(height: 40,),
+                          Container(
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             )
           ],
