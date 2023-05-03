@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:color_blast/Page/details_profile.dart';
+import 'package:color_blast/Page/planning_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
 import 'package:color_blast/Page/update_password_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -180,6 +181,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
 
                         SizedBox(height: 40,),
+                        ElementAnimation(1.5,GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => PlanningPage()),
+                              );
+                            },
+                            child:Text("Votre planning", style: TextStyle(color: Colors.grey),)),
+                        ),
                           Container(
                           ),
                       ],

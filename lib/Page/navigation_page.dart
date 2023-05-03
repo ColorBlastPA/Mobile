@@ -51,7 +51,7 @@ class _NavigationPageState extends State<NavigationPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart_outlined),
-              label: 'Shop',
+              label: 'Magasin',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.message),
