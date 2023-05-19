@@ -59,7 +59,7 @@ class _NavigationPageState extends State<NavigationPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              label: 'Profile',
+              label: 'Profil',
             ),
           ],
         ),

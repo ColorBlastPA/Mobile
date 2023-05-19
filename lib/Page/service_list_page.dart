@@ -1,3 +1,4 @@
+import 'package:color_blast/Page/service_details_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -71,22 +72,35 @@ class _ServiceListPageState extends State<ServiceListPage> {
             child: ListView.builder(
               itemCount: filteredData.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                      child: Text(filteredData[index].nom[0]+ filteredData[index].prenom[0])
-                  ),
-                  title: Text('${filteredData[index].nom} ${filteredData[index].prenom}'),
-                  subtitle: Text('${filteredData[index].pays}, ${filteredData[index].ville}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Column(
-                        children: [
-                          Icon(Icons.star, color: Colors.yellow),
-                          Text('${filteredData[index].note}/5'),
-                        ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ServiceDetailsPage(
+                          companyName: "PaintCorp",
+                          imageUrl: "https://www.expert-chantier.fr/assets/components/phpthumbof/cache/entreprise.f0e06343dbddff9666ef083d1ba8f9d4.jpg",
+                        ),
                       ),
-                    ],
+                    );
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      child: Text(filteredData[index].nom[0] + filteredData[index].prenom[0]),
+                    ),
+                    title: Text('${filteredData[index].nom} ${filteredData[index].prenom}'),
+                    subtitle: Text('${filteredData[index].pays}, ${filteredData[index].ville}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(Icons.star, color: Colors.yellow),
+                            Text('${filteredData[index].note}/5'),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

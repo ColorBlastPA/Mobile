@@ -16,7 +16,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Détails du profile"),
+        title: Text("Détails du profil"),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
