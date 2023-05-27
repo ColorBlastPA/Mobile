@@ -45,6 +45,7 @@ dependencies:
   permission_handler: ^5.1.0+2
   image_picker: ^0.8.0+4
   table_calendar: ^3.0.9
+  flutter_elegant_number_button: any
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,4 @@
+import 'package:color_blast/Page/product_details_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -129,6 +130,14 @@ class _ShopPageState extends State<ShopPage> {
             ),
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              // Action à effectuer lors du clic sur l'icône du panier
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -202,7 +211,10 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   void onItemClicked(Map<String, dynamic> item) {
-    print('Clicked on item ${item['name']}');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProductDetailsPage()),
+    );
     // ici, vous pouvez ajouter du code pour gérer l'action de clic
   }
 
