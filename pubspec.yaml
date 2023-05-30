@@ -46,6 +46,8 @@ dependencies:
   image_picker: ^0.8.0+4
   table_calendar: ^3.0.9
   flutter_elegant_number_button: any
+  flutter_form_builder: ^7.0.0-alpha.3
+  form_validator: ^2.1.1
 
 dev_dependencies:
   flutter_test:

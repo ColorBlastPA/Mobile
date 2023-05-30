@@ -1,5 +1,6 @@
 import 'package:color_blast/Page/signup_page2.dart';
 import 'package:flutter/material.dart';
+import 'package:form_validator/form_validator.dart';
 
 import '../Animation/animation.dart';
 
@@ -9,6 +10,11 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  TextEditingController emailController = TextEditingController();
+  RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  bool isEmailValid = true;
+  TextEditingController passwordController = TextEditingController();
+  bool isPasswordValid = true;
 
  @override
   Widget build(BuildContext context) {
@@ -97,10 +103,17 @@ class _SignupPageState extends State<SignupPage> {
                                     border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: emailController,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isEmailValid = emailRegex.hasMatch(value);
+                                    });
+                                  },
                                   decoration: InputDecoration(
-                                      hintText: "Email",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none
+                                    hintText: "Email",
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                    errorText: isEmailValid ? null : "Email invalide",
                                   ),
                                 ),
                               ),
@@ -110,10 +123,18 @@ class _SignupPageState extends State<SignupPage> {
                                     //border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: passwordController,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isPasswordValid = value.length >= 8 && value.contains(RegExp(r'[A-Z]'));
+                                    });
+                                  },
+                                  obscureText: true,
                                   decoration: InputDecoration(
-                                      hintText: "Mot de passe",
-                                      hintStyle: TextStyle(color: Colors.grey),
-                                      border: InputBorder.none
+                                    hintText: "Mot de passe",
+                                    hintStyle: TextStyle(color: Colors.grey),
+                                    border: InputBorder.none,
+                                    errorText: isPasswordValid ? null : "Mot de passe invalide",
                                   ),
                                 ),
                               ),
