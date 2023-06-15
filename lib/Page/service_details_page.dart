@@ -1,4 +1,5 @@
 import 'package:color_blast/Animation/animation.dart';
+import 'package:color_blast/Page/take_meet_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -84,9 +85,12 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                 child: Container(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Code à exécuter lorsque le bouton est pressé
-                      // Ajoutez ici la logique pour prendre un rendez-vous
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TakeMeetPage()),
+                      );
                     },
+
                     child: Text('Prendre RDV'),
                   ),
                 ),

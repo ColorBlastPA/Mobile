@@ -2,8 +2,12 @@ import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/login_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey='pk_test_51NIrKYCJoeQc9GZJfcBZzkPPVhjiTegipqcnxtZFtiqpHzjSjif38iRjkUSc097ZVLU984Hg4oxiCV8Mb15XGKSU0039XcrFtf';
   runApp(const MyApp());
 }
 

@@ -1,3 +1,4 @@
+import 'package:color_blast/Page/basket_product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_elegant_number_button/flutter_elegant_number_button.dart';
 
@@ -61,7 +62,10 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              // Action à effectuer lors du clic sur l'icône du panier
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BasketProductPage()),
+              );
             },
           ),
         ],

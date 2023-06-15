@@ -39,12 +39,16 @@ class _SignupPage2State extends State<SignupPage2> {
       // Récupérer les informations de localisation de la première marque de place
       Placemark place = placemarks[0];
 
+      String numeroRue = place.subThoroughfare ?? '';
+      String nomRue = place.thoroughfare ?? '';
+
       // Afficher les informations de localisation
       pays = place.country;
       departement = place.administrativeArea;
       codePostal = place.postalCode;
       ville = place.locality;
-      adresse = place.thoroughfare + ' ' + place.subThoroughfare;
+      adresse = '$nomRue $numeroRue ';
+
 
     } catch (e) {
       print(e);

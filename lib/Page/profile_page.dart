@@ -7,6 +7,8 @@ import 'package:color_blast/Page/update_password_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 import '../Animation/animation.dart';
 import 'forgot_password_page.dart';
@@ -168,27 +170,85 @@ class _ProfilePageState extends State<ProfilePage> {
 
                           ),
                         )),
-                        SizedBox(height: 40,),
+                        //SizedBox(height: 20,),
+
                         ElementAnimation(1.5,GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => UpdatePasswordPage()),
-                              );
-                            },
-                            child:Text("Changer de mot de passe", style: TextStyle(color: Colors.grey),)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => PlanningPage()),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.calendar_month,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 8), // Espacement entre l'icône et le texte
+                              Text(
+                                "Votre planning",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         ),
 
+                        SizedBox(height: 20,),
 
-                        SizedBox(height: 40,),
                         ElementAnimation(1.5,GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => PlanningPage()),
-                              );
-                            },
-                            child:Text("Votre planning", style: TextStyle(color: Colors.grey),)),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => UpdatePasswordPage()),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.lock_outline,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 8), // Espacement entre l'icône et le texte
+                              Text(
+                                "Changer de mot de passe",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        ),
+                        SizedBox(height: 20,),
+                        ElementAnimation(1.5,GestureDetector(
+                          onTap: () {
+                            const url = 'https://colorblast.current.ovh/confidentialite'; // Remplacez par l'URL de vos règles de confidentialité
+                            launchUrl(url);
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.privacy_tip,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 8), // Espacement entre l'icône et le texte
+                              Text(
+                                "Règles de confidentialité",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         ),
                           Container(
                           ),
@@ -203,4 +263,10 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
+}
+
+Future<void> launchUrl(String url) async {
+  //if (await canLaunch(url)) {
+    await launch(url);
+  //}
 }

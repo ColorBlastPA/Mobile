@@ -17,10 +17,11 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=2.18.0 <3.0.0-nullsafety'
+
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -40,14 +41,20 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   mailer: ^6.0.0
-  geolocator: ^6.1.14
-  geocoding: ^1.0.5
-  permission_handler: ^5.1.0+2
   image_picker: ^0.8.0+4
   table_calendar: ^3.0.9
   flutter_elegant_number_button: any
   flutter_form_builder: ^7.0.0-alpha.3
   form_validator: ^2.1.1
+  rich_text_controller: ^1.4.2
+  multiselect_formfield: ^0.1.7
+  http: ^0.13.5
+  flutter_stripe: ^9.2.1
+  geocoding: ^2.1.0
+  permission_handler: ^10.3.0
+  geolocator: ^9.0.2
+  url_launcher: ^6.1.11
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:
@@ -66,7 +73,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon.png"
+  image_path: "assets/ColorBlastLogo.png"
 
 
 # The following section is specific to Flutter packages.
