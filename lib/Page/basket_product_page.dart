@@ -43,6 +43,19 @@ class _BasketProductPageState extends State<BasketProductPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Votre Panier'),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.deepOrange,
+                Colors.orange,
+                Colors.orangeAccent,
+              ],
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -103,16 +116,10 @@ class _BasketProductPageState extends State<BasketProductPage> {
               },
             ),
           ),
-        ElevatedButton(
-          onPressed: () => paymentController.makePayment(amount: '5', currency: 'USD'),
-          child: Text("Payer"),
-        ),
-          /*ElementAnimation(1.6,GestureDetector(
+
+          ElementAnimation(1.6,GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProductDetailsPage()),
-              );
+              paymentController.makePayment(amount: '5', currency: 'USD');
             },
             child: Container(
               height: 50,
@@ -122,14 +129,10 @@ class _BasketProductPageState extends State<BasketProductPage> {
                   color: Colors.orange[900]
               ),
               child: Center(
-                child: ElevatedButton(
-                  onPressed: () => paymentController.makePayment(amount: '5', currency: 'USD'),
-                  child: Text("Payer"),
-                ),
+                child: Text("Payer", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
               ),
             ),
-          ),
-          ),*/
+          )),
           SizedBox(height: 50),
         ],
       ),

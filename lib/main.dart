@@ -2,6 +2,7 @@ import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/login_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
 
@@ -17,6 +18,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       title: 'ColorBlast',
       theme: ThemeData(

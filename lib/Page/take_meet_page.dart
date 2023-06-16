@@ -285,6 +285,9 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
               ElevatedButton(
                 onPressed: _showSelectionModal,
                 child: Text('Sélectionner des produits'),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                ),
               ),
               SizedBox(height: 25),
               Row(
@@ -293,6 +296,9 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                     child: ElevatedButton(
                       onPressed: _selectDateRange,
                       child: Text('Sélectionner une date'),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                      ),
                     ),
                   ),
                 ],
@@ -312,6 +318,9 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                         // Logique pour le bouton "Valider"
                       },
                       child: Text('Valider'),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                      ),
                     ),
                   ),
                   SizedBox(width: 10), // Espacement entre les boutons
@@ -321,6 +330,9 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                         // Logique pour le bouton "Faire un devis"
                       },
                       child: Text('Faire un devis'),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                      ),
                     ),
                   ),
                 ],
