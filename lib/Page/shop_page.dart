@@ -130,6 +130,8 @@ class _ShopPageState extends State<ShopPage> {
             ),
           ),
         ),
+        automaticallyImplyLeading: false,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.shopping_cart),
