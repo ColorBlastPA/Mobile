@@ -1,7 +1,11 @@
+import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/service_details_page.dart';
+import 'package:color_blast/Service/service_pro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../Model/professionnel.dart';
 import '../Model/user.dart';
 
 
@@ -13,104 +17,117 @@ class ServiceListPage extends StatefulWidget {
 }
 
 class _ServiceListPageState extends State<ServiceListPage> {
-  List<User> data = [
-    User(nom: 'Dupont', prenom: 'Jean', pays: 'France', ville: 'Paris', note: 3),
-    User(nom: 'Martin', prenom: 'Sophie', pays: 'Belgique', ville: 'Bruxelles', note: 4),
-    User(nom: 'Müller', prenom: 'Hans', pays: 'Allemagne', ville: 'Berlin', note: 2),
-    User(nom: 'Rossi', prenom: 'Luigi', pays: 'Italie', ville: 'Rome', note: 5),
-    User(nom: 'García', prenom: 'Pablo', pays: 'Espagne', ville: 'Madrid', note: 3),
-    User(nom: 'Silva', prenom: 'Maria', pays: 'Portugal', ville: 'Lisbonne', note: 4),
-    User(nom: 'Andersen', prenom: 'Jens', pays: 'Danemark', ville: 'Copenhague', note: 2),
-    User(nom: 'Wilson', prenom: 'John', pays: 'Royaume-Uni', ville: 'Londres', note: 5),
-    User(nom: 'Smith', prenom: 'Emily', pays: 'Canada', ville: 'Montréal', note: 3),
-    User(nom: 'Lee', prenom: 'Jung-Su', pays: 'Corée du Sud', ville: 'Séoul', note: 4),
-    User(nom: 'Tanaka', prenom: 'Yuki', pays: 'Japon', ville: 'Tokyo', note: 2),
-    User(nom: 'Santos', prenom: 'Miguel', pays: 'Brésil', ville: 'Rio de Janeiro', note: 5),
-    User(nom: 'Chen', prenom: 'Yan', pays: 'Chine', ville: 'Pékin', note: 3),
-    User(nom: 'López', prenom: 'Carlos', pays: 'Mexique', ville: 'Mexico', note: 4),
-    User(nom: 'Kowalski', prenom: 'Jan', pays: 'Pologne', ville: 'Varsovie', note: 2),
-    User(nom: 'Ivanov', prenom: 'Dmitri', pays: 'Russie', ville: 'Moscou', note: 5),
-    User(nom: 'Álvarez', prenom: 'Juan', pays: 'Colombie', ville: 'Bogota', note: 3),
-    User(nom: 'Nguyen', prenom: 'Hoa', pays: 'Vietnam', ville: 'Hanoi', note: 4),
-    User(nom: 'González', prenom: 'Alejandro', pays: 'Argentine', ville: 'Buenos Aires', note: 2),
-
-  ];
-
-  List<User> filteredData = [];
+  List<Professionnel?>? filteredData = [];
+  List<Professionnel?>? pro = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    filteredData = data;
+    getData();
+  }
+
+  getData() async {
+    pro = await ServicePro().getAllPro();
+    setState(() {
+      filteredData = pro;
+      isLoading = false;
+    });
   }
 
   void filterList(String query) {
     setState(() {
-      filteredData = data
-          .where((person) => person.nom.toLowerCase().contains(query.toLowerCase()) || person.prenom.toLowerCase().contains(query.toLowerCase()))
+      filteredData = pro!
+          .where((person) =>
+      person!.lastname.toLowerCase().contains(query.toLowerCase()) ||
+          person.firstname.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
+  }
+
+
+
+  Future<void> refreshData() async {
+    setState(() {
+      isLoading = true;
+    });
+    await getData();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: (value) => filterList(value),
-              decoration: InputDecoration(
-                hintText: 'Rechercher...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) => filterList(value),
+                decoration: InputDecoration(
+                  hintText: 'Rechercher...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredData.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ServiceDetailsPage(
-                          companyName: "PaintCorp",
-                          imageUrl: "https://www.expert-chantier.fr/assets/components/phpthumbof/cache/entreprise.f0e06343dbddff9666ef083d1ba8f9d4.jpg",
+            Expanded(
+              child: isLoading
+                  ? Center(
+                child: CircularProgressIndicator(),
+              )
+                  : ListView.builder(
+                      itemCount: filteredData?.length,
+                      itemBuilder: (BuildContext context, int index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ServiceDetailsPage(
+                            companyName: filteredData![index]!.companyName,
+                            imageUrl:
+                            "https://www.expert-chantier.fr/assets/components/phpthumbof/cache/entreprise.f0e06343dbddff9666ef083d1ba8f9d4.jpg",
+                            professionnel: filteredData![index]!,
+                          ),
                         ),
+                      );
+                    },
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: Text(filteredData![index]!.lastname[0] +
+                            filteredData![index]!.firstname[0]),
                       ),
-                    );
-                  },
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      child: Text(filteredData[index].nom[0] + filteredData[index].prenom[0]),
+                      title: Text(
+                          '${filteredData![index]!.lastname} ${filteredData![index]!.firstname}'),
+                      subtitle: Text(
+                          '${filteredData![index]!.country}, ${filteredData![index]!.city}'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Column(
+                            children: [
+                              Icon(Icons.star, color: Colors.yellow),
+                              Text('${filteredData![index]!.note}/5'),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    title: Text('${filteredData[index].nom} ${filteredData[index].prenom}'),
-                    subtitle: Text('${filteredData[index].pays}, ${filteredData[index].ville}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Column(
-                          children: [
-                            Icon(Icons.star, color: Colors.yellow),
-                            Text('${filteredData[index].note}/5'),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
+
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+
 
 
 

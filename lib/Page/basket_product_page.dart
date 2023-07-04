@@ -119,7 +119,7 @@ class _BasketProductPageState extends State<BasketProductPage> {
 
           ElementAnimation(1.6,GestureDetector(
             onTap: () {
-              paymentController.makePayment(amount: '5', currency: 'USD');
+              paymentController.makePayment(amount: totalPrice, currency: 'USD');
             },
             child: Container(
               height: 50,

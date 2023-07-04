@@ -3,18 +3,21 @@ import 'package:color_blast/Page/take_meet_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ServiceDetailsPage extends StatefulWidget {
-  final String companyName; // Nom de l'entreprise
-  final String imageUrl; // URL de l'image
+import '../Model/professionnel.dart';
 
-  ServiceDetailsPage({required this.companyName, required this.imageUrl});
+class ServiceDetailsPage extends StatefulWidget {
+  final String companyName;
+  final String imageUrl;
+  final Professionnel professionnel;
+
+  ServiceDetailsPage({required this.companyName, required this.imageUrl, required this.professionnel});
 
   @override
   _ServiceDetailsPageState createState() => _ServiceDetailsPageState();
 }
 
 class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
-  bool isStarred = false; // État local pour la sélection de l'étoile
+  bool isStarred = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
           Stack(
             children: <Widget>[
               Container(
-                color: Colors.grey, // Couleur de fond pour la section de l'image
+                color: Colors.grey,
                 child: Image.network(
                   widget.imageUrl,
                   fit: BoxFit.cover,
@@ -53,7 +56,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
-                      isStarred = !isStarred; // Inverser l'état de l'étoile
+                      isStarred = !isStarred;
                     });
                   },
                   child: Icon(
@@ -70,7 +73,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                   children: [
                     Icon(Icons.star, color: Colors.yellow),
                     Text(
-                      '3/5',
+                      widget.professionnel.note.toString()+"/5",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -101,7 +104,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: RichText(
-              text: const TextSpan(
+              text: TextSpan(
                 text: 'Description: ',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -110,9 +113,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                 ),
                 children: [
                   TextSpan(
-                    text: "PaintCorp est une petite entreprise qui propose des "
-                        "peintres d\'exception et hautement qualifiés pour"
-                        " peu d\'argent.",
+                    text: widget.professionnel.description,
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
                       decoration: TextDecoration.none,
@@ -140,7 +141,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                         ),
                         children: [
                           TextSpan(
-                            text: "22 rue Drouot, Paris",
+                            text: widget.professionnel.department + ", " + widget.professionnel.country,
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               decoration: TextDecoration.none,
@@ -164,7 +165,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                         ),
                         children: [
                           TextSpan(
-                            text: "15€",
+                            text: widget.professionnel.price.toString() + "€",
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               decoration: TextDecoration.none,
@@ -193,7 +194,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                   ),
                   children: [
                     TextSpan(
-                      text: "contact@contact.fr / 01 23 45 56 78",
+                      text: widget.professionnel.mail + " / " + widget.professionnel.phone,
                       style: TextStyle(
                         fontWeight: FontWeight.normal,
                         decoration: TextDecoration.none,

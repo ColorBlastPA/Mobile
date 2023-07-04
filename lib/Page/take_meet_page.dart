@@ -33,11 +33,11 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     super.dispose();
   }
   List<String> items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
+    'peinture rouge',
+    'peinture bleu',
+    'peinture orange',
+    'peinture vert',
+    'peinture rose',
   ];
 
   List<String> _selectedItems = [];
@@ -102,10 +102,20 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
   }
 
   Future<void> _selectDateRange() async {
+    final themeData = ThemeData(
+      colorScheme: ColorScheme.light(
+        primary: Colors.orangeAccent,
+        onPrimary: Colors.white,
+      ),
+    );
+
     final pickedDateRange = await showDateRangePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 365)),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(data: themeData, child: child!);
+      },
     );
 
     if (pickedDateRange != null) {
@@ -115,6 +125,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
       });
     }
   }
+
 
 
 
@@ -286,7 +297,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                 onPressed: _showSelectionModal,
                 child: Text('Sélectionner des produits'),
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
                 ),
               ),
               SizedBox(height: 25),
@@ -297,7 +308,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                       onPressed: _selectDateRange,
                       child: Text('Sélectionner une date'),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
                       ),
                     ),
                   ),
@@ -323,7 +334,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10), // Espacement entre les boutons
+                  SizedBox(width: 10),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
@@ -331,7 +342,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                       },
                       child: Text('Faire un devis'),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent), // Couleur de fond lorsque le bouton est dans son état par défaut
+                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
                       ),
                     ),
                   ),

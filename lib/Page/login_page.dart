@@ -1,3 +1,4 @@
+import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/home_page.dart';
 import 'package:color_blast/Page/navigation_page.dart';
@@ -5,6 +6,7 @@ import 'package:color_blast/Page/signup_page.dart';
 import 'package:flutter/material.dart';
 
 import '../Animation/animation.dart';
+import '../Service/service_client.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -13,6 +15,42 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+
+  void login() async {
+    var response = await ServiceClient().login(mailController.text, passwordController.text);
+    if (response == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NavigationPage()),
+      );
+      print(DataManager().client?.mail);
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Ce compte ou ce mot de passe n'existe pas"),
+
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  final TextEditingController mailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                                     border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: mailController,
                                   decoration: InputDecoration(
                                       hintText: "Email",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -87,6 +126,8 @@ class _LoginPageState extends State<LoginPage> {
                                     //border: Border(bottom: BorderSide(color: Colors.grey))
                                 ),
                                 child: TextField(
+                                  controller: passwordController,
+                                  obscureText: true,
                                   decoration: InputDecoration(
                                       hintText: "Mot de passe",
                                       hintStyle: TextStyle(color: Colors.grey),
@@ -121,10 +162,11 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 40,),
                         ElementAnimation(1.6,GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            login();
+                            /*Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => NavigationPage()),
-                            );
+                            );*/
                           },
                           child: Container(
                             height: 50,

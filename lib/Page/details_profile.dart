@@ -3,6 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../Animation/animation.dart';
+import '../Model/client.dart';
+import '../Model/data_manager.dart';
+import '../Model/update_result.dart';
+import '../Service/service_client.dart';
 
 class ProfileDetails extends StatefulWidget {
   const ProfileDetails({Key? key}) : super(key: key);
@@ -12,6 +16,56 @@ class ProfileDetails extends StatefulWidget {
 }
 
 class _ProfileDetailsState extends State<ProfileDetails> {
+  Client? client = DataManager().client;
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
+  final TextEditingController postalCodeController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    firstNameController.text = client?.firstname ?? "";
+    lastNameController.text = client?.lastname ?? "";
+    emailController.text = client?.mail ?? "";
+    countryController.text = client?.country ?? "";
+    departmentController.text = client?.department ?? "";
+    postalCodeController.text = client?.postalCode ?? "";
+    cityController.text = client?.city ?? "";
+    addressController.text = client?.address ?? "";
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    emailController.dispose();
+    countryController.dispose();
+    departmentController.dispose();
+    postalCodeController.dispose();
+    cityController.dispose();
+    addressController.dispose();
+    super.dispose();
+  }
+
+  Future<void> updateClient() async {
+    Client client = Client(lastname: lastNameController.text, firstname: firstNameController.text, mail: emailController.text, password: this.client?.password ?? "", country: countryController.text, department: departmentController.text, postalCode: postalCodeController.text, city: cityController.text, address: addressController.text, admin: false, id: this.client!.id );
+    print(client.id);
+
+    var response = await ServiceClient().updateClient(client);
+    if (response == 200) {
+      UpdateResult result = UpdateResult(context, client);
+      Navigator.of(context).pop(result);
+    } else {
+      print("erreur");
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,9 +86,9 @@ class _ProfileDetailsState extends State<ProfileDetails> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.check), // icone "Valider"
+            icon: Icon(Icons.check),
             onPressed: () {
-              print("je modifie");
+              updateClient();
             },
           ),
         ],
@@ -64,6 +118,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: firstNameController,
                           decoration: InputDecoration(
                               hintText: "Prénom",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -77,6 +132,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                           border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: lastNameController,
                           decoration: InputDecoration(
                               hintText: "Nom",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -91,6 +147,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                         ),
                         child: TextField(
                           enabled: false,
+                          controller: emailController,
                           decoration: InputDecoration(
                               hintText: "Email",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -104,6 +161,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: countryController,
                           decoration: InputDecoration(
                               hintText: "Pays",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -117,6 +175,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: departmentController,
                           decoration: InputDecoration(
                               hintText: "Département",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -130,6 +189,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: postalCodeController,
                           decoration: InputDecoration(
                               hintText: "Code postal",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -143,6 +203,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: cityController,
                           decoration: InputDecoration(
                               hintText: "Ville",
                               hintStyle: TextStyle(color: Colors.grey),
@@ -156,6 +217,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
                             //border: Border(bottom: BorderSide(color: Colors.grey))
                         ),
                         child: TextField(
+                          controller: addressController,
                           decoration: InputDecoration(
                               hintText: "Adresse",
                               hintStyle: TextStyle(color: Colors.grey),

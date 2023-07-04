@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
@@ -8,7 +9,7 @@ class PaymentController extends GetxController {
   Map<String, dynamic>? paymentIntentData;
 
   Future<void> makePayment(
-      {required String amount, required String currency}) async {
+      {required double amount, required String currency}) async {
     try {
       paymentIntentData = await createPaymentIntent(amount, currency);
       if (paymentIntentData != null) {
@@ -51,7 +52,7 @@ class PaymentController extends GetxController {
   }
 
   //  Future<Map<String, dynamic>>
-  createPaymentIntent(String amount, String currency) async {
+  createPaymentIntent(double amount, String currency) async {
     try {
       Map<String, dynamic> body = {
         'amount': calculateAmount(amount),
@@ -62,7 +63,7 @@ class PaymentController extends GetxController {
           Uri.parse('https://api.stripe.com/v1/payment_intents'),
           body: body,
           headers: {
-            'Authorization': 'Bearer ',
+            'Authorization': 'Bearer sk_test_51NIrKYCJoeQc9GZJr83rwag0vnJpjbkBKcaP8uyI5dz9Wir9nqDxs75KdeqTsFdHtk4xWXq0b5J27oXAPd9jjazR00wlfHM4Kp',
             'Content-Type': 'application/x-www-form-urlencoded'
           });
       return jsonDecode(response.body);
@@ -71,8 +72,8 @@ class PaymentController extends GetxController {
     }
   }
 
-  calculateAmount(String amount) {
-    final a = (int.parse(amount)) * 100;
+  calculateAmount(double amount) {
+    final a = (amount * 100).toInt();
     return a.toString();
   }
 }

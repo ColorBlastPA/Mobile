@@ -1,8 +1,10 @@
-class DataManager{
-   String data1 = "";
-   String data2 = "";
-   String data3 = "";
+import 'package:color_blast/Model/client.dart';
+import 'package:color_blast/Model/professionnel.dart';
 
+class DataManager{
+
+   Client? client;
+   List<Professionnel?>? professionnel;
 
   static final DataManager _instance = DataManager._internal();
 
@@ -11,5 +13,10 @@ class DataManager{
   }
 
   DataManager._internal();
+
+   void reset() {
+     client = null;
+     professionnel = null;
+   }
 
 }

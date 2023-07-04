@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/details_profile.dart';
+import 'package:color_blast/Page/login_page.dart';
 import 'package:color_blast/Page/planning_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
 import 'package:color_blast/Page/update_password_page.dart';
@@ -11,6 +13,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 import '../Animation/animation.dart';
+import '../Model/client.dart';
+import '../Model/update_result.dart';
 import 'forgot_password_page.dart';
 import 'navigation_page.dart';
 
@@ -23,6 +27,16 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File? _image;
+  Client? client;
+
+  @override
+  void initState() {
+    super.initState();
+    print("je passe" + DataManager().client!.lastname);
+    this.client = DataManager().client;
+  }
+
+
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().getImage(source: source);
@@ -62,6 +76,20 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       },
     );
+  }
+
+  void navigateToChildPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfileDetails()),
+    );
+
+    if (result is UpdateResult) {
+      setState(() {
+        this.client = result.client;
+      });
+
+    }
   }
 
 
@@ -120,14 +148,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Kévin Mazure",
-                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                          (client?.firstname ?? "undefined") + " " + (client?.lastname ?? "undefined"),
+                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+
                           ),
                           IconButton(
                             onPressed: () {
-                                Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => ProfileDetails()));
+                                navigateToChildPage();
+
                             },
                             icon: Icon(Icons.edit),
                           ),
@@ -249,6 +277,35 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                         ),
+                        ),
+                          SizedBox(height: 20,),
+                        ElementAnimation(1.5,GestureDetector(
+                          onTap: () {
+                            DataManager().reset();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginPage()),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.logout,
+                                color: Colors.red,
+
+                              ),
+                              SizedBox(width: 8), // Espacement entre l'icône et le texte
+                              Text(
+                                "Déconnexion",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
                         ),
                           Container(
                           ),

@@ -2,6 +2,8 @@ import 'package:color_blast/Page/product_details_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'basket_product_page.dart';
+
 class ShopPage extends StatefulWidget {
   ShopPage({Key? key}) : super(key: key);
 
@@ -136,7 +138,10 @@ class _ShopPageState extends State<ShopPage> {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              // Action à effectuer lors du clic sur l'icône du panier
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BasketProductPage()),
+              );
             },
           ),
         ],

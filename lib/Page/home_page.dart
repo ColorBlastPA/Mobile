@@ -1,3 +1,4 @@
+import 'package:color_blast/Page/favoris_list_page.dart';
 import 'package:color_blast/Page/service_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -45,9 +46,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           children: [
             ServiceListPage(),
-            Container(
-              child:Text('Obtenir la localisation'),
-            ),
+            FavorisListPage(),
           ],
         )
     ),
