@@ -3,6 +3,7 @@ import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/home_page.dart';
 import 'package:color_blast/Page/navigation_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
+import 'package:color_blast/Service/service_pro.dart';
 import 'package:flutter/material.dart';
 
 import '../Animation/animation.dart';
@@ -20,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   void login() async {
     var response = await ServiceClient().login(mailController.text, passwordController.text);
     if (response == 200) {
+      DataManager().favoris = await ServicePro().getProFavorisById(DataManager().client?.id);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => NavigationPage()),

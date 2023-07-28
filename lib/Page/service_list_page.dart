@@ -88,7 +88,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                           builder: (context) => ServiceDetailsPage(
                             companyName: filteredData![index]!.companyName,
                             imageUrl:
-                            "https://www.expert-chantier.fr/assets/components/phpthumbof/cache/entreprise.f0e06343dbddff9666ef083d1ba8f9d4.jpg",
+                            "https://www.batiperform.com/fichiers_site/a6178bat/contenu_pages/entreprise-generale-batiment-1.jpg",
                             professionnel: filteredData![index]!,
                           ),
                         ),
@@ -106,12 +106,12 @@ class _ServiceListPageState extends State<ServiceListPage> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Column(
+                          /*Column(
                             children: [
                               Icon(Icons.star, color: Colors.yellow),
                               Text('${filteredData![index]!.note}/5'),
                             ],
-                          ),
+                          ),*/
                         ],
                       ),
                     ),

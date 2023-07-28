@@ -5,6 +5,7 @@ class DataManager{
 
    Client? client;
    List<Professionnel?>? professionnel;
+   List<Professionnel?>? favoris;
 
   static final DataManager _instance = DataManager._internal();
 
@@ -17,6 +18,7 @@ class DataManager{
    void reset() {
      client = null;
      professionnel = null;
+     favoris = null;
    }
 
 }

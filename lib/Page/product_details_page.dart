@@ -19,16 +19,28 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     Item(
       headerValue: 'Avis',
       expandedValue: Container(
-        height: 500, // Hauteur fixe pour l'affichage de 5 éléments à la fois
+        height: 500,
         child: ListView.builder(
           itemCount: 15,
           itemBuilder: (BuildContext context, int index) {
+            int note = 3;
             return ListTile(
               leading: CircleAvatar(
                 child: Text("KM"),
               ),
               title: Text("Kevin Mazure"),
               subtitle: Text("Je suis le commentaire"),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: Colors.yellow,
+                  ),
+                  SizedBox(width: 5),
+                  Text("$note/5"),
+                ],
+              ),
             );
           },
         ),

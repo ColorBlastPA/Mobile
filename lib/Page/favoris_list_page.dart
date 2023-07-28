@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../Model/professionnel.dart';
+import '../Service/service_pro.dart';
 
 class FavorisListPage extends StatefulWidget {
   const FavorisListPage({Key? key}) : super(key: key);
@@ -13,20 +14,43 @@ class FavorisListPage extends StatefulWidget {
 }
 
 class _FavorisListPageState extends State<FavorisListPage> {
-  List<Professionnel?>? pro = DataManager().professionnel;
+  List<Professionnel?>? favoris = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    favoris = await ServicePro().getProFavorisById(DataManager().client?.id);
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   Future<void> refreshData() async {
     setState(() {
-      pro = DataManager().professionnel;
+      getData();
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: refreshData,
-      child: ListView.builder(
-        itemCount: pro?.length,
+      child: isLoading
+          ? Center(
+        child: CircularProgressIndicator(), // Affiche un spinner circulaire
+      )
+          : favoris?.isEmpty ?? true // Vérifie si le tableau est vide ou null
+          ? Center(
+        child: Text("Vous n'avez pas de favoris"),
+      ) // Affiche le message si le tableau est vide
+          : ListView.builder(
+        itemCount: favoris?.length,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
@@ -34,28 +58,28 @@ class _FavorisListPageState extends State<FavorisListPage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ServiceDetailsPage(
-                    companyName: pro![index]!.companyName,
-                    imageUrl: "https://www.expert-chantier.fr/assets/components/phpthumbof/cache/entreprise.f0e06343dbddff9666ef083d1ba8f9d4.jpg",
-                    professionnel: pro![index]!,
+                    companyName: favoris![index]!.companyName,
+                    imageUrl:
+                    "https://www.batiperform.com/fichiers_site/a6178bat/contenu_pages/entreprise-generale-batiment-1.jpg",
+                    professionnel: favoris![index]!,
                   ),
                 ),
               );
             },
             child: ListTile(
               leading: CircleAvatar(
-                child: Text(pro![index]!.lastname[0] + pro![index]!.firstname[0]),
+                child: Text(
+                    favoris![index]!.lastname[0] +
+                        favoris![index]!.firstname[0]),
               ),
-              title: Text('${pro![index]!.lastname} ${pro![index]!.firstname}'),
-              subtitle: Text('${pro![index]!.country}, ${pro![index]!.city}'),
+              title: Text(
+                  '${favoris![index]!.lastname} ${favoris![index]!.firstname}'),
+              subtitle: Text(
+                  '${favoris![index]!.country}, ${favoris![index]!.city}'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Column(
-                    children: [
-                      Icon(Icons.star, color: Colors.yellow),
-                      Text('${pro![index]!.note}/5'),
-                    ],
-                  ),
+                  // Insérez ici le code pour afficher l'étoile et la note sur 5 si nécessaire.
                 ],
               ),
             ),

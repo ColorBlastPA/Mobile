@@ -1,8 +1,10 @@
 import 'package:color_blast/Animation/animation.dart';
 import 'package:color_blast/Page/take_meet_page.dart';
+import 'package:color_blast/Service/service_favoris.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Model/data_manager.dart';
 import '../Model/professionnel.dart';
 
 class ServiceDetailsPage extends StatefulWidget {
@@ -18,6 +20,40 @@ class ServiceDetailsPage extends StatefulWidget {
 
 class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
   bool isStarred = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkIfProfessionalIsStarred();
+  }
+
+
+  addFavoris() async {
+    int response = await ServiceFavoris().createFavoris(DataManager().client?.id, widget.professionnel);
+    if(response == 200){
+      //faire un truc
+    }
+  }
+
+
+
+  void checkIfProfessionalIsStarred() {
+    List<Professionnel?>? favoris = DataManager().favoris;
+    if (favoris != null) {
+      for (Professionnel? pro in favoris) {
+        if (pro?.id == widget.professionnel.id) {
+          setState(() {
+            isStarred = true;
+          });
+          break;
+        }
+      }
+    }
+  }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +91,14 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                 right: 16.0,
                 child: GestureDetector(
                   onTap: () {
-                    setState(() {
-                      isStarred = !isStarred;
-                    });
+                    if(isStarred == false){
+                      setState(() {
+                        addFavoris();
+                        isStarred = true;
+                      });
+                    }else{
+                      //remove
+                    }
                   },
                   child: Icon(
                     isStarred ? Icons.star : Icons.star_border,
@@ -65,7 +106,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                   ),
                 ),
               ),
-              Positioned(
+              /*Positioned(
                 bottom: 5.0,
                 left: 16.0,
                 child: Column(
@@ -81,7 +122,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                     ),
                   ],
                 ),
-              ),
+              ),*/
               Positioned(
                 bottom: 5.0,
                 right: 16.0,
@@ -228,22 +269,30 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
               shrinkWrap: true,
               itemCount: 6,
               itemBuilder: (BuildContext context, int index) {
+                int note = 3;
                 return ListTile(
                   leading: CircleAvatar(
-                    child: Text(
-                      "KM",
-                    ),
+                    child: Text("KM"),
                   ),
-                  title: Text(
-                    "Kevin Mazure",
-                  ),
-                  subtitle: Text(
-                    "je suis le commentaire",
+                  title: Text("Kevin Mazure"),
+                  subtitle: Text("je suis le commentaire"),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: Colors.yellow,
+                      ),
+                      SizedBox(width: 5),
+                      Text("$note/5"),
+                    ],
                   ),
                 );
               },
             ),
           ),
+
+
         ],
       ),
       ),

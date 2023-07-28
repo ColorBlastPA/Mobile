@@ -17,4 +17,17 @@ class ServicePro{
     return null;
   }
 
+  Future<List<Professionnel?>?> getProFavorisById(int? idClient) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/favoris/${idClient}');
+
+    var response = await client.get(uri);
+    if(response.statusCode==200){
+      var json = response.body;
+      DataManager().favoris = professionnelFromJson(json);
+      return DataManager().favoris;
+    }
+    return null;
+  }
+
 }
