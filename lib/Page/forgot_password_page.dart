@@ -1,4 +1,5 @@
 import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Service/service_email.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
@@ -13,39 +14,53 @@ class ForgotPasswordPage extends StatefulWidget {
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-void sendEmail() async {
-  // Paramètres SMTP de votre fournisseur de messagerie
-  String username = 'colorblastpa@gmail.com';
-  String password = 'Jesuislemdp';
-
-  final smtpServer = gmail(username, password);
-  // Use the SmtpServer class to configure an SMTP server:
-  // final smtpServer = SmtpServer('smtp.domain.com');
-  // See the named arguments of SmtpServer for further configuration
-  // options.
-
-  // Create our message.
-  final message = Message()
-    ..from = Address(username, "kevin")
-    ..recipients.add('olivierpetit@yopmail.fr')
-    ..ccRecipients.addAll(['olivierpetit2@yopmail.fr', 'olivierpeti3t@yopmail.fr'])
-    ..bccRecipients.add(Address('olivierpetit4@yopmail.fr'))
-    ..subject = 'Test Dart Mailer library :: 😀 :: ${DateTime.now()}'
-    ..text = 'This is the plain text.\nThis is line 2 of the text part.'
-    ..html = "<h1>Test</h1>\n<p>Hey! Here's some HTML content</p>";
-
-  try {
-    final sendReport = await send(message, smtpServer);
-    print('Message sent: ' + sendReport.toString());
-  } on MailerException catch (e) {
-    print('Message not sent.');
-    for (var p in e.problems) {
-      print('Problem: ${p.code}: ${p.msg}');
-    }
-  }
-}
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+
+  TextEditingController emailController = TextEditingController();
+
+
+  void sendEmail() async {
+    int response = await ServiceEmail().forgotPassword(emailController.text);
+    if (response == 200) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Votre mot de passe à bien été modifié. Veuillez vérifier dans votre boite mail le nouveau mot de passe. Vous pourrez le modifier dans votre Profil. "),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Une erreur c'est produite. Veuillez vérifier votre email avant de rééssayer."),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,6 +129,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                                 border: Border(bottom: BorderSide(color: Colors.grey)),
                               ),
                               child: TextField(
+                                controller: emailController,
                                 decoration: InputDecoration(
                                   hintText: "Email",
                                   hintStyle: TextStyle(color: Colors.grey),
@@ -132,6 +148,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               child: Center(
                                 child: GestureDetector(
                                   onTap: () {
+                                    print(emailController.text);
                                     sendEmail();
                                   },
                                   child: Text(

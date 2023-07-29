@@ -1,4 +1,5 @@
 import 'package:color_blast/Page/signup_page2.dart';
+import 'package:color_blast/Service/service_client.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 
@@ -18,14 +19,16 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController passwordController = TextEditingController();
   bool isPasswordValid = true;
 
-  void nextPage(){
-    if(emailController.text.isEmpty || firstnameController.text.isEmpty || lastnameController.text.isEmpty || passwordController.text.isEmpty || isEmailValid == false || isPasswordValid == false){
+  Future<void> nextPage() async {
+
+    int response = await ServiceClient().checkEmail(emailController.text);
+    if(response == 200){
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("Information"),
-            content: Text("Tous les champs doivent être remplis et valide !"),
+            content: Text("Ce mail possède déjà un compte."),
             actions: [
               TextButton(
                 child: Text("OK"),
@@ -38,10 +41,30 @@ class _SignupPageState extends State<SignupPage> {
         },
       );
     }else{
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SignupPage2(firstnameController.text,lastnameController.text,emailController.text,passwordController.text)),
-      );
+      if(emailController.text.isEmpty || firstnameController.text.isEmpty || lastnameController.text.isEmpty || passwordController.text.isEmpty || isEmailValid == false || isPasswordValid == false){
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Information"),
+              content: Text("Tous les champs doivent être remplis et valide !"),
+              actions: [
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SignupPage2(firstnameController.text,lastnameController.text,emailController.text,passwordController.text)),
+        );
+      }
     }
   }
 

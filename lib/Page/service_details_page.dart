@@ -35,6 +35,13 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
     }
   }
 
+  removeFavoris() async {
+    int response = await ServiceFavoris().removeFavoris(DataManager().client?.id, widget.professionnel);
+    if(response == 200){
+      //faire un truc
+    }
+  }
+
 
 
   void checkIfProfessionalIsStarred() {
@@ -97,7 +104,10 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                         isStarred = true;
                       });
                     }else{
-                      //remove
+                      setState(() {
+                        removeFavoris();
+                        isStarred = false;
+                      });
                     }
                   },
                   child: Icon(

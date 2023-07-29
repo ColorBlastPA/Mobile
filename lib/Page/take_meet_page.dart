@@ -1,6 +1,9 @@
+import 'package:color_blast/Model/data_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:intl/intl.dart';
+
+import '../Model/client.dart';
 
 
 
@@ -12,6 +15,9 @@ class TakeMeetPage extends StatefulWidget {
 }
 
 class _TakeMeetPageState extends State<TakeMeetPage> {
+
+  Client? client = DataManager().client;
+
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
   TextEditingController _villeController = TextEditingController();
@@ -21,6 +27,15 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
 
   bool _isOutdoorSelected = false;
   bool _isIndoorSelected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameController.text = client?.firstname ?? "";
+    _lastNameController.text = client?.lastname ?? "";
+    _villeController.text = client?.city ?? "";
+    _adresseController.text = client?.country ?? "";
+  }
 
 
   @override
@@ -273,15 +288,15 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                   Text('Surface:'),
                   SizedBox(width: 10),
                   Container(
-                    width: 120, // Définir la largeur souhaitée pour la zone éditable
+                    width: 120,
                     child: TextField(
                       controller: _surfaceController,
                       keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.none, // Empêche le clavier d'afficher les actions
+                      textInputAction: TextInputAction.none,
                       decoration: InputDecoration(
                         hintText: 'Entrez la surface',
                       ),
-                      style: TextStyle(fontSize: 14), // Ajuster la taille de police du texte éditable
+                      style: TextStyle(fontSize: 14),
                     ),
                   ),
                   SizedBox(width: 10),
@@ -323,7 +338,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
               SizedBox(height: 25),
               Row(
                 children: [
-                  Expanded(
+                  /*Expanded(
                     child: ElevatedButton(
                       onPressed: () {
                         // Logique pour le bouton "Valider"
@@ -334,7 +349,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  SizedBox(width: 10),*/
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {

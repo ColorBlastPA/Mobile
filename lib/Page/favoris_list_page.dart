@@ -15,12 +15,13 @@ class FavorisListPage extends StatefulWidget {
 
 class _FavorisListPageState extends State<FavorisListPage> {
   List<Professionnel?>? favoris = [];
-  bool isLoading = true;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    getData();
+    favoris = DataManager().favoris;
+
   }
 
   getData() async {
@@ -43,15 +44,15 @@ class _FavorisListPageState extends State<FavorisListPage> {
       onRefresh: refreshData,
       child: isLoading
           ? Center(
-        child: CircularProgressIndicator(), // Affiche un spinner circulaire
+        child: CircularProgressIndicator(),
       )
-          : favoris?.isEmpty ?? true // Vérifie si le tableau est vide ou null
+          : favoris?.isEmpty ?? true
           ? Center(
-        child: Text("Vous n'avez pas de favoris"),
-      ) // Affiche le message si le tableau est vide
+            child: Text("Vous n'avez pas de favoris"),
+          )
           : ListView.builder(
-        itemCount: favoris?.length,
-        itemBuilder: (BuildContext context, int index) {
+            itemCount: favoris?.length,
+            itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
               Navigator.push(

@@ -83,5 +83,18 @@ class ServiceClient{
     }
   }
 
+  Future<int> checkEmail(String mail) async {
+    var response = await http.post(
+      Uri.parse('https://api-colorblast.current.ovh/client/checkEmail'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': mail
+      }),
+    );
+    return response.statusCode;
+  }
+
 
 }
