@@ -55,6 +55,9 @@ dependencies:
   geolocator: ^9.0.2
   url_launcher: ^6.1.11
   get: ^4.6.5
+  cell_calendar: ^0.8.0
+  syncfusion_flutter_datepicker: ^22.2.7
+
 
 dev_dependencies:
   flutter_test:

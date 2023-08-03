@@ -4,6 +4,8 @@ import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:intl/intl.dart';
 
 import '../Model/client.dart';
+import '../Model/planning.dart';
+import '../Service/service_planning.dart';
 
 
 
@@ -17,6 +19,8 @@ class TakeMeetPage extends StatefulWidget {
 class _TakeMeetPageState extends State<TakeMeetPage> {
 
   Client? client = DataManager().client;
+  List<Planning?>? planning = [];
+  List<DateTimeRange> _selectedDateRanges = [];
 
   TextEditingController _firstNameController = TextEditingController();
   TextEditingController _lastNameController = TextEditingController();
@@ -35,6 +39,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     _lastNameController.text = client?.lastname ?? "";
     _villeController.text = client?.city ?? "";
     _adresseController.text = client?.country ?? "";
+    getPlanning();
   }
 
 
@@ -59,7 +64,13 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
   DateTime? _startDate;
   DateTime? _endDate;
 
+  DateTime? _selectedStartDate;
+  DateTime? _selectedEndDate;
 
+  Future<void> getPlanning() async {
+    planning = await ServicePlanning().getPlanningByIdClient(DataManager().client?.id);
+    print(planning?.length);
+  }
 
 
   void _showSelectionModal() async {
@@ -116,6 +127,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     }
   }
 
+
   Future<void> _selectDateRange() async {
     final themeData = ThemeData(
       colorScheme: ColorScheme.light(
@@ -124,10 +136,16 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
       ),
     );
 
+    final initialStartDate = planning!.isNotEmpty ? planning![1]?.ddate : DateTime.now();
+    final initialEndDate = planning!.isNotEmpty ? planning![1]?.fdate : DateTime.now();
+
     final pickedDateRange = await showDateRangePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(Duration(days: 365)),
+      initialDateRange: initialStartDate != null && initialEndDate != null
+          ? DateTimeRange(start: initialStartDate, end: initialEndDate)
+          : null,
       builder: (BuildContext context, Widget? child) {
         return Theme(data: themeData, child: child!);
       },
@@ -135,11 +153,14 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
 
     if (pickedDateRange != null) {
       setState(() {
-        _startDate = pickedDateRange.start;
-        _endDate = pickedDateRange.end;
+        _selectedDateRanges.add(pickedDateRange);
       });
     }
   }
+
+
+
+
 
 
 
@@ -320,7 +341,9 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _selectDateRange,
+                      onPressed: () {
+                        _selectDateRange();
+                      },
                       child: Text('Sélectionner une date'),
                       style: ButtonStyle(
                         backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
@@ -330,9 +353,14 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                 ],
               ),
               SizedBox(height: 25),
-              if (_startDate != null && _endDate != null)
+              if (_selectedDateRanges.isNotEmpty)
                 Text(
-                  'Date de début: ${DateFormat('dd/MM/yyyy').format(_startDate!)}\nDate de fin: ${DateFormat('dd/MM/yyyy').format(_endDate!)}',
+                  'Dates sélectionnées:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              for (var dateRange in _selectedDateRanges)
+                Text(
+                  'Date de début: ${DateFormat('dd/MM/yyyy').format(dateRange.start)}\nDate de fin: ${DateFormat('dd/MM/yyyy').format(dateRange.end)}',
                   style: TextStyle(fontSize: 16),
                 ),
               SizedBox(height: 25),

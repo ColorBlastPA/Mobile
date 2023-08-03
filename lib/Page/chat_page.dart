@@ -1,3 +1,4 @@
+import 'package:color_blast/Animation/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,8 +10,17 @@ class ChatPage extends StatefulWidget {
   State<ChatPage> createState() => _ChatPageState();
 }
 
+
 class _ChatPageState extends State<ChatPage> {
   List<Message> messages = [
+    Message("John Doe", "Salut!", "2023-06-18"),
+    Message("Moi", "Bonjour!", "2023-06-18"),
+    Message("John Doe", "Salut!", "2023-06-18"),
+    Message("Moi", "Bonjour!", "2023-06-18"),
+    Message("John Doe", "Salut!", "2023-06-18"),
+    Message("Moi", "Bonjour!", "2023-06-18"),
+    Message("John Doe", "Salut!", "2023-06-18"),
+    Message("Moi", "Bonjour!", "2023-06-18"),
     Message("John Doe", "Salut!", "2023-06-18"),
     Message("Moi", "Bonjour!", "2023-06-18"),
   ];
@@ -36,19 +46,16 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
       ),
-      body: Column(
+      body: ElementAnimation(0.5,Column(
         children: [
           Expanded(
             child: ListView.builder(
+              reverse: true, // Affiche les nouveaux messages en bas
               itemCount: messages.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  leading: CircleAvatar(
-                    child: Text(messages[index].getInitials()),
-                  ),
-                  title: Text(messages[index].content),
-                  trailing: Text(messages[index].date),
-                );
+                // Inverse l'index pour afficher les nouveaux messages en bas
+                int invertedIndex = messages.length - 1 - index;
+                return buildMessageItem(messages[invertedIndex]);
               },
             ),
           ),
@@ -75,6 +82,45 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ],
       ),
+      ),
+
+    );
+  }
+
+  Widget buildMessageItem(Message message) {
+    bool isMe = message.sender == "Moi";
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: isMe ? Colors.blue : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message.sender,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isMe ? Colors.white : Colors.black,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              message.content,
+              style: TextStyle(color: isMe ? Colors.white : Colors.black),
+            ),
+            SizedBox(height: 4),
+            Text(
+              message.date,
+              style: TextStyle(color: isMe ? Colors.white70 : Colors.black54),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -97,13 +143,6 @@ class Message {
   final String date;
 
   Message(this.sender, this.content, this.date);
-
-  String getInitials() {
-    List<String> names = sender.split(" ");
-    String initials = "";
-    for (var name in names) {
-      initials += name[0];
-    }
-    return initials;
-  }
 }
+
+

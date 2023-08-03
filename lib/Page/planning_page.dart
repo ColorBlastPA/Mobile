@@ -1,3 +1,6 @@
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/planning.dart';
+import 'package:color_blast/Service/service_planning.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -13,12 +16,66 @@ class PlanningPage extends StatefulWidget {
 class _PlanningPageState extends State<PlanningPage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now(); // Définir une date antérieure d'un an
+  DateTime _focusedDay = DateTime.now();
+  List<Planning?>? planning = [];
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting('fr_FR', null);
+    getPlanning();
+  }
+
+  Future<void> getPlanning() async {
+    planning = await ServicePlanning().getPlanningByIdClient(DataManager().client?.id);
+
+  }
+
+  // Méthode pour déterminer si une date appartient à un planning
+  bool _isDateInPlanning(DateTime date) {
+    if (planning == null) return false;
+    for (var plan in planning!) {
+      if (date.isAfter(plan!.ddate) && date.isBefore(plan.fdate)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Méthode pour déterminer si une date est la date d'aujourd'hui
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.day == now.day && date.month == now.month && date.year == now.year;
+  }
+
+  // Méthode pour afficher une notification en bas de l'écran
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 1),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  // Méthode pour obtenir le style du cercle pour la date spécifiée
+  // avec un cercle rouge si le planning est inactif, sinon bleu
+  Widget _getCircleMarkerBuilder(BuildContext context, DateTime date, List<dynamic> events) {
+    if (!_isDateInPlanning(date)) return Container();
+
+    final planningForDate = planning!.firstWhere((plan) {
+      return date.isAfter(plan!.ddate) && date.isBefore(plan.fdate);
+    });
+
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: planningForDate!.actif ? Colors.blue : Colors.red,
+      ),
+    );
   }
 
   @override
@@ -40,7 +97,36 @@ class _PlanningPageState extends State<PlanningPage> {
           ),
         ),
       ),
-      body: TableCalendar(
+      body: Column(
+        children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2021, 1, 1),
+            lastDay: DateTime.utc(2023, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) {
+              return _isDateInPlanning(day);
+            },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) => _getCircleMarkerBuilder(context, date, events),
+            ),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+
+              if (_isDateInPlanning(selectedDay)) {
+                _showSnackbar("Planning sélectionné !");
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/*body: TableCalendar(
         calendarFormat: _calendarFormat,
         selectedDayPredicate: (day) {
           return isSameDay(_selectedDay, day);
@@ -65,11 +151,23 @@ class _PlanningPageState extends State<PlanningPage> {
           formatButtonVisible: false,
           titleCentered: true,
         ),
+        eventLoader: (day) {
+          List<Planning> events = [];
+          if (planning != null) {
+            for (var plan in planning!) {
+              if (plan != null) {
+                if (day.isAfter(plan.ddate.subtract(Duration(days: 1))) &&
+                    day.isBefore(plan.fdate.add(Duration(days: 1)))) {
+                  events.add(plan);
+                }
+              }
+            }
+          }
+          return events;
+        },
         firstDay: DateTime.utc(2021, 01, 01),
         lastDay: DateTime.utc(2023, 12, 31), // Augmenter la date maximale à 2023
         focusedDay: _focusedDay,
         locale: 'fr_FR',
       ),
-    );
-  }
-}
+      */

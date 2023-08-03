@@ -41,13 +41,15 @@ class _MessagingPageState extends State<MessagingPage> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: ListView.builder(
+      body: conversations.isEmpty
+          ? Center(
+        child: Text("Vous n'avez aucune discussion"),
+      )
+          : ListView.builder(
         itemCount: conversations.length,
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
             onTap: () {
-              // Action à effectuer lorsqu'une cellule est cliquée
-              // Par exemple, ouvrir une nouvelle page de discussion
               _openChatPage(conversations[index]);
             },
             child: ListTile(
