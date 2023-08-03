@@ -18,8 +18,8 @@ class ServiceLine{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, dynamic>{
-        'id': line.id,
         'idMessagerie': line.idMessagerie,
+        'mail': line.mail,
         'lastname': line.lastname,
         'firstname': line.firstname,
         'content': line.content,

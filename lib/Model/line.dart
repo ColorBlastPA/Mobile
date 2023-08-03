@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 List<Line> lineFromJson(String str) => List<Line>.from(json.decode(str).map((x) => Line.fromJson(x)));
@@ -7,6 +8,7 @@ String lineToJson(List<Line> data) => json.encode(List<dynamic>.from(data.map((x
 class Line {
   int id;
   int idMessagerie;
+  String? mail;
   String lastname;
   String firstname;
   String content;
@@ -15,6 +17,7 @@ class Line {
   Line({
     required this.id,
     required this.idMessagerie,
+    this.mail,
     required this.lastname,
     required this.firstname,
     required this.content,
@@ -24,6 +27,7 @@ class Line {
   factory Line.fromJson(Map<String, dynamic> json) => Line(
     id: json["id"],
     idMessagerie: json["idMessagerie"],
+    mail: json["mail"],
     lastname: json["lastname"],
     firstname: json["firstname"],
     content: json["content"],
@@ -33,6 +37,7 @@ class Line {
   Map<String, dynamic> toJson() => {
     "id": id,
     "idMessagerie": idMessagerie,
+    "mail": mail,
     "lastname": lastname,
     "firstname": firstname,
     "content": content,
