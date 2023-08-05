@@ -1,118 +1,63 @@
+import 'package:color_blast/Page/basket_product_page.dart';
 import 'package:color_blast/Page/product_details_page.dart';
+import 'package:color_blast/Service/service_product.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'basket_product_page.dart';
+import '../Model/product.dart';
 
 class ShopPage extends StatefulWidget {
   ShopPage({Key? key}) : super(key: key);
 
-  final List<Map<String, dynamic>> items = [
-    {
-      'name': 'Objet 1',
-      'price': 10,
-      'category': 'Catégorie 1',
-      'price': 48,
-      'image': 'https://picsum.photos/id/237/200/200',
-    },
-    {
-      'name': 'Objet 2',
-      'price': 20,
-      'category': 'Catégorie 1',
-      'price': 4,
-      'image': 'https://picsum.photos/id/238/200/200',
-    },
-    {
-      'name': 'Objet 3',
-      'price': 30,
-      'category': 'Catégorie 2',
-      'price': 20,
-      'image': 'https://picsum.photos/id/239/200/200',
-    },
-    {
-      'name': 'Objet 4',
-      'price': 40,
-      'category': 'Catégorie 2',
-      'price': 19,
-      'image': 'https://picsum.photos/id/240/200/200',
-    },
-    {
-      'name': 'Objet 5',
-      'price': 50,
-      'category': 'Catégorie 3',
-      'price': 78,
-      'image': 'https://picsum.photos/id/241/200/200',
-    },
-    {
-      'name': 'Objet 6',
-      'price': 60,
-      'category': 'Catégorie 3',
-      'price': 37,
-      'image': 'https://picsum.photos/id/242/200/200',
-    },
-    {
-      'name': 'Objet 7',
-      'price': 70,
-      'category': 'Catégorie 4',
-      'price': 12,
-      'image': 'https://picsum.photos/id/243/200/200',
-    },
-    {
-      'name': 'Objet 8',
-      'price': 80,
-      'category': 'Catégorie 4',
-      'price': 148,
-      'image': 'https://picsum.photos/id/244/200/200',
-    },
-    {
-      'name': 'Objet 9',
-      'price': 90,
-      'category': 'Catégorie 5',
-      'price': 58,
-      'image': 'https://picsum.photos/id/244/200/200',
-    },
-    {
-      'name': 'Objet 10',
-      'price': 100,
-      'category': 'Catégorie 5',
-      'price': 44,
-      'image': 'https://picsum.photos/id/244/200/200',
-    },
-  ];
 
   @override
   State<ShopPage> createState() => _ShopPageState();
 }
 
 class _ShopPageState extends State<ShopPage> {
-
+  List<Product?>? products = [];
   TextEditingController searchController = TextEditingController();
+  List<Product?>? filteredItems = [];
+  List<Product?>? allProducts = [];
 
-  List<Map<String, dynamic>> filteredItems = [];
+  @override
+  void initState() {
+    super.initState();
+    getDatas().then((loadedProducts) {
+      setState(() {
+        products = loadedProducts;
+        allProducts = loadedProducts;
+        filteredItems = loadedProducts;
+      });
+    });
+  }
+
   @override
   void dispose() {
     searchController.dispose();
     super.dispose();
   }
 
-  @override
-  void initState() {
-    super.initState();
-    filteredItems = widget.items;
+  Future<List<Product?>?> getDatas() async {
+    List<Product?>? products = await ServiceProduct().getAllProducts();
+    return products;
   }
 
   void filterList(String query) {
-    List<Map<String, dynamic>> filteredList = [];
-    widget.items.forEach((item) {
-      if (item['name'].toLowerCase().contains(query.toLowerCase())) {
-        filteredList.add(item);
-      }
-    });
-    setState(() {
-      filteredItems = filteredList;
-    });
+    if (query.isEmpty) {
+      setState(() {
+        filteredItems = allProducts;
+      });
+    } else {
+      List<Product?> filteredList = allProducts!
+          .where((item) =>
+          item!.name.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+      setState(() {
+        filteredItems = filteredList;
+      });
+    }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -160,11 +105,20 @@ class _ShopPageState extends State<ShopPage> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              separatorBuilder: (BuildContext context, int index) => SizedBox(height: 20),
-              itemCount: filteredItems.length,
+            child: filteredItems == null || filteredItems!.isEmpty
+                ? Center(
+              child: filteredItems == null
+                  ? CircularProgressIndicator()
+                  : Text("Aucun produit ne correspond"),
+            )
+                : ListView.separated(
+              separatorBuilder: (BuildContext context, int index) =>
+                  SizedBox(height: 20),
+              itemCount: filteredItems!.length,
               itemBuilder: (BuildContext context, int index) {
-                return buildListItem(filteredItems[index], () => onItemClicked(filteredItems[index]));
+                return buildListItem(
+                    filteredItems![index]!,
+                        () => onItemClicked(filteredItems![index]!));
               },
             ),
           ),
@@ -173,27 +127,24 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  Widget buildListItem(Map<String, dynamic> item, void Function() onClick) {
-    if (item.isEmpty) {
-      return SizedBox();
-    }
+  Widget buildListItem(Product item, void Function() onClick) {
     return GestureDetector(
       onTap: onClick,
       child: Column(
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage: NetworkImage(item['image']),
+            backgroundImage: NetworkImage("https://picsum.photos/id/242/200/200"),
           ),
           SizedBox(height: 10),
-          Text(item['name'], style: TextStyle(fontSize: 20)),
+          Text(item.name, style: TextStyle(fontSize: 20)),
           SizedBox(height: 5),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //Icon(Icons.star, color: Colors.yellow),
               //SizedBox(width: 5),
-              Text('${item['price']} €'),
+              Text('${item.price} €'),
             ],
           ),
         ],
@@ -201,12 +152,10 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
-  void onItemClicked(Map<String, dynamic> item) {
+  void onItemClicked(Product item) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ProductDetailsPage()),
+      MaterialPageRoute(builder: (context) => ProductDetailsPage(item)),
     );
-
   }
-
 }

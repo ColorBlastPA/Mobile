@@ -1,31 +1,51 @@
 import 'package:color_blast/Animation/animation.dart';
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Service/service_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
+import '../Model/line.dart';
 
+class ChatPage extends StatefulWidget {
+  const ChatPage(this.idMessagerie);
+
+  final int idMessagerie;
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatPage> createState() => _ChatPageState(this.idMessagerie);
 }
 
 
 class _ChatPageState extends State<ChatPage> {
-  List<Message> messages = [
-    Message("John Doe", "Salut!", "2023-06-18"),
-    Message("Moi", "Bonjour!", "2023-06-18"),
-    Message("John Doe", "Salut!", "2023-06-18"),
-    Message("Moi", "Bonjour!", "2023-06-18"),
-    Message("John Doe", "Salut!", "2023-06-18"),
-    Message("Moi", "Bonjour!", "2023-06-18"),
-    Message("John Doe", "Salut!", "2023-06-18"),
-    Message("Moi", "Bonjour!", "2023-06-18"),
-    Message("John Doe", "Salut!", "2023-06-18"),
-    Message("Moi", "Bonjour!", "2023-06-18"),
-  ];
+  int idMessagerie = 0;
+  List<Line?>? lines;
+  bool isLoading = true;
+  _ChatPageState(int idMessagerie){
+    this.idMessagerie = idMessagerie;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+
+  }
+
+  getData() async {
+    lines = await ServiceLine().getLinesByIdMessagerie(idMessagerie);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void appendLine(Line newLine) async{
+    var response = await ServiceLine().appendLine(newLine);
+  }
+
 
   TextEditingController _textEditingController = TextEditingController();
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,49 +66,57 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
       ),
-      body: ElementAnimation(0.5,Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true, // Affiche les nouveaux messages en bas
-              itemCount: messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                // Inverse l'index pour afficher les nouveaux messages en bas
-                int invertedIndex = messages.length - 1 - index;
-                return buildMessageItem(messages[invertedIndex]);
-              },
+      body: ElementAnimation(
+        0.5,
+        Column(
+          children: [
+            Expanded(
+              child: isLoading
+                  ? Center(
+                    child: CircularProgressIndicator(),
+              )
+                  : lines != null && lines!.isNotEmpty
+                  ? ListView.builder(
+                reverse: true,
+                itemCount: lines!.length,
+                itemBuilder: (BuildContext context, int index) {
+                  int invertedIndex = lines!.length - 1 - index;
+                  return buildMessageItem(lines![invertedIndex]!);
+                },
+              )
+                  : Center(
+                    child: Text("Pas de messages"),
+              ),
             ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _textEditingController,
-                    decoration: InputDecoration(
-                      hintText: "Saisissez votre message...",
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _textEditingController,
+                      decoration: InputDecoration(
+                        hintText: "Saisissez votre message...",
+                      ),
                     ),
                   ),
-                ),
-                CupertinoButton(
-                  child: Icon(CupertinoIcons.arrow_right),
-                  onPressed: () {
-                    sendMessage();
-                  },
-                ),
-              ],
+                  CupertinoButton(
+                    child: Icon(CupertinoIcons.arrow_right),
+                    onPressed: () {
+                      sendMessage();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-      ),
-
     );
   }
 
-  Widget buildMessageItem(Message message) {
-    bool isMe = message.sender == "Moi";
+  Widget buildMessageItem(Line line) {
+    bool isMe = line.mail == DataManager().client?.mail;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -102,7 +130,14 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              message.sender,
+              line.firstname,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isMe ? Colors.white : Colors.black,
+              ),
+            ),
+            Text(
+              line.lastname,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: isMe ? Colors.white : Colors.black,
@@ -110,12 +145,12 @@ class _ChatPageState extends State<ChatPage> {
             ),
             SizedBox(height: 4),
             Text(
-              message.content,
+              line.content,
               style: TextStyle(color: isMe ? Colors.white : Colors.black),
             ),
             SizedBox(height: 4),
             Text(
-              message.date,
+              line.date.toString(),
               style: TextStyle(color: isMe ? Colors.white70 : Colors.black54),
             ),
           ],
@@ -128,21 +163,18 @@ class _ChatPageState extends State<ChatPage> {
     if (_textEditingController.text.isNotEmpty) {
       setState(() {
         String content = _textEditingController.text;
-        String date = DateFormat('yyyy-MM-dd').format(DateTime.now());
-        Message newMessage = Message("Moi", content, date);
-        messages.add(newMessage);
+        DateTime date = DateTime.now();
+        Line newLine = Line(id: 1, idMessagerie: idMessagerie, lastname: DataManager().client!.lastname, firstname: DataManager().client!.firstname, content: content, date: date, mail:DataManager().client!.mail );
+        lines?.add(newLine);
+        appendLine(newLine);
         _textEditingController.clear();
       });
     }
   }
+
+
 }
 
-class Message {
-  final String sender;
-  final String content;
-  final String date;
 
-  Message(this.sender, this.content, this.date);
-}
 
 

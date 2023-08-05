@@ -1,7 +1,11 @@
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/messagerie.dart';
 import 'package:color_blast/Page/chat_page.dart';
 import 'package:color_blast/Page/shop_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../Service/service_messagerie.dart';
 
 class MessagingPage extends StatefulWidget {
   const MessagingPage({Key? key}) : super(key: key);
@@ -11,6 +15,25 @@ class MessagingPage extends StatefulWidget {
 }
 
 class _MessagingPageState extends State<MessagingPage> {
+
+  List<Messagerie?>? discussions = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    //getData();
+
+  }
+
+  getData() async {
+    discussions = await ServiceMessagerie().getMessageriesByIdClient(DataManager().client?.id);
+    /*setState(() {
+      isLoading = false;
+    });*/
+  }
+
+
   // Exemple de données de discussion
   List<Conversation> conversations = [
     Conversation("John Doe", "je suis le dernier message", "2023-06-18"),
@@ -41,24 +64,24 @@ class _MessagingPageState extends State<MessagingPage> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: conversations.isEmpty
+      body: discussions == null || discussions == []
           ? Center(
-        child: Text("Vous n'avez aucune discussion"),
+            child: Text("Vous n'avez aucune discussion"),
       )
           : ListView.builder(
-        itemCount: conversations.length,
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
+            itemCount: discussions?.length,
+            itemBuilder: (BuildContext context, int index) {
+            return InkWell(
             onTap: () {
-              _openChatPage(conversations[index]);
+              _openChatPage(discussions![index]!);
             },
-            child: ListTile(
-              leading: CircleAvatar(
-                child: Text(conversations[index].getInitials()),
-              ),
-              title: Text("${conversations[index].name}"),
-              subtitle: Text("${conversations[index].lastMessage}"),
-              trailing: Text("${conversations[index].date}"),
+              child: ListTile(
+                leading: CircleAvatar(
+                  child: Text(conversations[index].getInitials()),
+                ),
+                title: Text("${conversations[index].name}"),
+                subtitle: Text("${conversations[index].lastMessage}"),
+                trailing: Text("${conversations[index].date}"),
             ),
           );
         },
@@ -66,10 +89,10 @@ class _MessagingPageState extends State<MessagingPage> {
     );
   }
 
-  void _openChatPage(Conversation conversation) {
+  void _openChatPage(Messagerie messagerie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatPage()),
+      MaterialPageRoute(builder: (context) => ChatPage(messagerie.id)),
     );
   }
 }

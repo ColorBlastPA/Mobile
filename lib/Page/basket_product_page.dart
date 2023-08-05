@@ -14,19 +14,19 @@ class BasketProductPage extends StatefulWidget {
   State<BasketProductPage> createState() => _BasketProductPageState();
 }
 
-class Product {
+class Product1 {
   final String name;
   final double price;
 
-  Product({required this.name, required this.price});
+  Product1({required this.name, required this.price});
 }
 
 class _BasketProductPageState extends State<BasketProductPage> {
-  List<Product> productList = [
-    Product(name: 'Produit 1', price: 10.99),
-    Product(name: 'Produit 2', price: 15.99),
-    Product(name: 'Produit 3', price: 12.49),
-    Product(name: 'Produit 4', price: 9.99),
+  List<Product1> productList = [
+    Product1(name: 'Produit 1', price: 10.99),
+    Product1(name: 'Produit 2', price: 15.99),
+    Product1(name: 'Produit 3', price: 12.49),
+    Product1(name: 'Produit 4', price: 9.99),
   ];
 
   int selectedProductIndex = -1;

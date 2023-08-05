@@ -1,4 +1,4 @@
-import 'package:color_blast/Page/messaging_page.dart';
+import 'package:color_blast/Page/messagin_page.dart';
 import 'package:color_blast/Page/profile_page.dart';
 import 'package:color_blast/Page/shop_page.dart';
 import 'package:flutter/material.dart';

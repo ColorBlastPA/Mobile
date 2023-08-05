@@ -1,9 +1,5 @@
 import 'dart:convert';
-import 'dart:html';
 
-import 'package:color_blast/Model/data_manager.dart';
-import 'package:color_blast/Model/messagerie.dart';
-import 'package:color_blast/Model/professionnel.dart';
 import 'package:http/http.dart' as http;
 
 import '../Model/line.dart';

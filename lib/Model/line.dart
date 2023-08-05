@@ -17,7 +17,7 @@ class Line {
   Line({
     required this.id,
     required this.idMessagerie,
-    this.mail,
+    required this.mail,
     required this.lastname,
     required this.firstname,
     required this.content,
