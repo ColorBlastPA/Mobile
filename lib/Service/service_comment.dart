@@ -30,5 +30,18 @@ class ServiceComment{
     return null;
   }
 
+  Future<List<Comment?>?> getCommentsByIdPro(int idPro) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/comments/Pro/${idPro}');
+
+    var response = await client.get(uri);
+    if(response.statusCode==200){
+      var json = response.body;
+      return commentFromJson(json);
+
+    }
+    return null;
+  }
+
 
 }

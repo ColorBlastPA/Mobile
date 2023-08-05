@@ -4,8 +4,10 @@ import 'package:color_blast/Service/service_favoris.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Model/comment.dart';
 import '../Model/data_manager.dart';
 import '../Model/professionnel.dart';
+import '../Service/service_comment.dart';
 
 class ServiceDetailsPage extends StatefulWidget {
   final String companyName;
@@ -20,13 +22,30 @@ class ServiceDetailsPage extends StatefulWidget {
 
 class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
   bool isStarred = false;
+  List<Comment?>? comments = [];
+  bool isLoadingComments = true;
+
 
   @override
   void initState() {
     super.initState();
+    getDatas();
     checkIfProfessionalIsStarred();
+
   }
 
+  getDatas() async {
+    setState(() {
+      isLoadingComments = true;
+    });
+
+    List<Comment?>? loadedComments = await ServiceComment().getCommentsByIdPro(widget.professionnel.id);
+
+    setState(() {
+      comments = loadedComments;
+      isLoadingComments = false;
+    });
+  }
 
   addFavoris() async {
     int response = await ServiceFavoris().createFavoris(DataManager().client?.id, widget.professionnel);
@@ -275,17 +294,20 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
           ),
           SizedBox(height: 5),
           Expanded(
-            child: ListView.builder(
+            child: isLoadingComments
+              ? Center(child: CircularProgressIndicator())
+              : comments == null || comments!.isEmpty
+            ? Center(child: Text("Aucun commentaire pour ce service."))
+            : ListView.builder(
               shrinkWrap: true,
-              itemCount: 6,
+              itemCount: comments!.length,
               itemBuilder: (BuildContext context, int index) {
-                int note = 3;
                 return ListTile(
                   leading: CircleAvatar(
-                    child: Text("KM"),
+                    child: Text("${comments?[index]?.lastname[0]}${comments?[index]?.firstname[0]}"),
                   ),
-                  title: Text("Kevin Mazure"),
-                  subtitle: Text("je suis le commentaire"),
+                  title: Text("${comments?[index]?.lastname ?? ""} ${comments?[index]?.firstname ?? ""}"),
+                  subtitle: Text(comments?[index]?.content ?? ""),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -294,10 +316,11 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                         color: Colors.yellow,
                       ),
                       SizedBox(width: 5),
-                      Text("$note/5"),
+                      Text("${comments?[index]?.note ?? 0}/5"),
                     ],
                   ),
                 );
+
               },
             ),
           ),
