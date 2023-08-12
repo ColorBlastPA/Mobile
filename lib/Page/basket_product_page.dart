@@ -1,11 +1,11 @@
 import 'package:color_blast/Controller/payment_controller.dart';
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/panier.dart';
 import 'package:color_blast/Page/product_details_page.dart';
+import 'package:color_blast/Service/service_panier.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import '../Animation/animation.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-
 
 class BasketProductPage extends StatefulWidget {
   const BasketProductPage({Key? key}) : super(key: key);
@@ -14,30 +14,35 @@ class BasketProductPage extends StatefulWidget {
   State<BasketProductPage> createState() => _BasketProductPageState();
 }
 
-class Product1 {
-  final String name;
-  final double price;
-
-  Product1({required this.name, required this.price});
-}
-
 class _BasketProductPageState extends State<BasketProductPage> {
-  List<Product1> productList = [
-    Product1(name: 'Produit 1', price: 10.99),
-    Product1(name: 'Produit 2', price: 15.99),
-    Product1(name: 'Produit 3', price: 12.49),
-    Product1(name: 'Produit 4', price: 9.99),
-  ];
+  List<Panier?>? panier = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+
+  getData() async {
+    panier = await ServicePanier().getPanierByIdClient(DataManager().client?.id);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  removeElement(int idPanier) async {
+    await ServicePanier().removePanier(idPanier);
+  }
 
   int selectedProductIndex = -1;
-
 
   @override
   Widget build(BuildContext context) {
     final paymentController = Get.put(PaymentController());
     double totalPrice = 0.0;
-    for (var product in productList) {
-      totalPrice += product.price;
+    for (var panierItem in panier ?? []) {
+      totalPrice += panierItem?.product?.price ?? 0.0;
     }
 
     return Scaffold(
@@ -59,7 +64,9 @@ class _BasketProductPageState extends State<BasketProductPage> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 16),
+          isLoading
+              ? CircularProgressIndicator()
+              : SizedBox(height: 16),
           Text(
             'Prix total: ${totalPrice.toStringAsFixed(2)} €',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -67,13 +74,13 @@ class _BasketProductPageState extends State<BasketProductPage> {
           SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
-              itemCount: productList.length,
+              itemCount: panier?.length ?? 0,
               itemBuilder: (context, index) {
-                final product = productList[index];
+                final panierItem = panier![index];
                 return ListTile(
-                  leading: Image.asset('assets/img.png'), // Remplacez 'assets/images/product_image.png' par le chemin de votre image
-                  title: Text(product.name),
-                  subtitle: Text('${product.price} €'),
+                  leading: Image.asset('assets/img.png'),
+                  title: Text(panierItem?.product?.name ?? ""),
+                  subtitle: Text('${panierItem?.product?.price ?? 0.0} €'),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
                     onPressed: () {
@@ -85,7 +92,8 @@ class _BasketProductPageState extends State<BasketProductPage> {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             title: Text('Supprimer le produit ?'),
-                            content: Text('Êtes-vous sûr de vouloir supprimer ce produit de votre panier ?'),
+                            content: Text(
+                                'Êtes-vous sûr de vouloir supprimer ce produit de votre panier ?'),
                             actions: [
                               TextButton(
                                 child: Text('Annuler'),
@@ -98,11 +106,14 @@ class _BasketProductPageState extends State<BasketProductPage> {
                               ),
                               TextButton(
                                 child: Text('Supprimer'),
-                                onPressed: () {
-                                  setState(() {
-                                    productList.removeAt(selectedProductIndex);
-                                    selectedProductIndex = -1;
-                                  });
+                                onPressed: () async {
+                                  if (panierItem != null) {
+                                    await removeElement(panierItem.idPanier);
+                                    setState(() {
+                                      panier!.removeAt(selectedProductIndex);
+                                      selectedProductIndex = -1;
+                                    });
+                                  }
                                   Navigator.of(context).pop();
                                 },
                               ),
@@ -116,23 +127,26 @@ class _BasketProductPageState extends State<BasketProductPage> {
               },
             ),
           ),
-
-          ElementAnimation(1.6,GestureDetector(
+          GestureDetector(
             onTap: () {
-              paymentController.makePayment(amount: totalPrice, currency: 'USD');
+              paymentController.makePayment(
+                  amount: totalPrice, currency: 'USD');
             },
             child: Container(
               height: 50,
               margin: EdgeInsets.symmetric(horizontal: 50),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
-                  color: Colors.orange[900]
-              ),
+                  color: Colors.orange[900]),
               child: Center(
-                child: Text("Payer", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
+                child: Text(
+                  "Payer",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
-          )),
+          ),
           SizedBox(height: 50),
         ],
       ),

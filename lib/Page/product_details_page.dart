@@ -1,3 +1,4 @@
+import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/basket_product_page.dart';
 import 'package:color_blast/Service/service_comment.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_elegant_number_button/flutter_elegant_number_button.dart
 import '../Animation/animation.dart';
 import '../Model/comment.dart';
 import '../Model/product.dart';
+import '../Service/service_panier.dart';
 
 class ProductDetailsPage extends StatefulWidget {
 
@@ -34,6 +36,23 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     super.initState();
     getDatas();
   }
+
+  num count = 0;
+
+  addPanier(int count) async {
+    final clientId = DataManager().client?.id;
+    final productId = this.product?.id;
+
+    for (int i = 0; i < count; i++) {
+      final response = await ServicePanier().createPanier(clientId, productId);
+      if (response == 201) {
+        print("ajout effectué");
+      } else {
+        print("erreur");
+      }
+    }
+  }
+
 
   getDatas() async {
     List<Comment?>? loadedComments =
@@ -89,7 +108,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     });
   }
 
-  num count = 0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,24 +202,25 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'Note: ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 25,
-                              color: Colors.black,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 55.0),
+                          child: Container(
+                            alignment: Alignment.topLeft,
+                            child: ElegantNumberButton(
+                              initialValue: count,
+                              buttonSizeWidth: 40,
+                              buttonSizeHeight: 40,
+                              color: Colors.orangeAccent,
+                              minValue: 0,
+                              maxValue: 100,
+                              step: 1,
+                              decimalPlaces: 0,
+                              onChanged: (value) {
+                                setState(() {
+                                  count = value;
+                                });
+                              },
                             ),
-                            children: [
-                              TextSpan(
-                                text: "4/5",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 25,
-                                  decoration: TextDecoration.none,
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ),
@@ -208,46 +228,32 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: EdgeInsets.only(left: 16.0),
-                child: Container(
-                  alignment: Alignment.topLeft,
-                  child: ElegantNumberButton(
-                    initialValue: count,
-                    buttonSizeWidth: 40,
-                    buttonSizeHeight: 40,
-                    color: Colors.orangeAccent,
-                    minValue: 0,
-                    maxValue: 100,
-                    step: 1,
-                    decimalPlaces: 0,
-                    onChanged: (value) {
-                      setState(() {
-                        count = value;
-                      });
-                    },
-                  ),
-                ),
-              ),
+
               SizedBox(height: 40),
-              Container(
-                height: 50,
-                margin: EdgeInsets.symmetric(horizontal: 50),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.orange[900],
-                ),
-                child: Center(
-                  child: Text(
-                    "Ajouter au panier",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {
+                  addPanier(count.toInt());
+                },
+
+                child: Container(
+                  height: 50,
+                  margin: EdgeInsets.symmetric(horizontal: 50),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: Colors.orange[900],
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Ajouter au panier",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
               ),
+
               SizedBox(height: 20),
               ExpansionPanelList(
                 expandedHeaderPadding: EdgeInsets.all(0),
@@ -262,8 +268,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     body: item.expandedValue is Widget
                         ? item.expandedValue
                         : Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text(item.expandedValue),
+                          padding: EdgeInsets.all(16.0),
+                          child: Text(item.expandedValue),
                     ),
                     isExpanded: item.isExpanded,
                   );
@@ -280,6 +286,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       ),
     );
   }
+
+
 }
 
 

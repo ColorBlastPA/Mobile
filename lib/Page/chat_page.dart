@@ -130,14 +130,7 @@ class _ChatPageState extends State<ChatPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              line.firstname,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isMe ? Colors.white : Colors.black,
-              ),
-            ),
-            Text(
-              line.lastname,
+              "${line.firstname} ${line.lastname}",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: isMe ? Colors.white : Colors.black,
@@ -150,14 +143,29 @@ class _ChatPageState extends State<ChatPage> {
             ),
             SizedBox(height: 4),
             Text(
-              line.date.toString(),
+              formatMessageDate(line.date),
               style: TextStyle(color: isMe ? Colors.white70 : Colors.black54),
             ),
           ],
+
         ),
       ),
     );
   }
+
+  String formatMessageDate(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime).inDays;
+
+    if (difference == 0) {
+      // La date est aujourd'hui, afficher l'heure
+      return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
+    } else {
+      // Afficher la date complète
+      return "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
+    }
+  }
+
 
   void sendMessage() {
     if (_textEditingController.text.isNotEmpty) {

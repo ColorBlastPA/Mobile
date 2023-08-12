@@ -22,26 +22,19 @@ class _MessagingPageState extends State<MessagingPage> {
   @override
   void initState() {
     super.initState();
-    //getData();
+    getData();
 
   }
 
   getData() async {
     discussions = await ServiceMessagerie().getMessageriesByIdClient(DataManager().client?.id);
-    /*setState(() {
+    setState(() {
       isLoading = false;
-    });*/
+    });
   }
 
 
-  // Exemple de données de discussion
-  List<Conversation> conversations = [
-    Conversation("John Doe", "je suis le dernier message", "2023-06-18"),
-    Conversation("Jane Smith", "je suis le dernier message", "2023-06-19"),
-    Conversation("Alice Johnson", "je suis le dernier message", "2023-06-20"),
-    Conversation("Bob Williams", "je suis le dernier message", "2023-06-20"),
-    Conversation("Eve Davis", "je suis le dernier message", "2023-06-20"),
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,10 +57,14 @@ class _MessagingPageState extends State<MessagingPage> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: discussions == null || discussions == []
+      body: isLoading
+          ? Center(
+            child: CircularProgressIndicator(),
+          )
+          :discussions == null || discussions == []
           ? Center(
             child: Text("Vous n'avez aucune discussion"),
-      )
+          )
           : ListView.builder(
             itemCount: discussions?.length,
             itemBuilder: (BuildContext context, int index) {
@@ -77,12 +74,20 @@ class _MessagingPageState extends State<MessagingPage> {
             },
               child: ListTile(
                 leading: CircleAvatar(
-                  child: Text(conversations[index].getInitials()),
+                  child: Text(getInitials(
+                      (discussions?[index]?.pro.lastname ?? "") + " " + (discussions?[index]?.pro.firstname ?? "")
+                  )),
                 ),
-                title: Text("${conversations[index].name}"),
-                subtitle: Text("${conversations[index].lastMessage}"),
-                trailing: Text("${conversations[index].date}"),
-            ),
+
+
+
+                title: Text("${discussions?[index]?.pro.lastname} ${discussions?[index]?.pro.firstname}"),
+                subtitle: Text("${discussions?[index]?.messagerie.lastMessage}"),
+                trailing: Text(
+                  formatLastMessageDate(discussions?[index]?.messagerie.dLastMessage),
+                ),
+
+              ),
           );
         },
       ),
@@ -92,25 +97,44 @@ class _MessagingPageState extends State<MessagingPage> {
   void _openChatPage(Messagerie messagerie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatPage(messagerie.id)),
+      MaterialPageRoute(builder: (context) => ChatPage(messagerie.messagerie.id)),
     );
   }
-}
 
-class Conversation {
-  final String name;
-  final String lastMessage;
-  final String date;
+  String getInitials(String? name) {
+    if (name == null || name.isEmpty) {
+      return "";
+    }
 
-  Conversation(this.name, this.lastMessage, this.date);
-
-  String getInitials() {
-    // Méthode pour obtenir les initiales du nom et prénom
     List<String> names = name.split(" ");
     String initials = "";
-    for (var name in names) {
-      initials += name[0];
+
+    for (String n in names) {
+      if (n.isNotEmpty) {
+        initials += n[0];
+      }
     }
+
     return initials;
   }
+
+  String formatLastMessageDate(DateTime? dateTime) {
+    if (dateTime == null) {
+      return "";
+    }
+
+    final now = DateTime.now();
+    final difference = now.difference(dateTime).inDays;
+
+    if (difference == 0) {
+      // La date est aujourd'hui, afficher l'heure
+      return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}:${dateTime.second.toString().padLeft(2, '0')}";
+    } else {
+      // Afficher la date complète
+      return "${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}";
+    }
+  }
+
+
 }
+
