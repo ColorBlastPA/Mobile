@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/professionnel.dart';
+import 'package:color_blast/Model/update_result_pro.dart';
 import 'package:color_blast/Page/details_profile.dart';
-import 'package:color_blast/Page/login_page.dart';
 import 'package:color_blast/Page/planning_page.dart';
-import 'package:color_blast/Page/signup_page.dart';
 import 'package:color_blast/Page/update_password_page.dart';
+import 'package:color_blast/Page/workspace_selection_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,9 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../Animation/animation.dart';
 import '../Model/client.dart';
-import '../Model/update_result.dart';
-import 'forgot_password_page.dart';
-import 'navigation_page.dart';
+import '../Model/update_result_client.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -28,12 +27,17 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? _image;
   Client? client;
+  Professionnel? pro;
 
   @override
   void initState() {
     super.initState();
-    print("je passe" + DataManager().client!.lastname);
-    this.client = DataManager().client;
+    if(DataManager().workspaceClient == true){
+      this.client = DataManager().client;
+    }else{
+      this.pro = DataManager().pro;
+    }
+
   }
 
 
@@ -84,11 +88,14 @@ class _ProfilePageState extends State<ProfilePage> {
       MaterialPageRoute(builder: (context) => ProfileDetails()),
     );
 
-    if (result is UpdateResult) {
+    if (result is UpdateResultClient) {
+        setState(() {
+          this.client = result.client;
+        });
+    }else if(result is UpdateResultPro){
       setState(() {
-        this.client = result.client;
+        this.pro = result.pro;
       });
-
     }
   }
 
@@ -148,14 +155,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                          (client?.firstname ?? "undefined") + " " + (client?.lastname ?? "undefined"),
-                          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-
+                            DataManager().workspaceClient!
+                                ? (client?.firstname ?? "undefined") + " " + (client?.lastname ?? "undefined")
+                                : (pro?.firstname ?? "undefined") + " " + (pro?.lastname ?? "undefined"),
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                           ),
                           IconButton(
                             onPressed: () {
                                 navigateToChildPage();
-
                             },
                             icon: Icon(Icons.edit),
                           ),
@@ -284,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             DataManager().reset();
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(builder: (context) => WorkspaceSelectionPage()),
                             );
                           },
                           child: Row(

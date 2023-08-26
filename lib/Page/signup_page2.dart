@@ -1,4 +1,7 @@
 
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/professionnel.dart';
+import 'package:color_blast/Page/signup_page3.dart';
 import 'package:color_blast/Service/service_client.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +55,16 @@ class _SignupPage2State extends State<SignupPage2> {
     }else{
       print("erreur");
     }
+  }
+
+  Future<void> goToSign3() async {
+    Professionnel pro = Professionnel(id: 1, lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", companyName: "", price: 0, phone: "", note: 0, description: "");
+
+    Navigator.push(context,
+        MaterialPageRoute<void>(
+            builder:(BuildContext context) {
+              return SignupPage3(pro);
+            }));
   }
 
 
@@ -241,17 +254,20 @@ class _SignupPage2State extends State<SignupPage2> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      //border: Border(bottom: BorderSide(color: Colors.grey))
-                                    ),
-                                    child: TextField(
-                                      controller: textAdresseController,
-                                      decoration: InputDecoration(
-                                        hintText: "Adresse",
-                                        hintStyle: TextStyle(color: Colors.grey),
-                                        border: InputBorder.none,
+                                  Visibility(
+                                    visible: DataManager().workspaceClient!,
+                                    child: Container(
+                                      padding: EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        //border: Border(bottom: BorderSide(color: Colors.grey))
+                                      ),
+                                      child: TextField(
+                                        controller: textAdresseController,
+                                        decoration: InputDecoration(
+                                          hintText: "Adresse",
+                                          hintStyle: TextStyle(color: Colors.grey),
+                                          border: InputBorder.none,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -259,6 +275,7 @@ class _SignupPage2State extends State<SignupPage2> {
                               ),
                             )),
                             SizedBox(height: 40,),
+                            DataManager().workspaceClient == true ?
                             ElementAnimation(1.6, GestureDetector(
                               onTap: () {
                                 createAccount();
@@ -277,7 +294,28 @@ class _SignupPage2State extends State<SignupPage2> {
                                   ),
                                 ),
                               ),
-                            )),
+                            )) :
+                          ElementAnimation(1.6, GestureDetector(
+                          onTap: () {
+                          goToSign3();
+                          },
+                          child: Container(
+                          height: 50,
+                          margin: EdgeInsets.symmetric(horizontal: 50),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.orange[900],
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Continuer",
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
                             SizedBox(height: 50,),
                             SizedBox(height: 30,),
                           ],

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/professionnel.dart';
 
 import '../Model/client.dart';
 import 'package:http/http.dart' as http;
@@ -33,24 +34,47 @@ class ServiceClient{
     }
   }
 
-  Future<int> login(String mail, String password) async {
-    var response = await http.post(
-      Uri.parse('https://api-colorblast.current.ovh/client/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'mail': mail,
-        'password': password
-      }),
-    );
-    if(response.statusCode==200){
-      var json = response.body;
-      DataManager().client =  clientFromJson(json);
+  Future<int> login(String mail, String password, bool workspaceClient) async {
 
+    if(workspaceClient == true){
+      var response = await http.post(
+        Uri.parse('https://api-colorblast.current.ovh/client/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'mail': mail,
+          'password': password
+        }),
+      );
+      if(response.statusCode==200){
+        var json = response.body;
+        DataManager().client =  clientFromJson(json);
+
+      }
+      return response.statusCode;
+    }else{
+      var response = await http.post(
+        Uri.parse('https://api-colorblast.current.ovh/professionnel/login'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'mail': mail,
+          'password': password
+        }),
+      );
+      if(response.statusCode==200){
+        var json = response.body;
+        DataManager().pro =  professionnelFromJson(json);
+
+      }
+      return response.statusCode;
     }
 
-    return response.statusCode;
+
+
+
   }
 
   Future<int> updateClient(Client client) async {

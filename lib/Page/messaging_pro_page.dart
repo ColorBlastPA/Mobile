@@ -1,22 +1,20 @@
 import 'package:color_blast/Model/data_manager.dart';
-import 'package:color_blast/Model/messagerie.dart';
-import 'package:color_blast/Page/chat_page.dart';
-import 'package:color_blast/Page/shop_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Model/messaging_pro.dart';
 import '../Service/service_messagerie.dart';
+import 'chat_page.dart';
 
-class MessagingPage extends StatefulWidget {
-  const MessagingPage({Key? key}) : super(key: key);
+class MessagingProPage extends StatefulWidget {
+  const MessagingProPage({Key? key}) : super(key: key);
 
   @override
-  State<MessagingPage> createState() => _MessagingPageState();
+  State<MessagingProPage> createState() => _MessagingProPageState();
 }
 
-class _MessagingPageState extends State<MessagingPage> {
-
-  List<MessagerieClient?>? discussions = [];
+class _MessagingProPageState extends State<MessagingProPage> {
+  List<MessagingPro?>? discussions = [];
   bool isLoading = true;
 
   @override
@@ -27,7 +25,7 @@ class _MessagingPageState extends State<MessagingPage> {
   }
 
   getData() async {
-    discussions = await ServiceMessagerie().getMessageriesByIdClient(DataManager().client?.id);
+    discussions = await ServiceMessagerie().getMessageriesByIdPro(DataManager().pro?.id);
     setState(() {
       isLoading = false;
     });
@@ -60,11 +58,11 @@ class _MessagingPageState extends State<MessagingPage> {
       body: isLoading
           ? Center(
             child: CircularProgressIndicator(),
-          )
+      )
           :discussions == null || discussions == []
           ? Center(
             child: Text("Vous n'avez aucune discussion"),
-          )
+      )
           : ListView.builder(
             itemCount: discussions?.length,
             itemBuilder: (BuildContext context, int index) {
@@ -75,26 +73,26 @@ class _MessagingPageState extends State<MessagingPage> {
               child: ListTile(
                 leading: CircleAvatar(
                   child: Text(getInitials(
-                      (discussions?[index]?.pro.lastname ?? "") + " " + (discussions?[index]?.pro.firstname ?? "")
+                      (discussions?[index]?.client.lastname ?? "") + " " + (discussions?[index]?.client.firstname ?? "")
                   )),
                 ),
 
 
 
-                title: Text("${discussions?[index]?.pro.lastname} ${discussions?[index]?.pro.firstname}"),
+                title: Text("${discussions?[index]?.client.lastname} ${discussions?[index]?.client.firstname}"),
                 subtitle: Text("${discussions?[index]?.messagerie.lastMessage}"),
                 trailing: Text(
                   formatLastMessageDate(discussions?[index]?.messagerie.dLastMessage),
                 ),
 
-              ),
+            ),
           );
         },
       ),
     );
   }
 
-  void _openChatPage(MessagerieClient messagerie) {
+  void _openChatPage(MessagingPro messagerie) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => ChatPage(messagerie.messagerie.id)),

@@ -4,20 +4,20 @@
 
 import 'dart:convert';
 
-List<Messagerie> messagerieFromJson(String str) => List<Messagerie>.from(json.decode(str).map((x) => Messagerie.fromJson(x)));
+List<MessagerieClient> messagerieFromJson(String str) => List<MessagerieClient>.from(json.decode(str).map((x) => MessagerieClient.fromJson(x)));
 
-String messagerieToJson(List<Messagerie> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String messagerieToJson(List<MessagerieClient> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class Messagerie {
+class MessagerieClient {
   MessagerieClass messagerie;
   Pro pro;
 
-  Messagerie({
+  MessagerieClient({
     required this.messagerie,
     required this.pro,
   });
 
-  factory Messagerie.fromJson(Map<String, dynamic> json) => Messagerie(
+  factory MessagerieClient.fromJson(Map<String, dynamic> json) => MessagerieClient(
     messagerie: MessagerieClass.fromJson(json["messagerie"]),
     pro: Pro.fromJson(json["pro"]),
   );

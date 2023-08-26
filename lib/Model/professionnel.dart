@@ -4,7 +4,9 @@
 
 import 'dart:convert';
 
-List<Professionnel> professionnelFromJson(String str) => List<Professionnel>.from(json.decode(str).map((x) => Professionnel.fromJson(x)));
+List<Professionnel> professionnelListFromJson(String str) => List<Professionnel>.from(json.decode(str).map((x) => Professionnel.fromJson(x)));
+
+Professionnel professionnelFromJson(String str) => Professionnel.fromJson(json.decode(str));
 
 String professionnelToJson(List<Professionnel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 

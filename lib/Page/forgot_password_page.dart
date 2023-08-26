@@ -8,7 +8,8 @@ import 'package:mailer/smtp_server/gmail.dart';
 import '../Animation/animation.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({Key? key}) : super(key: key);
+  final bool WorkspaceClient;
+  ForgotPasswordPage(this.WorkspaceClient);
 
   @override
   State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
@@ -21,7 +22,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
 
   void sendEmail() async {
-    int response = await ServiceEmail().forgotPassword(emailController.text);
+    int response = await ServiceEmail().forgotPassword(emailController.text,widget.WorkspaceClient);
     if (response == 200) {
       showDialog(
         context: context,

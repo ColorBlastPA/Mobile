@@ -2,7 +2,9 @@ import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/forgot_password_page.dart';
 import 'package:color_blast/Page/home_page.dart';
 import 'package:color_blast/Page/navigation_page.dart';
+import 'package:color_blast/Page/navigation_pro_page.dart';
 import 'package:color_blast/Page/signup_page.dart';
+import 'package:color_blast/Page/workspace_selection_page.dart';
 import 'package:color_blast/Service/service_pro.dart';
 import 'package:flutter/material.dart';
 
@@ -11,22 +13,34 @@ import '../Service/service_client.dart';
 
 
 class LoginPage extends StatefulWidget {
+  final bool WorkspaceClient;
+
+  LoginPage({this.WorkspaceClient = false});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
 
 
   void login() async {
-    var response = await ServiceClient().login(mailController.text, passwordController.text);
+    var response = await ServiceClient().login(mailController.text, passwordController.text,widget.WorkspaceClient);
     if (response == 200) {
-      DataManager().favoris = await ServicePro().getProFavorisById(DataManager().client?.id);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => NavigationPage()),
-      );
-      print(DataManager().client?.mail);
+      DataManager().workspaceClient = widget.WorkspaceClient;
+      if(widget.WorkspaceClient == true){
+        DataManager().favoris = await ServicePro().getProFavorisById(DataManager().client?.id);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationPage()),
+        );
+        print(DataManager().client?.mail);
+      }else{
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NavigationProPage()),
+        );
+      }
+
     } else {
       showDialog(
         context: context,
@@ -55,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
   
   @override
   Widget build(BuildContext context) {
+    bool isFromNavigationPage = widget.WorkspaceClient;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -71,7 +86,23 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 80,),
+            Padding(
+              padding: EdgeInsets.only(top: 40, left: 20),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => WorkspaceSelectionPage()),
+                  );
+                },
+                child: ElementAnimation(1, Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 30,
+                ),),
+              ),
+            ),
+            SizedBox(height: 20,),
             Padding(
               padding: EdgeInsets.all(20),
               child: Column(
@@ -146,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
+                                MaterialPageRoute(builder: (context) => ForgotPasswordPage(isFromNavigationPage)),
                               );
                             },
                             child:Text("Mot de passe oublié ?", style: TextStyle(color: Colors.grey),)),

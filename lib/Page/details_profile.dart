@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../Animation/animation.dart';
 import '../Model/client.dart';
 import '../Model/data_manager.dart';
-import '../Model/update_result.dart';
+import '../Model/update_result_client.dart';
 import '../Service/service_client.dart';
 
 class ProfileDetails extends StatefulWidget {
@@ -58,7 +58,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
 
     var response = await ServiceClient().updateClient(client);
     if (response == 200) {
-      UpdateResult result = UpdateResult(context, client);
+      UpdateResultClient result = UpdateResultClient(context, client);
       Navigator.of(context).pop(result);
     } else {
       print("erreur");
