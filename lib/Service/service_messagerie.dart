@@ -21,8 +21,9 @@ class ServiceMessagerie{
   }
 
   Future<List<MessagingPro?>?> getMessageriesByIdPro(int? idClient) async{
+
     var client = http.Client();
-    var uri = Uri.parse('https://api-colorblast.current.ovh/messagerie/client/${idClient}');
+    var uri = Uri.parse('https://api-colorblast.current.ovh/messagerie/pro/${idClient}');
 
     var response = await client.get(uri);
     if(response.statusCode==200){

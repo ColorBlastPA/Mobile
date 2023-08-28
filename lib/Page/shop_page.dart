@@ -1,14 +1,11 @@
-import 'package:color_blast/Page/basket_product_page.dart';
-import 'package:color_blast/Page/product_details_page.dart';
-import 'package:color_blast/Service/service_product.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import '../Service/service_product.dart';
 import '../Model/product.dart';
+import '../Page/product_details_page.dart';
+import '../Page/basket_product_page.dart';
 
 class ShopPage extends StatefulWidget {
   ShopPage({Key? key}) : super(key: key);
-
 
   @override
   State<ShopPage> createState() => _ShopPageState();
@@ -16,9 +13,11 @@ class ShopPage extends StatefulWidget {
 
 class _ShopPageState extends State<ShopPage> {
   List<Product?>? products = [];
-  TextEditingController searchController = TextEditingController();
   List<Product?>? filteredItems = [];
   List<Product?>? allProducts = [];
+  List<bool> selectedCategories = [false, false, false]; // EXTERN, INTERN, ACCESSORY
+  List<String> selectedCategoryNames = ['EXTERN', 'INTERN', 'ACCESSORY']; // Names of the categories
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -43,13 +42,25 @@ class _ShopPageState extends State<ShopPage> {
     return products;
   }
 
-  void filterList(String query) {
-    if (query.isEmpty) {
+  void filterByCategory(List<String> categories) {
+    if (categories.isEmpty) {
       setState(() {
         filteredItems = allProducts;
       });
     } else {
-      List<Product?> filteredList = allProducts!
+      setState(() {
+        filteredItems = allProducts!
+            .where((item) => categories.contains(item!.category))
+            .toList();
+      });
+    }
+  }
+
+  void filterList(String query) {
+    if (query.isEmpty) {
+      filterByCategory(getSelectedCategories());
+    } else {
+      List<Product?> filteredList = filteredItems!
           .where((item) =>
           item!.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -104,6 +115,15 @@ class _ShopPageState extends State<ShopPage> {
               ),
             ),
           ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: selectedCategoryNames.map((tagName) {
+              int index = selectedCategoryNames.indexOf(tagName);
+              return buildTag(tagName, index);
+            }).toList(),
+          ),
+          SizedBox(height: 20),
           Expanded(
             child: filteredItems == null || filteredItems!.isEmpty
                 ? Center(
@@ -127,6 +147,31 @@ class _ShopPageState extends State<ShopPage> {
     );
   }
 
+  Widget buildTag(String tagName, int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedCategories[index] = !selectedCategories[index];
+          filterByCategory(getSelectedCategories());
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: selectedCategories[index] ? Colors.blue : Colors.grey,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          tagName,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget buildListItem(Product item, void Function() onClick) {
     return GestureDetector(
       onTap: onClick,
@@ -134,7 +179,8 @@ class _ShopPageState extends State<ShopPage> {
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage: NetworkImage("https://picsum.photos/id/242/200/200"),
+            backgroundImage:
+            NetworkImage("https://picsum.photos/id/242/200/200"),
           ),
           SizedBox(height: 10),
           Text(item.name, style: TextStyle(fontSize: 20)),
@@ -142,8 +188,6 @@ class _ShopPageState extends State<ShopPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //Icon(Icons.star, color: Colors.yellow),
-              //SizedBox(width: 5),
               Text('${item.price} €'),
             ],
           ),
@@ -158,4 +202,22 @@ class _ShopPageState extends State<ShopPage> {
       MaterialPageRoute(builder: (context) => ProductDetailsPage(item)),
     );
   }
+
+  List<String> getSelectedCategories() {
+    List<String> selectedCategoryNames = [];
+    for (int i = 0; i < selectedCategories.length; i++) {
+      if (selectedCategories[i]) {
+        if (i == 0) {
+          selectedCategoryNames.add("EXTERN");
+        } else if (i == 1) {
+          selectedCategoryNames.add("INTERN");
+        } else if (i == 2) {
+          selectedCategoryNames.add("ACCESSORY");
+        }
+      }
+    }
+    return selectedCategoryNames;
+  }
+
+
 }
