@@ -1,16 +1,66 @@
 // To parse this JSON data, do
 //
-//     final professionnel = professionnelFromJson(jsonString);
+//     final userPro = userProFromJson(jsonString);
 
 import 'dart:convert';
 
-List<Professionnel> professionnelListFromJson(String str) => List<Professionnel>.from(json.decode(str).map((x) => Professionnel.fromJson(x)));
+UserPro userProFromJson(String str) => UserPro.fromJson(json.decode(str));
 
-Professionnel professionnelFromJson(String str) => Professionnel.fromJson(json.decode(str));
+String userProToJson(UserPro data) => json.encode(data.toJson());
 
-String professionnelToJson(List<Professionnel> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+class UserPro {
+  Pro pro;
+  Certificate certificate;
 
-class Professionnel {
+  UserPro({
+    required this.pro,
+    required this.certificate,
+  });
+
+  factory UserPro.fromJson(Map<String, dynamic> json) => UserPro(
+    pro: Pro.fromJson(json["pro"]),
+    certificate: Certificate.fromJson(json["certificate"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "pro": pro.toJson(),
+    "certificate": certificate.toJson(),
+  };
+}
+
+class Certificate {
+  int id;
+  String idKey;
+  int idPro;
+  String filename;
+  String url;
+
+  Certificate({
+    required this.id,
+    required this.idKey,
+    required this.idPro,
+    required this.filename,
+    required this.url,
+  });
+
+  factory Certificate.fromJson(Map<String, dynamic> json) => Certificate(
+    id: json["id"],
+    idKey: json["idKey"],
+    idPro: json["idPro"],
+    filename: json["filename"],
+    url: json["url"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "idKey": idKey,
+    "idPro": idPro,
+    "filename": filename,
+    "url": url,
+  };
+}
+
+class Pro {
   int id;
   String lastname;
   String firstname;
@@ -25,10 +75,10 @@ class Professionnel {
   String phone;
   int note;
   String description;
-  int? idCertificate;
-  String? avatar;
+  int idCertificate;
+  String avatar;
 
-  Professionnel({
+  Pro({
     required this.id,
     required this.lastname,
     required this.firstname,
@@ -47,7 +97,7 @@ class Professionnel {
     required this.avatar,
   });
 
-  factory Professionnel.fromJson(Map<String, dynamic> json) => Professionnel(
+  factory Pro.fromJson(Map<String, dynamic> json) => Pro(
     id: json["id"],
     lastname: json["lastname"],
     firstname: json["firstname"],
@@ -64,7 +114,6 @@ class Professionnel {
     description: json["description"],
     idCertificate: json["idCertificate"],
     avatar: json["avatar"],
-
   );
 
   Map<String, dynamic> toJson() => {

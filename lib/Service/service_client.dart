@@ -6,6 +6,8 @@ import 'package:color_blast/Model/professionnel.dart';
 import '../Model/client.dart';
 import 'package:http/http.dart' as http;
 
+import '../Model/user_pro.dart';
+
 class ServiceClient{
   Future<int> createClient(Client client) async {
     final response = await http.post(
@@ -23,7 +25,6 @@ class ServiceClient{
         "postal_code": client.postalCode,
         "city": client.city,
         "address": client.address,
-        "admin": client.admin,
       }),
     );
 
@@ -66,7 +67,7 @@ class ServiceClient{
       );
       if(response.statusCode==200){
         var json = response.body;
-        DataManager().pro =  professionnelFromJson(json);
+        DataManager().pro =  userProFromJson(json);
 
       }
       return response.statusCode;
@@ -94,7 +95,7 @@ class ServiceClient{
         "postal_code": client.postalCode,
         "city": client.city,
         "address": client.address,
-        "admin": client.admin,
+        "avatar": client.avatar,
       }),
     );
 

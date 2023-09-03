@@ -25,7 +25,7 @@ class _MessagingProPageState extends State<MessagingProPage> {
   }
 
   getData() async {
-    discussions = await ServiceMessagerie().getMessageriesByIdPro(DataManager().pro?.id);
+    discussions = await ServiceMessagerie().getMessageriesByIdPro(DataManager().pro?.pro.id);
     setState(() {
       isLoading = false;
     });

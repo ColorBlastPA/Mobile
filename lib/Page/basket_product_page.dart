@@ -78,7 +78,17 @@ class _BasketProductPageState extends State<BasketProductPage> {
               itemBuilder: (context, index) {
                 final panierItem = panier![index];
                 return ListTile(
-                  leading: Image.asset('assets/img.png'),
+                  leading: panierItem?.product?.image != null && panierItem?.product?.image != ""
+                      ? Image.network(
+                    panierItem!.product!.image!,
+                    width: 50,  // Largeur souhaitée
+                    height: 50, // Hauteur souhaitée
+                  )
+                      : Image.asset(
+                    'assets/img.png',
+                    width: 50,  // Largeur souhaitée
+                    height: 50, // Hauteur souhaitée
+                  ),
                   title: Text(panierItem?.product?.name ?? ""),
                   subtitle: Text('${panierItem?.product?.price ?? 0.0} €'),
                   trailing: IconButton(
@@ -124,6 +134,7 @@ class _BasketProductPageState extends State<BasketProductPage> {
                     },
                   ),
                 );
+
               },
             ),
           ),

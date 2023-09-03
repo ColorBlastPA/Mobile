@@ -68,10 +68,12 @@ class _FavorisListPageState extends State<FavorisListPage> {
               );
             },
             child: ListTile(
-              leading: CircleAvatar(
-                child: Text(
-                    favoris![index]!.lastname[0] +
-                        favoris![index]!.firstname[0]),
+              leading: favoris![index]!.avatar != null && favoris![index]!.avatar != ""
+                  ? CircleAvatar(
+                    backgroundImage: NetworkImage(favoris![index]!.avatar!),
+              )
+                  : CircleAvatar(
+                    child: Text(favoris![index]!.lastname[0] + favoris![index]!.firstname[0]),
               ),
               title: Text(
                   '${favoris![index]!.lastname} ${favoris![index]!.firstname}'),

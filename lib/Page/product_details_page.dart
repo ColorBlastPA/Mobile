@@ -146,15 +146,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 20),
               Container(
                 alignment: Alignment.center,
                 child: Image.network(
-                  "https://www.outillage-pierre.com/16309-tm_thickbox_default/pot-de-peinture-technicolor-85-ml.jpg",
+                  product?.image ?? "https://picsum.photos/id/242/200/200",
                   fit: BoxFit.cover,
                   width: 200,
                   height: 200,
                 ),
               ),
+
+
               SizedBox(height: 20),
               Container(
                 alignment: Alignment.center,

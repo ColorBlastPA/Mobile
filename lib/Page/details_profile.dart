@@ -53,7 +53,7 @@ class _ProfileDetailsState extends State<ProfileDetails> {
   }
 
   Future<void> updateClient() async {
-    Client client = Client(lastname: lastNameController.text, firstname: firstNameController.text, mail: emailController.text, password: this.client?.password ?? "", country: countryController.text, department: departmentController.text, postalCode: postalCodeController.text, city: cityController.text, address: addressController.text, admin: false, id: this.client!.id );
+    Client client = Client(lastname: lastNameController.text, firstname: firstNameController.text, mail: emailController.text, password: this.client?.password ?? "", country: countryController.text, department: departmentController.text, postalCode: postalCodeController.text, city: cityController.text, address: addressController.text, id: this.client!.id, avatar: '' );
     print(client.id);
 
     var response = await ServiceClient().updateClient(client);

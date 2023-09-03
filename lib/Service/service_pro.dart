@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
 
 class ServicePro{
 
@@ -61,5 +63,28 @@ class ServicePro{
       return response.statusCode;
     }
   }
+
+
+  Future<int> uploadCertificate(int idPro, String filePath) async {
+    final uri = Uri.parse('https://api-colorblast.current.ovh/upload-pdf/$idPro');
+
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath(
+        'file',
+        filePath, // Chemin du fichier local
+        contentType: MediaType('application', 'pdf'),
+      ));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      return response.statusCode;
+    } else {
+      return response.statusCode;
+    }
+  }
+
+
+
 
 }

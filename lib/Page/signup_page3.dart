@@ -1,5 +1,6 @@
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:color_blast/Service/service_pro.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,8 @@ class SignupPage3 extends StatefulWidget {
 
 class _SignupPage3State extends State<SignupPage3> {
   Professionnel? pro;
+  String selectedFileName = '';
+
   _SignupPage3State(Professionnel pro){
     this.pro = pro;
   }
@@ -32,7 +35,7 @@ class _SignupPage3State extends State<SignupPage3> {
 
 
   Future<void> createAccount() async {
-    Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text);
+    Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text, idCertificate: null, avatar: '');
     var response = await ServicePro().createPro(newPro);
     if(response == 200){
       Navigator.push(context,
@@ -44,7 +47,6 @@ class _SignupPage3State extends State<SignupPage3> {
       print("erreur");
     }
   }
-
 
 
   @override
@@ -67,145 +69,192 @@ class _SignupPage3State extends State<SignupPage3> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SizedBox(height: 80,),
+                SizedBox(height: 60),
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      ElementAnimation(1, Text(
-                        "Création Service",
-                        style: TextStyle(color: Colors.white, fontSize: 40),
-                      )),
+                      ElementAnimation(
+                        1,
+                        Text(
+                          "Création Service",
+                          style: TextStyle(color: Colors.white, fontSize: 40),
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 SizedBox(height: 10),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(60),
-                        topRight: Radius.circular(60),
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            child: Container(
+              margin: EdgeInsets.only(top: 220),
+              padding: EdgeInsets.all(40),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(60),
+                  topRight: Radius.circular(60),
+                ),
+              ),
+              child: Column(
+                children: <Widget>[
+                  ElementAnimation(
+                    1.4,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(225, 95, 27, .3),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          )
+                        ],
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Colors.grey)),
+                            ),
+                            child: TextField(
+                              controller: textNameCompanyController,
+                              decoration: InputDecoration(
+                                hintText: "Nom de la compagnie",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Colors.grey)),
+                            ),
+                            child: TextField(
+                              controller: textTelController,
+                              keyboardType: TextInputType.phone,
+                              onChanged: (value) {
+                                setState(() {
+                                  isPhoneValid = phoneRegex.hasMatch(value);
+                                });
+                              },
+                              decoration: InputDecoration(
+                                hintText: "Numéro de tel",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                                errorText: isPhoneValid ? null : 'Numéro invalide',
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              border: Border(bottom: BorderSide(color: Colors.grey)),
+                            ),
+                            child: TextField(
+                              controller: textPriceController,
+                              keyboardType: TextInputType.numberWithOptions(decimal: true),
+                              decoration: InputDecoration(
+                                hintText: "Prix moy/H",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            child: TextField(
+                              controller: textDescriptionController,
+                              maxLines: 5,
+                              decoration: InputDecoration(
+                                hintText: "Description",
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.all(40),
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(height: 60,),
-                            ElementAnimation(1.4, Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Color.fromRGBO(225, 95, 27, .3),
-                                    blurRadius: 20,
-                                    offset: Offset(0, 10),
-                                  )
-                                ],
-                              ),
-                              child: Column(
-                                children: <Widget>[
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border(bottom: BorderSide(color: Colors.grey)),
-                                    ),
-                                    child: TextField(
-                                      controller: textNameCompanyController,
-                                      decoration: InputDecoration(
-                                        hintText: "Nom de la compagnie",
-                                        hintStyle: TextStyle(color: Colors.grey),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border(bottom: BorderSide(color: Colors.grey)),
-                                    ),
-                                    child: TextField(
-                                      controller: textTelController,
-                                      keyboardType: TextInputType.phone,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isPhoneValid = phoneRegex.hasMatch(value);
-                                        });
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: "Numéro de tel",
-                                        hintStyle: TextStyle(color: Colors.grey),
-                                        border: InputBorder.none,
-                                        errorText: isPhoneValid
-                                            ? null
-                                            : 'Numéro invalide',
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      border: Border(bottom: BorderSide(color: Colors.grey)),
-                                    ),
-                                    child: TextField(
-                                      controller: textPriceController,
-                                      keyboardType: TextInputType.numberWithOptions(decimal: true), // Allows float input
-                                      decoration: InputDecoration(
-                                        hintText: "Prix moy/H",
-                                        hintStyle: TextStyle(color: Colors.grey),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.all(10),
-                                    child: TextField(
-                                      controller: textDescriptionController,
-                                      maxLines: 5, // Allows for multiline input
-                                      decoration: InputDecoration(
-                                        hintText: "Description",
-                                        hintStyle: TextStyle(color: Colors.grey),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                            SizedBox(height: 40,),
-                            ElementAnimation(1.6, GestureDetector(
-                              onTap: () {
-                                createAccount();
-                              },
-                              child: Container(
-                                height: 50,
-                                margin: EdgeInsets.symmetric(horizontal: 50),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.orange[900],
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "Valider",
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                              ),
-                            )) ,
+                  ),
+                  SizedBox(height: 20),
+                  ElementAnimation(
+                    1.6,
+                    ElevatedButton(
+                      onPressed: () async {
+                        FilePickerResult? result = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['pdf'],
+                        );
 
-                            SizedBox(height: 30,),
+                        if (result != null) {
+                          String filePath = result.files.single.path!;
+                          setState(() {
+                            selectedFileName = filePath.split('/').last;
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.orange[900],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.file_upload,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Sélectionner un fichier PDF",
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                )
-              ],
+
+                  SizedBox(height: 10),
+                  Text(selectedFileName),
+                  SizedBox(height: 20),
+                  ElementAnimation(
+                    1.6,
+                    GestureDetector(
+                      onTap: () {
+                        createAccount();
+                      },
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.symmetric(horizontal: 50),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(50),
+                          color: Colors.orange[900],
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Valider",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  //SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -223,6 +272,4 @@ class _SignupPage3State extends State<SignupPage3> {
       ),
     );
   }
-
-
 }

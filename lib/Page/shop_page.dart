@@ -173,14 +173,17 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Widget buildListItem(Product item, void Function() onClick) {
+    String? imageUrl = (item.image != null && item.image != "")
+        ? item.image
+        : "https://picsum.photos/id/242/200/200";
+
     return GestureDetector(
       onTap: onClick,
       child: Column(
         children: [
           CircleAvatar(
             radius: 60,
-            backgroundImage:
-            NetworkImage("https://picsum.photos/id/242/200/200"),
+            backgroundImage: NetworkImage(imageUrl!),
           ),
           SizedBox(height: 10),
           Text(item.name, style: TextStyle(fontSize: 20)),
@@ -195,6 +198,7 @@ class _ShopPageState extends State<ShopPage> {
       ),
     );
   }
+
 
   void onItemClicked(Product item) {
     Navigator.push(

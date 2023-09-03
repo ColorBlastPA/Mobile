@@ -77,8 +77,8 @@ class _ServiceListPageState extends State<ServiceListPage> {
             Expanded(
               child: isLoading
                   ? Center(
-                child: CircularProgressIndicator(),
-              )
+                    child: CircularProgressIndicator(),
+                  )
                   : ListView.builder(
                       itemCount: filteredData?.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -97,10 +97,14 @@ class _ServiceListPageState extends State<ServiceListPage> {
                       );
                     },
                     child: ListTile(
-                      leading: CircleAvatar(
-                        child: Text(filteredData![index]!.lastname[0] +
-                            filteredData![index]!.firstname[0]),
+                      leading: filteredData![index]!.avatar != null && filteredData![index]!.avatar != ""
+                          ? CircleAvatar(
+                            backgroundImage: NetworkImage(filteredData![index]!.avatar!),
+                      )
+                          : CircleAvatar(
+                            child: Text(filteredData![index]!.lastname[0] + filteredData![index]!.firstname[0]),
                       ),
+
                       title: Text(
                           '${filteredData![index]!.lastname} ${filteredData![index]!.firstname}'),
                       subtitle: Text(

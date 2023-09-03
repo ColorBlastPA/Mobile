@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:color_blast/Model/update_result_pro.dart';
+import 'package:color_blast/Model/user_pro.dart';
 import 'package:color_blast/Page/details_profile.dart';
 import 'package:color_blast/Page/planning_page.dart';
 import 'package:color_blast/Page/update_password_page.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 
 import '../Animation/animation.dart';
@@ -27,7 +30,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? _image;
   Client? client;
-  Professionnel? pro;
+  Pro? pro;
 
   @override
   void initState() {
@@ -35,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if(DataManager().workspaceClient == true){
       this.client = DataManager().client;
     }else{
-      this.pro = DataManager().pro;
+      this.pro = DataManager().pro?.pro;
     }
 
   }
@@ -48,8 +51,41 @@ class _ProfilePageState extends State<ProfilePage> {
       setState(() {
         _image = File(pickedFile.path);
       });
+      await uploadImage(_image!, client!.id);
     }
     Navigator.pop(context);
+  }
+
+
+  Future<void> uploadImage(File imageFile, int idClient) async {
+    print("idClient"+idClient.toString());
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api-colorblast.current.ovh/api/setAvatarClient/$idClient'),
+      );
+      print("path"+imageFile.path);
+      var image = await http.MultipartFile.fromPath('file', imageFile.path);
+      request.files.add(image);
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print("ça fonctionne");
+        String responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> json = jsonDecode(responseBody);
+        Client updatedClient = Client.fromJson(json);
+        DataManager().client = updatedClient;
+        this.client = updatedClient;
+      } else {
+        print("Code d'erreur HTTP : ${response.statusCode}");
+        print("Raison de l'erreur : ${response.reasonPhrase}");
+
+        String responseBody = await response.stream.bytesToString();
+        print("Corps de la réponse en cas d'erreur : $responseBody");
+      }
+    } catch (error) {
+      print(error);
+    }
   }
 
   Future<void> _showImageSourceDialog() async {
@@ -133,22 +169,33 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: CircleAvatar(
                           radius: 75,
                           backgroundColor: Colors.white,
-                          child: _image != null
+                          child: (_image != null)
                               ? ClipRRect(
                             borderRadius: BorderRadius.circular(75),
                                 child: Image.file(
-                              _image!,
-                              fit: BoxFit.cover,
-                              width: 150,
-                              height: 150,
-                            ),
-                          )
+                                _image!,
+                                fit: BoxFit.cover,
+                                width: 150,
+                                height: 150,
+                              ),
+                            )
+                              : ((DataManager().workspaceClient == true)
+                              ? (client?.avatar != null && client?.avatar != "")
+                              ? Image.network(client!.avatar!)
                               : const Icon(
                             Icons.person,
                             size: 50,
                             color: Colors.grey,
-                          ),
+                          )
+                              : (pro?.avatar != null && pro?.avatar != "")
+                              ? Image.network(pro!.avatar!)
+                              : const Icon(
+                            Icons.person,
+                            size: 50,
+                            color: Colors.grey,
+                          )),
                         ),
+
                       ),
                       SizedBox(height: 20),
                       Row(

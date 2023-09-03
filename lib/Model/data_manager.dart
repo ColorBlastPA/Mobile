@@ -1,10 +1,11 @@
 import 'package:color_blast/Model/client.dart';
 import 'package:color_blast/Model/professionnel.dart';
+import 'package:color_blast/Model/user_pro.dart';
 
 class DataManager{
 
    Client? client;
-   Professionnel? pro;
+   UserPro? pro;
    List<Professionnel?>? professionnel;
    List<Professionnel?>? favoris;
    bool? workspaceClient;

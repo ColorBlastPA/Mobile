@@ -1,6 +1,3 @@
-// To parse this JSON data, do
-//
-//     final client = clientFromJson(jsonString);
 
 import 'dart:convert';
 
@@ -19,7 +16,7 @@ class Client {
   String postalCode;
   String city;
   String address;
-  bool admin;
+  String? avatar;
 
   Client({
     required this.id,
@@ -32,7 +29,7 @@ class Client {
     required this.postalCode,
     required this.city,
     required this.address,
-    required this.admin,
+    required this.avatar,
   });
 
 
@@ -48,7 +45,7 @@ class Client {
     postalCode: json["postal_code"],
     city: json["city"],
     address: json["address"],
-    admin: json["admin"],
+    avatar: json["avatar"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -62,6 +59,6 @@ class Client {
     "postal_code": postalCode,
     "city": city,
     "address": address,
-    "admin": admin,
+    "avatar": avatar,
   };
 }

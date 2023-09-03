@@ -1,3 +1,6 @@
+// To parse this JSON data, do
+//
+//     final product = productFromJson(jsonString);
 
 import 'dart:convert';
 
@@ -10,6 +13,7 @@ class Product {
   String name;
   double price;
   String description;
+  String? image;
   String category;
 
   Product({
@@ -17,6 +21,7 @@ class Product {
     required this.name,
     required this.price,
     required this.description,
+    required this.image,
     required this.category,
   });
 
@@ -25,6 +30,7 @@ class Product {
     name: json["name"],
     price: json["price"]?.toDouble(),
     description: json["description"],
+    image: json["image"],
     category: json["category"],
   );
 
@@ -33,6 +39,7 @@ class Product {
     "name": name,
     "price": price,
     "description": description,
+    "image": image,
     "category": category,
   };
 }
