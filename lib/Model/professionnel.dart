@@ -27,6 +27,7 @@ class Professionnel {
   String description;
   int? idCertificate;
   String? avatar;
+  bool waiting;
 
   Professionnel({
     required this.id,
@@ -45,6 +46,7 @@ class Professionnel {
     required this.description,
     required this.idCertificate,
     required this.avatar,
+    required this.waiting,
   });
 
   factory Professionnel.fromJson(Map<String, dynamic> json) => Professionnel(
@@ -64,6 +66,7 @@ class Professionnel {
     description: json["description"],
     idCertificate: json["idCertificate"],
     avatar: json["avatar"],
+    waiting: json["waiting"],
 
   );
 
@@ -84,5 +87,6 @@ class Professionnel {
     "description": description,
     "idCertificate": idCertificate,
     "avatar": avatar,
+    "waiting":waiting,
   };
 }

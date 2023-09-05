@@ -43,7 +43,7 @@ class _SignupPage2State extends State<SignupPage2> {
 
 
   Future<void> createAccount() async {
-    Client client = Client(lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", address: this.adresse ?? "", id: 1, avatar: '' );
+    Client client = Client(lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", address: this.adresse ?? "", id: 1, avatar: '');
 
     var response = await ServiceClient().createClient(client);
     if(response == 200){
@@ -58,7 +58,7 @@ class _SignupPage2State extends State<SignupPage2> {
   }
 
   Future<void> goToSign3() async {
-    Professionnel pro = Professionnel(id: 1, lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", companyName: "", price: 0, phone: "", note: 0, description: "", idCertificate: null, avatar: '');
+    Professionnel pro = Professionnel(id: 1, lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", companyName: "", price: 0, phone: "", note: 0, description: "", idCertificate: null, avatar: '', waiting: true);
 
     Navigator.push(context,
         MaterialPageRoute<void>(

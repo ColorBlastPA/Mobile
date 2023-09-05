@@ -64,6 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
         'POST',
         Uri.parse('https://api-colorblast.current.ovh/api/setAvatarClient/$idClient'),
       );
+
       print("path"+imageFile.path);
       var image = await http.MultipartFile.fromPath('file', imageFile.path);
       request.files.add(image);
@@ -170,31 +171,45 @@ class _ProfilePageState extends State<ProfilePage> {
                           radius: 75,
                           backgroundColor: Colors.white,
                           child: (_image != null)
-                              ? ClipRRect(
-                            borderRadius: BorderRadius.circular(75),
-                                child: Image.file(
-                                _image!,
-                                fit: BoxFit.cover,
-                                width: 150,
-                                height: 150,
-                              ),
-                            )
+                              ? ClipOval(
+                            child: Image.file(
+                              _image!,
+                              fit: BoxFit.cover,
+                              width: 150,
+                              height: 150,
+                            ),
+                          )
                               : ((DataManager().workspaceClient == true)
                               ? (client?.avatar != null && client?.avatar != "")
-                              ? Image.network(client!.avatar!)
+                              ? ClipOval(
+                            child: Image.network(
+                              client!.avatar!,
+                              fit: BoxFit.cover,
+                              width: 150,
+                              height: 150,
+                            ),
+                          )
                               : const Icon(
                             Icons.person,
                             size: 50,
                             color: Colors.grey,
                           )
                               : (pro?.avatar != null && pro?.avatar != "")
-                              ? Image.network(pro!.avatar!)
+                              ? ClipOval(
+                            child: Image.network(
+                              pro!.avatar!,
+                              fit: BoxFit.cover,
+                              width: 150,
+                              height: 150,
+                            ),
+                          )
                               : const Icon(
                             Icons.person,
                             size: 50,
                             color: Colors.grey,
                           )),
                         ),
+
 
                       ),
                       SizedBox(height: 20),

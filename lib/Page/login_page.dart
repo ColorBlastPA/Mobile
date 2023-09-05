@@ -41,7 +41,26 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
 
-    } else {
+    } else if (response == 401) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Ce compte est en cours de validation."),
+
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }else{
       showDialog(
         context: context,
         builder: (BuildContext context) {

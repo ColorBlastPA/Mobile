@@ -1,9 +1,14 @@
+
+import 'dart:io';
+
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:color_blast/Service/service_pro.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+
 
 import '../Animation/animation.dart';
 import '../Model/data_manager.dart';
@@ -34,19 +39,46 @@ class _SignupPage3State extends State<SignupPage3> {
   RegExp phoneRegex = RegExp(r'^0[1-9]\d{8}$');
 
 
+  File? selectedFile; // Ajoutez cette variable pour stocker le fichier sélectionné
+
   Future<void> createAccount() async {
-    Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text, idCertificate: null, avatar: '');
+    Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text, idCertificate: null, avatar: '', waiting: true);
     var response = await ServicePro().createPro(newPro);
-    if(response == 200){
-      Navigator.push(context,
-          MaterialPageRoute<void>(
-              builder:(BuildContext context) {
-                return LoginPage(WorkspaceClient: false,);
-              }));
-    }else{
+    if (response.statusCode == 200) {
+      newPro = professionnelFromJson(response.body);
+      print("ID ="+newPro.id.toString());
+      // Vérifiez si un fichier a été sélectionné
+      if (selectedFile != null) {
+        var pdfFile = selectedFile!.readAsBytesSync(); // Lire le fichier comme un tableau d'octets
+
+        var uploadResponse = await http.post(
+          Uri.parse('https://api-colorblast.current.ovh/api/upload-pdf/${newPro.id}'),
+          headers: {
+            'Content-Type': 'application/pdf',
+          },
+          body: pdfFile,
+        );
+        print(selectedFile!.path);
+        if (uploadResponse.statusCode == 200) {
+          // Le fichier a été téléchargé avec succès
+          print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
+          Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) {
+            return LoginPage(WorkspaceClient: false);
+          }));
+        } else {
+          // Gérer les erreurs de téléchargement du fichier
+          print("Erreur lors du téléchargement du fichier PDF : ${uploadResponse.statusCode}");
+          print(uploadResponse.reasonPhrase);
+
+          print(uploadResponse.body);
+        }
+      }
+    } else {
       print("erreur");
     }
   }
+
+
 
 
   @override
@@ -195,9 +227,9 @@ class _SignupPage3State extends State<SignupPage3> {
                         );
 
                         if (result != null) {
-                          String filePath = result.files.single.path!;
+                          selectedFile = File(result.files.single.path!);
                           setState(() {
-                            selectedFileName = filePath.split('/').last;
+                            selectedFileName = selectedFile!.path.split('/').last;
                           });
                         }
                       },
@@ -225,6 +257,7 @@ class _SignupPage3State extends State<SignupPage3> {
                         ),
                       ),
                     ),
+
                   ),
 
                   SizedBox(height: 10),
