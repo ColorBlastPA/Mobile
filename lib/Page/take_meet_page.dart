@@ -38,7 +38,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     _firstNameController.text = client?.firstname ?? "";
     _lastNameController.text = client?.lastname ?? "";
     _villeController.text = client?.city ?? "";
-    _adresseController.text = client?.country ?? "";
+    _adresseController.text = client?.address ?? "";
     getPlanning();
   }
 

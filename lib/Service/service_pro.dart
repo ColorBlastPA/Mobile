@@ -54,6 +54,7 @@ class ServicePro{
         "phone": pro.phone,
         "note": pro.note,
         "description": pro.description,
+        "waiting": pro.waiting,
       }),
     );
 

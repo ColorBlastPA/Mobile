@@ -9,6 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
+
 
 import '../Animation/animation.dart';
 import '../Model/data_manager.dart';
@@ -46,20 +49,34 @@ class _SignupPage3State extends State<SignupPage3> {
     var response = await ServicePro().createPro(newPro);
     if (response.statusCode == 200) {
       newPro = professionnelFromJson(response.body);
-      print("ID ="+newPro.id.toString());
+      print("ID =" + newPro.id.toString());
+
       // Vérifiez si un fichier a été sélectionné
       if (selectedFile != null) {
-        var pdfFile = selectedFile!.readAsBytesSync(); // Lire le fichier comme un tableau d'octets
-
-        var uploadResponse = await http.post(
+        var request = http.MultipartRequest(
+          'POST',
           Uri.parse('https://api-colorblast.current.ovh/api/upload-pdf/${newPro.id}'),
-          headers: {
-            'Content-Type': 'application/pdf',
-          },
-          body: pdfFile,
         );
-        print(selectedFile!.path);
-        if (uploadResponse.statusCode == 200) {
+
+        // Lisez le contenu du fichier en tant que liste d'octets (Uint8List)
+        Uint8List fileBytes = await selectedFile!.readAsBytes();
+
+        // Créez un flux à partir de la liste d'octets (Uint8List)
+        var stream = Stream.fromIterable([fileBytes]);
+
+        request.files.add(
+          http.MultipartFile(
+            'file',
+            stream,
+            fileBytes.length,
+            filename: selectedFile!.path.split('/').last, // Nom de fichier
+            contentType: MediaType('application', 'pdf'), // Type de contenu
+          ),
+        );
+
+        var response = await request.send();
+
+        if (response.statusCode == 200) {
           // Le fichier a été téléchargé avec succès
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
           Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) {
@@ -67,14 +84,30 @@ class _SignupPage3State extends State<SignupPage3> {
           }));
         } else {
           // Gérer les erreurs de téléchargement du fichier
-          print("Erreur lors du téléchargement du fichier PDF : ${uploadResponse.statusCode}");
-          print(uploadResponse.reasonPhrase);
-
-          print(uploadResponse.body);
+          print("Erreur lors du téléchargement du fichier PDF : ${response.statusCode}");
+          print(await response.stream.bytesToString());
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Erreur"),
+                content: Text("Une erreur est survenue lors du téléchargement du fichier PDF."),
+                actions: [
+                  TextButton(
+                    child: Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
         }
       }
     } else {
-      print("erreur");
+      print("Erreur lors de la création du professionnel");
+      // Gérer l'erreur lors de la création du professionnel
     }
   }
 
