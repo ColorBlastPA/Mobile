@@ -545,14 +545,14 @@ packages:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "22.2.7"
+    version: "19.4.56"
   syncfusion_flutter_datepicker:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_datepicker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "22.2.7"
+    version: "19.4.56"
   table_calendar:
     dependency: "direct main"
     description:

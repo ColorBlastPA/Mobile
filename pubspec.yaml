@@ -56,7 +56,7 @@ dependencies:
   url_launcher: ^6.1.11
   get: ^4.6.5
   cell_calendar: ^0.8.0
-  syncfusion_flutter_datepicker: ^22.2.7
+  syncfusion_flutter_datepicker: ^19.1.57-beta
   file_picker: ^5.3.1
 
 
