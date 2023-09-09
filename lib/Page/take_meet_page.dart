@@ -30,7 +30,8 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
   List<Product> _selectedProducts = [];
   List<Product?>? products = [];
   List<PickerDateRange> _selectedDateRanges = [];
-  DateRangePickerController _datePickerController = DateRangePickerController();
+  List<PickerDateRange> selectedCache = [];
+  final DateRangePickerController _datePickerController = DateRangePickerController();
 
 
   @override
@@ -54,9 +55,49 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     super.dispose();
   }
 
-  Future<void> getPlanning() async {
+  void getPlanning() async {
     planning = await ServicePlanning().getPlanningByIdPro(5005);
+
+    // Créez une liste de PickerDateRange à partir des données de planning
+    List<PickerDateRange> selectedDateRanges = [];
+    for (var planning in planning!) {
+      PickerDateRange pickerDateRange = PickerDateRange(planning?.ddate, planning?.fdate);
+      selectedDateRanges.add(pickerDateRange);
+    }
+
+    // Définissez les intervalles de dates dans le controller
+    setState(() {
+      _datePickerController.selectedRanges = selectedDateRanges;
+    });
   }
+
+  List<PickerDateRange> checkDateSelected(List<PickerDateRange>? selectedRanges) {
+    List<PickerDateRange> checkDateSelected = [];
+
+    if (selectedRanges != null) {
+      for (var selectedRange in selectedRanges) {
+        bool shouldAdd = true;
+        for (var planningItem in this.planning!) {
+          if (planningItem != null &&
+              (selectedRange.startDate!.isAfter(planningItem.fdate) || selectedRange.endDate!.isBefore(planningItem.ddate))) {
+            // Si la plage de dates sélectionnée ne chevauche pas une plage de planning, ajoutez-la
+            continue;
+          } else {
+            // Sinon, ne l'ajoutez pas
+            shouldAdd = false;
+            break;
+          }
+        }
+        if (shouldAdd) {
+          checkDateSelected.add(selectedRange);
+        }
+      }
+    }
+    print(checkDateSelected.length);
+    return checkDateSelected;
+  }
+
+
 
   Future<void> getProduct() async {
     products = await ServiceProduct().getProductsByCategories(["EXTERN", "INTERN"]);
@@ -238,7 +279,6 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
               SizedBox(height: 25),
               if (_isLoadingProducts)
                 CircularProgressIndicator(), // Affichez le spinner si les produits sont en cours de chargement
-
               if (!_isLoadingProducts) // Affichez le formulaire lorsque les produits sont chargés
                 MultiSelectFormField(
                   title: Text('Sélectionnez des produits'),
@@ -278,7 +318,6 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                     });
                   },
                 ),
-
               SizedBox(height: 25),
               Row(
                 children: [
@@ -292,18 +331,33 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                               title: Text("Sélectionnez des dates"),
                               content: SfDateRangePicker(
                                 view: DateRangePickerView.month,
-                                monthViewSettings: DateRangePickerMonthViewSettings(firstDayOfWeek: 6),
                                 selectionMode: DateRangePickerSelectionMode.multiRange,
-                                //onSelectionChanged: _onSelectionChanged,
-                                showActionButtons: false,
                                 controller: _datePickerController,
-
+                                showActionButtons: false,
                                 onCancel: () {
                                   _datePickerController.selectedRanges = null;
                                 },
+                                monthCellStyle: const DateRangePickerMonthCellStyle(
+                                  textStyle: TextStyle(
+                                    color: Colors.black, // Couleur du texte du mois
+                                    fontSize: 16.0, // Taille de la police du mois
+                                  ),
+                                  todayTextStyle: TextStyle(
+                                    color: Colors.blue, // Couleur du texte pour la date d'aujourd'hui
+                                    fontWeight: FontWeight.bold, // Gras pour la date d'aujourd'hui
+                                  ),
+                                  disabledDatesTextStyle: TextStyle(
+                                    color: Colors.grey, // Couleur du texte pour les dates désactivées
+                                  ),
+                                ),
+                                yearCellStyle: const DateRangePickerYearCellStyle(
+                                  textStyle: TextStyle(
+                                    color: Colors.black, // Couleur du texte de l'année
+                                    fontSize: 16.0, // Taille de la police de l'année
+                                  ),
+                                ),
                               ),
-
-                              actions: <Widget>[
+                                actions: <Widget>[
                                 TextButton(
                                   onPressed: () {
                                     Navigator.pop(context);
@@ -312,7 +366,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.pop(context, _datePickerController.selectedRanges);
+                                    Navigator.pop(context, checkDateSelected(_datePickerController.selectedRanges));
                                   },
                                   child: Text('OK'),
                                 ),
@@ -337,14 +391,13 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
               ),
               SizedBox(height: 25),
 
-              // Afficher les dates sélectionnées
-              if (_selectedDateRanges != [])
-                Column(
-                  children: [
-                    Text(
-                      'Dates sélectionnées:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
+              Column(
+                children: [
+                  Text(
+                    'Dates sélectionnées:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  if (_selectedDateRanges.length > 0)
                     ListView.builder(
                       shrinkWrap: true,
                       itemCount: _selectedDateRanges?.length,
@@ -359,8 +412,12 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                         );
                       },
                     ),
-                  ],
-                ),
+                  if (_selectedDateRanges.length > 1)
+                    Text("Vous ne pouvez sélectionner qu'une seule période !!"),
+                  if (_selectedDateRanges.isEmpty)
+                    Text("Veuillez renseignez au moins une date et non prise par le professionnel !!")
+                ],
+              ),
 
               SizedBox(height: 25),
               Row(
