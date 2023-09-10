@@ -1,10 +1,13 @@
+import 'package:color_blast/Model/booking.dart';
 import 'package:color_blast/Model/data_manager.dart';
-import 'package:color_blast/Model/planning.dart';
-import 'package:color_blast/Service/service_planning.dart';
+import 'package:color_blast/Service/service_booking.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/date_symbol_data_local.dart';
+
+
+
 
 class PlanningPage extends StatefulWidget {
   const PlanningPage({Key? key}) : super(key: key);
@@ -14,68 +17,67 @@ class PlanningPage extends StatefulWidget {
 }
 
 class _PlanningPageState extends State<PlanningPage> {
+  List<Booking?>? booking = [];
+  bool isLoading = false;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  List<Planning?>? planning = [];
 
   @override
   void initState() {
     super.initState();
-    initializeDateFormatting('fr_FR', null);
-    getPlanning();
+    getBooking().then((_) {
+      _createEventsFromBookings(booking);
+    });
   }
 
-  Future<void> getPlanning() async {
-    planning = await ServicePlanning().getPlanningByIdClient(DataManager().client?.id);
 
-  }
+  List<Event> _events = [];
 
-  // Méthode pour déterminer si une date appartient à un planning
-  bool _isDateInPlanning(DateTime date) {
-    if (planning == null) return false;
-    for (var plan in planning!) {
-      if (date.isAfter(plan!.ddate) && date.isBefore(plan.fdate)) {
-        return true;
+  void _createEventsFromBookings(List<Booking?>? bookings) {
+    _events.clear(); // Effacez les événements précédents si nécessaire
+
+    if (bookings != null) {
+      for (var booking in bookings) {
+        if (booking != null) {
+          _events.add(Event(booking));
+        }
       }
     }
-    return false;
   }
 
-  // Méthode pour déterminer si une date est la date d'aujourd'hui
-  bool _isToday(DateTime date) {
-    final now = DateTime.now();
-    return date.day == now.day && date.month == now.month && date.year == now.year;
-  }
 
-  // Méthode pour afficher une notification en bas de l'écran
-  void _showSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: Duration(seconds: 1),
-        backgroundColor: Colors.orange,
-      ),
+
+  Future<void> _showBookingInfoDialog(BuildContext context, Booking booking) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return BookingInfoDialog(booking: booking);
+      },
     );
   }
 
-  // Méthode pour obtenir le style du cercle pour la date spécifiée
-  // avec un cercle rouge si le planning est inactif, sinon bleu
-  Widget _getCircleMarkerBuilder(BuildContext context, DateTime date, List<dynamic> events) {
-    if (!_isDateInPlanning(date)) return Container();
+  List<Event> _getEventsForDay(DateTime date) {
+    final events = _events.where((event) {
+      final booking = event.booking;
+      return booking.booking.dhDebut.isBefore(date) && booking.booking.dhFin.isAfter(date);
+    }).toList();
 
-    final planningForDate = planning!.firstWhere((plan) {
-      return date.isAfter(plan!.ddate) && date.isBefore(plan.fdate);
+    return events;
+  }
+
+
+
+  Future<void> getBooking() async {
+    setState(() {
+      isLoading = true;
     });
 
-    return Container(
-      width: 6,
-      height: 6,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: planningForDate!.actif ? Colors.blue : Colors.red,
-      ),
-    );
+    booking = await ServiceBooking().getBookingByIdClientWithWaitingFalse(DataManager().client?.id);
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -97,77 +99,144 @@ class _PlanningPageState extends State<PlanningPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          TableCalendar(
-            firstDay: DateTime.utc(2021, 1, 1),
-            lastDay: DateTime.utc(2023, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) {
-              return _isDateInPlanning(day);
-            },
-            calendarBuilders: CalendarBuilders(
-              markerBuilder: (context, date, events) => _getCircleMarkerBuilder(context, date, events),
-            ),
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-
-              if (_isDateInPlanning(selectedDay)) {
-                _showSnackbar("Planning sélectionné !");
-              }
-            },
+      body: Center(
+        child: isLoading
+            ? CircularProgressIndicator()
+            : TableCalendar(
+          firstDay: DateTime.utc(2021, 1, 1),
+          lastDay: DateTime.utc(2025, 12, 31),
+          focusedDay: _focusedDay,
+          eventLoader: (date) => _getEventsForDay(date),
+          headerStyle: const HeaderStyle(
+            titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            formatButtonVisible: false,
           ),
-        ],
+          calendarStyle: CalendarStyle(
+            todayDecoration: BoxDecoration(
+              color: Colors.blue,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+            markerDecoration: BoxDecoration(
+              color: Colors.green,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+          ),
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay;
+            });
+
+            final eventsForDay = _getEventsForDay(selectedDay);
+            if (eventsForDay.isNotEmpty) {
+              _showBookingInfoDialog(context, eventsForDay[0].booking);
+            }
+          },
+        ),
+      ),
+
+
+    );
+  }
+}
+
+
+class EventIndicator extends StatelessWidget {
+  final Color color;
+
+  EventIndicator({required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
       ),
     );
   }
 }
 
-/*body: TableCalendar(
-        calendarFormat: _calendarFormat,
-        selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
-        },
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        },
-        calendarStyle: CalendarStyle(
-          todayDecoration: BoxDecoration(
-            color: Colors.blue,
-            shape: BoxShape.circle,
-          ),
-          selectedDecoration: BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.circle,
-          ),
-        ),
-        headerStyle: HeaderStyle(
-          formatButtonVisible: false,
-          titleCentered: true,
-        ),
-        eventLoader: (day) {
-          List<Planning> events = [];
-          if (planning != null) {
-            for (var plan in planning!) {
-              if (plan != null) {
-                if (day.isAfter(plan.ddate.subtract(Duration(days: 1))) &&
-                    day.isBefore(plan.fdate.add(Duration(days: 1)))) {
-                  events.add(plan);
-                }
-              }
-            }
-          }
-          return events;
-        },
-        firstDay: DateTime.utc(2021, 01, 01),
-        lastDay: DateTime.utc(2023, 12, 31), // Augmenter la date maximale à 2023
-        focusedDay: _focusedDay,
-        locale: 'fr_FR',
+
+class Event {
+  final Booking booking;
+
+  Event(this.booking);
+}
+
+
+class BookingInfoDialog extends StatelessWidget {
+  final Booking booking;
+
+  BookingInfoDialog({required this.booking});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'Détails de la réservation',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
-      */
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text(
+              'Nom complet : ${booking.booking.lastname} ${booking.booking.firstname}',
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.location_city),
+            title: Text('Ville : ${booking.booking.city}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.location_on),
+            title: Text('Adresse : ${booking.booking.address}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.category),
+            title: Text('Catégorie : ${booking.booking.category}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.crop_square),
+            title: Text('Surface : ${booking.booking.surface} m²'),
+          ),
+          ListTile(
+            leading: Icon(Icons.date_range),
+            title: Text('Date de début : ${booking.booking.dhDebut.toString()}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.date_range),
+            title: Text('Date de fin : ${booking.booking.dhFin.toString()}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.hourglass_empty),
+            title: Text(
+                'En attente : ${booking.booking.waiting ? 'Oui' : 'Non'}'),
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text('ID du client : ${booking.booking.idClient}'),
+          ),
+          // Vous pouvez ajouter d'autres informations de réservation ici
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('Fermer'),
+        ),
+      ],
+    );
+  }
+}
+
+

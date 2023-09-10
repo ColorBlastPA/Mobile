@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
     ]);
     return MaterialApp(
       title: 'ColorBlast',
+
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

@@ -1,85 +1,88 @@
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/planning.dart';
+import 'package:color_blast/Service/service_planning.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:multiselect_formfield/multiselect_formfield.dart';
-import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-import '../Model/client.dart';
-import '../Model/data_manager.dart';
-import '../Model/planning.dart';
-import '../Model/product.dart';
-import '../Service/service_planning.dart';
-import '../Service/service_product.dart';
-
-
-class TakeMeetPage extends StatefulWidget {
-  const TakeMeetPage({Key? key}) : super(key: key);
+class PlanningPage extends StatefulWidget {
+  const PlanningPage({Key? key}) : super(key: key);
 
   @override
-  State<TakeMeetPage> createState() => _TakeMeetPageState();
+  State<PlanningPage> createState() => _PlanningPageState();
 }
 
-class _TakeMeetPageState extends State<TakeMeetPage> {
-  Client? client = DataManager().client;
-  List<DateTimeRange> _selectedDateRanges = [];
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _villeController = TextEditingController();
-  TextEditingController _adresseController = TextEditingController();
-  TextEditingController _surfaceController = TextEditingController();
-  bool _isOutdoorSelected = false;
-  bool _isIndoorSelected = false;
-  bool _isLoadingProducts = true;
-  DateTime? _selectedDay; // Nouvelle variable pour stocker la date sélectionnée.
-  List<Product> _selectedProducts = [];
-  List<Product?>? products = [];
+class _PlanningPageState extends State<PlanningPage> {
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _selectedDay = DateTime.now();
+  DateTime _focusedDay = DateTime.now();
+  List<Planning?>? planning = [];
 
   @override
   void initState() {
     super.initState();
-    _firstNameController.text = client?.firstname ?? "";
-    _lastNameController.text = client?.lastname ?? "";
-    _villeController.text = client?.city ?? "";
-    _adresseController.text = client?.address ?? "";
-    getProduct();
+    initializeDateFormatting('fr_FR', null);
+    getPlanning();
   }
 
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _adresseController.dispose();
-    _villeController.dispose();
-    _surfaceController.dispose();
-    super.dispose();
+  Future<void> getPlanning() async {
+    planning = await ServicePlanning().getPlanningByIdClient(DataManager().client?.id);
+
   }
 
-  Future<void> getProduct() async {
-    products = await ServiceProduct().getProductsByCategories(["EXTERN", "INTERN"]);
-    setState(() {
-      _isLoadingProducts = false;
-    });
-  }
-
-
-  void getDevis() {
-    print("nom " + _lastNameController.text);
-    print("prénom " + _firstNameController.text);
-    print("ville " + _villeController.text);
-    print("adresse " + _adresseController.text);
-    print("surface " + _surfaceController.text);
-    print("intérieur " + _isIndoorSelected.toString());
-    print("extérieur " + _isOutdoorSelected.toString());
-    for (var dateRange in _selectedDateRanges) {
-      print("Date de début: ${DateFormat('dd/MM/yyyy').format(dateRange.start)}");
-      print("Date de fin: ${DateFormat('dd/MM/yyyy').format(dateRange.end)}");
+  // Méthode pour déterminer si une date appartient à un planning
+  bool _isDateInPlanning(DateTime date) {
+    if (planning == null) return false;
+    for (var plan in planning!) {
+      if (date.isAfter(plan!.ddate) && date.isBefore(plan.fdate)) {
+        return true;
+      }
     }
+    return false;
+  }
+
+  // Méthode pour déterminer si une date est la date d'aujourd'hui
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.day == now.day && date.month == now.month && date.year == now.year;
+  }
+
+  // Méthode pour afficher une notification en bas de l'écran
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 1),
+        backgroundColor: Colors.orange,
+      ),
+    );
+  }
+
+  // Méthode pour obtenir le style du cercle pour la date spécifiée
+  // avec un cercle rouge si le planning est inactif, sinon bleu
+  Widget _getCircleMarkerBuilder(BuildContext context, DateTime date, List<dynamic> events) {
+    if (!_isDateInPlanning(date)) return Container();
+
+    final planningForDate = planning!.firstWhere((plan) {
+      return date.isAfter(plan!.ddate) && date.isBefore(plan.fdate);
+    });
+
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: planningForDate!.actif ? Colors.blue : Colors.red,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Informations Rendez-vous"),
+        title: Text("Votre planning"),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -94,253 +97,31 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextField(
-                        controller: _firstNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Votre nom:',
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextField(
-                        controller: _lastNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Votre Prénom:',
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 25),
-              Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextField(
-                        controller: _villeController,
-                        decoration: InputDecoration(
-                          labelText: 'Votre ville:',
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextField(
-                        controller: _adresseController,
-                        decoration: InputDecoration(
-                          labelText: 'Votre Adresse:',
-                          labelStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                            color: Colors.black,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 25),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _isOutdoorSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        _isOutdoorSelected = value!;
-                      });
-                    },
-                  ),
-                  Text('Extérieur'),
-                  SizedBox(width: 20),
-                  Checkbox(
-                    value: _isIndoorSelected,
-                    onChanged: (value) {
-                      setState(() {
-                        _isIndoorSelected = value!;
-                      });
-                    },
-                  ),
-                  Text('Intérieur'),
-                ],
-              ),
-              SizedBox(height: 25),
-              Row(
-                children: [
-                  Text('Surface:'),
-                  SizedBox(width: 10),
-                  Container(
-                    width: 120,
-                    child: TextField(
-                      controller: _surfaceController,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.none,
-                      decoration: InputDecoration(
-                        hintText: 'Entrez la surface',
-                      ),
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Text('m²'),
-                ],
-              ),
-              SizedBox(height: 25),
-              if (_isLoadingProducts)
-                CircularProgressIndicator(), // Affichez le spinner si les produits sont en cours de chargement
+      body: Column(
+        children: [
+          TableCalendar(
+            firstDay: DateTime.utc(2021, 1, 1),
+            lastDay: DateTime.utc(2023, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) {
+              return _isDateInPlanning(day);
+            },
+            calendarBuilders: CalendarBuilders(
+              markerBuilder: (context, date, events) => _getCircleMarkerBuilder(context, date, events),
+            ),
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
 
-              if (!_isLoadingProducts) // Affichez le formulaire lorsque les produits sont chargés
-                MultiSelectFormField(
-                  title: Text('Sélectionnez des produits'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Veuillez sélectionner au moins un élément';
-                    }
-                    return null;
-                  },
-                  dataSource: products != null
-                      ? products
-                      ?.where((product) {
-                    if ((_isOutdoorSelected && _isIndoorSelected) || (!_isOutdoorSelected && !_isIndoorSelected)) {
-                      return true;
-                    } else if (_isOutdoorSelected) {
-                      return product?.category == "EXTERN";
-                    } else if (_isIndoorSelected) {
-                      return product?.category == "INTERN";
-                    }
-                    return false;
-                  })
-                      ?.map((product) => {
-                    "display": "${product?.name} - Prix: ${product?.price} €",
-                    "value": product,
-                  })
-                      .toList()
-                      : [],
-                  textField: 'display',
-                  valueField: 'value',
-                  okButtonLabel: 'OK',
-                  cancelButtonLabel: 'Annuler',
-                  initialValue: _selectedProducts,
-                  onSaved: (value) {
-                    setState(() {
-                      _selectedProducts = value.cast<Product>();
-                    });
-                  },
-                ),
-
-              SizedBox(height: 25),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _selectDateRange(context);
-                      },
-                      child: Text('Sélectionner une date'),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 25),
-              if (_selectedDateRanges.isNotEmpty)
-                Text(
-                  'Dates sélectionnées:',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              for (var dateRange in _selectedDateRanges)
-                Text(
-                  'Date de début: ${DateFormat('dd/MM/yyyy').format(dateRange.start)}\nDate de fin: ${DateFormat('dd/MM/yyyy').format(dateRange.end)}',
-                  style: TextStyle(fontSize: 16),
-                ),
-              SizedBox(height: 25),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        getDevis();
-                      },
-                      child: Text('Faire un devis'),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(Colors.orangeAccent),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              if (_isDateInPlanning(selectedDay)) {
+                _showSnackbar("Planning sélectionné !");
+              }
+            },
           ),
-        ),
+        ],
       ),
     );
-  }
-
-  void _selectDateRange(BuildContext context) async {
-    final initialDate = DateTime.now();
-    final newDateRange = await showDateRangePicker(
-      context: context,
-      firstDate: initialDate,
-      lastDate: initialDate.add(Duration(days: 365)), // Permet de sélectionner des dates jusqu'à un an à partir d'aujourd'hui.
-      currentDate: _selectedDay,
-    );
-
-    if (newDateRange == null) return;
-
-    setState(() {
-      _selectedDay = newDateRange.start;
-      _selectedDateRanges.add(newDateRange);
-    });
   }
 }
