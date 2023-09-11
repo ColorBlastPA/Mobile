@@ -160,7 +160,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => TakeMeetPage()),
+                        MaterialPageRoute(builder: (context) => TakeMeetPage(professionnel: widget.professionnel,)),
                       );
                     },
 

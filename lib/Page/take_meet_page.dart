@@ -1,3 +1,7 @@
+import 'dart:ffi';
+
+import 'package:color_blast/Model/booking.dart';
+import 'package:color_blast/Service/service_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -6,12 +10,14 @@ import '../Model/client.dart';
 import '../Model/data_manager.dart';
 import '../Model/planning.dart';
 import '../Model/product.dart';
+import '../Model/professionnel.dart';
 import '../Service/service_planning.dart';
 import '../Service/service_product.dart';
 
 class TakeMeetPage extends StatefulWidget {
-  const TakeMeetPage({Key? key}) : super(key: key);
 
+  final Professionnel professionnel;
+  TakeMeetPage({required this.professionnel});
   @override
   State<TakeMeetPage> createState() => _TakeMeetPageState();
 }
@@ -106,15 +112,103 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     });
   }
 
-  void getDevis() {
-    print("nom " + _lastNameController.text);
-    print("prénom " + _firstNameController.text);
-    print("ville " + _villeController.text);
-    print("adresse " + _adresseController.text);
-    print("surface " + _surfaceController.text);
-    print("intérieur " + _isIndoorSelected.toString());
-    print("extérieur " + _isOutdoorSelected.toString());
-    print("Dates sélectionnées: $_selectedDateRanges");
+  int getCategorie(){
+    if(_isOutdoorSelected && !_isIndoorSelected){
+      return 1;
+    }else if(!_isOutdoorSelected && _isIndoorSelected){
+      return 2;
+    }else if((_isOutdoorSelected && _isIndoorSelected) || (!_isOutdoorSelected && !_isIndoorSelected)){
+      return 3;
+    }
+    return 0;
+  }
+
+  Future<void> getDevis() async {
+    if(_lastNameController.text == "" || _firstNameController.text == "" ||_villeController.text == "" || _adresseController.text == "" || _surfaceController.text == ""){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Tous les champs doivent être remplis et valide !"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }else if(getCategorie() == 0){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Vous devez choisir au moins un type de peinture !"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }else if(_selectedDateRanges.length != 1){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Veuillez renseignez un intervalle de date !"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }else if(_selectedProducts.length == 0){
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Information"),
+            content: Text("Veuillez renseignez au moins un produit !"),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }else{
+      BookingClass bookingClass = BookingClass(id:1, idPro: widget.professionnel.id, lastname: _lastNameController.text, firstname: _firstNameController.text, city: _villeController.text, address: _adresseController.text, category: getCategorie(), surface: double.parse(_surfaceController.text), dhDebut: _selectedDateRanges.first.startDate!, dhFin: _selectedDateRanges.first.endDate!, waiting: true, idClient: DataManager().client!.id);
+      var response = await ServiceBooking().createBooking(bookingClass);
+      if(response.statusCode == 200){
+        bookingClass = bookingClassFromJson(response.body);
+        for (var product in _selectedProducts) {
+            await ServiceBooking().createProductBooking(bookingClass.id, product.id);
+        }
+      }else{
+        print("erreur");
+      }
+    }
+
   }
 
   @override

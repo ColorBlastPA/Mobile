@@ -1,6 +1,3 @@
-import 'package:color_blast/Page/forgot_password_page.dart';
-import 'package:color_blast/Page/login_page.dart';
-import 'package:color_blast/Page/signup_page.dart';
 import 'package:color_blast/Page/workspace_selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -5,9 +5,11 @@ List<Booking> bookingFromJson(String str) => List<Booking>.from(json.decode(str)
 
 String bookingToJson(List<Booking> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
+BookingClass bookingClassFromJson(String str) => BookingClass.fromJson(json.decode(str));
+
 class Booking {
   BookingClass booking;
-  List<Product> product;
+  List<_Product> product;
   Quote? quote;
 
   Booking({
@@ -18,7 +20,7 @@ class Booking {
 
   factory Booking.fromJson(Map<String, dynamic> json) => Booking(
     booking: BookingClass.fromJson(json["booking"]),
-    product: List<Product>.from(json["product"].map((x) => Product.fromJson(x))),
+    product: List<_Product>.from(json["product"].map((x) => _Product.fromJson(x))),
     quote: json["quote"] == null ? null : Quote.fromJson(json["quote"]),
   );
 
@@ -89,7 +91,7 @@ class BookingClass {
   };
 }
 
-class Product {
+class _Product {
   int id;
   String name;
   double price;
@@ -97,7 +99,7 @@ class Product {
   String? image;
   String category;
 
-  Product({
+  _Product({
     required this.id,
     required this.name,
     required this.price,
@@ -106,7 +108,7 @@ class Product {
     required this.category,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
+  factory _Product.fromJson(Map<String, dynamic> json) => _Product(
     id: json["id"],
     name: json["name"],
     price: json["price"]?.toDouble(),
