@@ -42,7 +42,7 @@ class _SignupPage3State extends State<SignupPage3> {
   RegExp phoneRegex = RegExp(r'^0[1-9]\d{8}$');
 
 
-  File? selectedFile; // Ajoutez cette variable pour stocker le fichier sélectionné
+  File? selectedFile;
 
   Future<void> createAccount() async {
     Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text, idCertificate: null, avatar: '', waiting: true);
