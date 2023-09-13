@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../Model/booking.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final Booking? booking;
@@ -15,6 +18,63 @@ class BookingDetailsPage extends StatefulWidget {
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
   File? selectedFile;
   String selectedFileName = '';
+
+  Future<void> validateBooking() async{
+      if (selectedFile != null) {
+        var request = http.MultipartRequest(
+          'POST',
+          Uri.parse('https://api-colorblast.current.ovh/api/upload-quote/${widget.booking?.booking.id}'),
+        );
+
+        // Lisez le contenu du fichier en tant que liste d'octets (Uint8List)
+        Uint8List fileBytes = await selectedFile!.readAsBytes();
+
+        // Créez un flux à partir de la liste d'octets (Uint8List)
+        var stream = Stream.fromIterable([fileBytes]);
+
+        request.files.add(
+          http.MultipartFile(
+            'file',
+            stream,
+            fileBytes.length,
+            filename: selectedFile!.path.split('/').last, // Nom de fichier
+            contentType: MediaType('application', 'pdf'), // Type de contenu
+          ),
+        );
+
+        var response = await request.send();
+
+        if (response.statusCode == 200) {
+          // Le fichier a été téléchargé avec succès
+          print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
+
+        } else {
+          // Gérer les erreurs de téléchargement du fichier
+          print("Erreur lors du téléchargement du fichier PDF : ${response.statusCode}");
+          print(await response.stream.bytesToString());
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Erreur"),
+                content: Text("Une erreur est survenue lors du téléchargement du fichier PDF."),
+                actions: [
+                  TextButton(
+                    child: Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+    print("Erreur lors de la création du professionnel");
+    // Gérer l'erreur lors de la création du professionnel
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +255,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Ajoutez ici la logique pour accepter le booking
+                    validateBooking();
                   },
                   child: Text('Accepter'),
                   style: ElevatedButton.styleFrom(
