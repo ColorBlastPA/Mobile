@@ -363,7 +363,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Icons.request_quote,
                                 color: Colors.grey,
                               ),
-                              SizedBox(width: 8), // Espacement entre l'icône et le texte
+                              SizedBox(width: 8),
+                              DataManager().workspaceClient == true ?
+                              Text(
+                                "Suivi des demandes",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              )
+                                  :
                               Text(
                                 "Demande de devis",
                                 style: TextStyle(

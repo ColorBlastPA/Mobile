@@ -15,7 +15,7 @@ class RequestBookingPage extends StatefulWidget {
 class _RequestBookingPageState extends State<RequestBookingPage> {
   List<Booking?>? booking;
 
-  bool isLoading = true; // Pour afficher le spinner
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -24,9 +24,13 @@ class _RequestBookingPageState extends State<RequestBookingPage> {
   }
 
   Future<void> getDatas() async {
-    booking = await ServiceBooking().getBookingByIdProWithWaitingTrue(DataManager().pro?.pro.id);
+    if(DataManager().workspaceClient == true){
+      booking = await ServiceBooking().getBookingByIdClientWithWaitingTrue(DataManager().client?.id);
 
-    // Une fois la requête terminée, arrêtez le chargement et mettez à jour l'interface utilisateur.
+    }else{
+      booking = await ServiceBooking().getBookingByIdProWithWaitingTrue(DataManager().pro?.pro.id);
+    }
+
     setState(() {
       isLoading = false;
     });
@@ -53,25 +57,41 @@ class _RequestBookingPageState extends State<RequestBookingPage> {
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator()) // Afficher le spinner
-          : booking == null || booking!.isEmpty
-          ? Center(child: Text('Vous n\'avez aucune demande de devis'))
-          : ListView.builder(
-        itemCount: booking!.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('${booking![index]?.booking.firstname} ${booking![index]?.booking.lastname}'),
-            subtitle: Text('${booking![index]?.booking.city}, ${booking![index]?.booking.address}'),
-            onTap: () {
-              // Naviguez vers une nouvelle page pour afficher les détails du booking
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => BookingDetailsPage(booking: booking![index]),
-                ),
-              );
-            },
-          );
-        },
+          : Container(
+        height: 500, // Ajustez cette valeur selon vos besoins
+        child: ListView.builder(
+          itemCount: booking!.length,
+          itemBuilder: (context, index) {
+            final currentBooking = booking![index];
+            final hasQuote = currentBooking?.quote != null;
+
+            return ListTile(
+              title: Text('${currentBooking?.booking.firstname} ${currentBooking?.booking.lastname}'),
+              subtitle: Text('${currentBooking?.booking.city}, ${currentBooking?.booking.address}'),
+              trailing: hasQuote
+                  ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 4.0),
+                ],
+              )
+                  : null,
+              onTap: () async {
+                final updated = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingDetailsPage(booking: currentBooking),
+                  ),
+                );
+
+                if (updated != null && updated is bool && updated) {
+                  getDatas();
+                }
+              },
+            );
+          },
+        ),
       ),
     );
   }

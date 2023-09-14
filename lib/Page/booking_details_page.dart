@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Service/service_booking.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../Model/booking.dart';
@@ -19,7 +21,57 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   File? selectedFile;
   String selectedFileName = '';
 
+  Future<void> refuseBooking() async {
+    var response = await ServiceBooking().deleteBooking(widget.booking?.booking.id);
+    if(response == 200){
+      Navigator.of(context).pop(true);
+    }else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Erreur"),
+            content: Text("Une erreur est survenue."),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   Future<void> validateBooking() async{
+    if(DataManager().workspaceClient == true){
+      widget.booking?.booking.waiting = false;
+      var response = await ServiceBooking().updateBooking(widget.booking!.booking.id, widget.booking!.booking);
+      if(response == 200){
+        Navigator.of(context).pop(true);
+      }else{
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Erreur"),
+              content: Text("Une erreur est survenue de la validation du booking."),
+              actions: [
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }else{
       if (selectedFile != null) {
         var request = http.MultipartRequest(
           'POST',
@@ -45,7 +97,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         var response = await request.send();
 
         if (response.statusCode == 200) {
-          // Le fichier a été téléchargé avec succès
+          Navigator.of(context).pop(true);
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
 
         } else {
@@ -71,9 +123,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           );
         }
       } else {
-    print("Erreur lors de la création du professionnel");
-    // Gérer l'erreur lors de la création du professionnel
+        print("Erreur lors de la validation du booking");
+        // Gérer l'erreur lors de la création du professionnel
+      }
     }
+
   }
 
   @override
@@ -246,7 +300,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Ajoutez ici la logique pour refuser le booking
+                    refuseBooking();
                   },
                   child: Text('Refuser'),
                   style: ElevatedButton.styleFrom(
@@ -269,4 +323,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       ),
     );
   }
+
+
 }

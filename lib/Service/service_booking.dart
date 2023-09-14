@@ -28,6 +28,29 @@ class ServiceBooking{
     return null;
   }
 
+  Future<List<Booking?>?> getBookingByIdClientWithWaitingTrue(int? idClient) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/bookings/client/${idClient}/waiting');
+
+    var response = await client.get(uri);
+    if(response.statusCode==200){
+      var json = response.body;
+      return bookingFromJson(json);
+    }
+    return null;
+  }
+
+  Future<int> updateBooking(int id, BookingClass updatedBooking) async {
+    final response = await http.put(
+      Uri.parse('https://api-colorblast.current.ovh/bookings/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(updatedBooking.toJson()),
+    );
+    return response.statusCode;
+  }
+
   Future<http.Response> createBooking(BookingClass bookingClass) async {
     final response = await http.post(
       Uri.parse('https://api-colorblast.current.ovh/bookings'),
@@ -63,6 +86,17 @@ class ServiceBooking{
         "idProduct": idProduct
       }),
     );
+  }
+
+  Future<int> deleteBooking(int? id) async {
+    final response = await http.delete(
+      Uri.parse('https://api-colorblast.current.ovh/bookings/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    return response.statusCode;
   }
 
 }
