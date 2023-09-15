@@ -5,7 +5,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class PaymentController extends GetxController {
+class PaymentControllertest extends GetxController {
   Map<String, dynamic>? paymentIntentData;
 
   Future<void> makePayment(

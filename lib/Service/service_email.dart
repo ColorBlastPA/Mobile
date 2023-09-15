@@ -12,10 +12,8 @@ class ServiceEmail{
     var uri;
 
     if(workspaceClient == true){
-      print("1");
       uri = Uri.parse('https://api-colorblast.current.ovh/forgotPasswordClient/${email}');
     }else{
-      print("2");
       uri = Uri.parse('https://api-colorblast.current.ovh/forgotPasswordPro/${email}');
     }
 
@@ -25,6 +23,13 @@ class ServiceEmail{
 
   }
 
+  Future<void> getCommentProductEmail(String email, String key) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/commentProduct/${email}/${key}');
+
+    var response = await client.get(uri);
+
+  }
 
 
 

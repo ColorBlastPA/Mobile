@@ -19,7 +19,7 @@ class ServicePanier{
     return null;
   }
 
-  Future<void> removePanier(int idPanier) async {
+  Future<void> removePanier(int? idPanier) async {
     var client = http.Client();
     var uri = Uri.parse('https://api-colorblast.current.ovh/paniers/${idPanier}');
 
