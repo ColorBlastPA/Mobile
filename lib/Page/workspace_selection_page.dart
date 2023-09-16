@@ -4,6 +4,7 @@ import 'package:color_blast/Page/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WorkspaceSelectionPage extends StatefulWidget {
   const WorkspaceSelectionPage({Key? key}) : super(key: key);
@@ -14,7 +15,9 @@ class WorkspaceSelectionPage extends StatefulWidget {
 
 class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
 
-  final channel = IOWebSocketChannel.connect('ws://api-colorblast.current.ovh/ws');
+  final channel = WebSocketChannel.connect(
+    Uri.parse('wss://echo.websocket.events'),
+  );
   String receivedMessage = '';
 
 

@@ -73,7 +73,11 @@ class _PlanningPageState extends State<PlanningPage> {
       isLoading = true;
     });
 
-    booking = await ServiceBooking().getBookingByIdClientWithWaitingFalse(DataManager().client?.id);
+    if(DataManager().workspaceClient == true){
+      booking = await ServiceBooking().getBookingByIdClientWithWaitingFalse(DataManager().client?.id);
+    }else{
+      booking = await ServiceBooking().getBookingByIdProWithWaitingFalse(DataManager().pro?.pro.id);
+    }
 
     setState(() {
       isLoading = false;

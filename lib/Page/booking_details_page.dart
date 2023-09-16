@@ -4,6 +4,7 @@ import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Service/service_booking.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../Model/booking.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
@@ -77,11 +78,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           'POST',
           Uri.parse('https://api-colorblast.current.ovh/api/upload-quote/${widget.booking?.booking.id}'),
         );
-
-        // Lisez le contenu du fichier en tant que liste d'octets (Uint8List)
         Uint8List fileBytes = await selectedFile!.readAsBytes();
 
-        // Créez un flux à partir de la liste d'octets (Uint8List)
         var stream = Stream.fromIterable([fileBytes]);
 
         request.files.add(
@@ -89,8 +87,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             'file',
             stream,
             fileBytes.length,
-            filename: selectedFile!.path.split('/').last, // Nom de fichier
-            contentType: MediaType('application', 'pdf'), // Type de contenu
+            filename: selectedFile!.path.split('/').last,
+            contentType: MediaType('application', 'pdf'),
           ),
         );
 
@@ -123,8 +121,23 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           );
         }
       } else {
-        print("Erreur lors de la validation du booking");
-        // Gérer l'erreur lors de la création du professionnel
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text("Erreur"),
+              content: Text("Si vous validez la demande, veuillez mettre un devis en format pdf."),
+              actions: [
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
       }
     }
 
@@ -252,44 +265,82 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
             // Bouton "Chercher un PDF" centré horizontalement
             Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  FilePickerResult? result = await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: ['pdf'],
-                  );
+              child: (() {
+                if (DataManager().workspaceClient == false && widget.booking?.quote == null) {
+                  // Afficher le bouton de sélection de fichier PDF
+                  return ElevatedButton(
+                    onPressed: () async {
+                      FilePickerResult? result = await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['pdf'],
+                      );
 
-                  if (result != null) {
-                    selectedFile = File(result.files.single.path!);
-                    setState(() {
-                      selectedFileName = selectedFile!.path.split('/').last;
-                    });
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.orange[900],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.file_upload,
-                        color: Colors.white,
+                      if (result != null) {
+                        selectedFile = File(result.files.single.path!);
+                        setState(() {
+                          selectedFileName = selectedFile!.path.split('/').last;
+                        });
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.orange[900],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
                       ),
-                      SizedBox(width: 10),
-                      Text(
-                        "Sélectionner un fichier PDF",
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.file_upload,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            "Sélectionner un fichier PDF",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
+                  );
+                } else if ((DataManager().workspaceClient == false && widget.booking?.quote != null) || (DataManager().workspaceClient == true && widget.booking?.quote == null)) {
+                  // Ne pas afficher le bouton
+                  return SizedBox.shrink();
+                } else if (DataManager().workspaceClient == true && widget.booking?.quote != null) {
+                  // Afficher les informations de devis
+                  return InkWell(
+                    onTap: () {
+                      launch(widget.booking?.quote?.url ?? "");
+                    },
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.picture_as_pdf,
+                          size: 48.0,
+                          color: Colors.blue,
+                        ),
+                        SizedBox(height: 4.0),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            widget.booking?.quote?.filename ?? "",
+                            style: TextStyle(
+                              color: Colors.blue, // Couleur du texte
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Par défaut, retournez une boîte vide
+                  return SizedBox.shrink();
+                }
+              })(),
             ),
             SizedBox(height: 10),
             Text(selectedFileName),
@@ -297,27 +348,46 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    refuseBooking();
-                  },
-                  child: Text('Refuser'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.red,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    validateBooking();
-                  },
-                  child: Text('Accepter'),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
-                  ),
-                ),
-              ],
+              children: (() {
+                if ((DataManager().workspaceClient == true && widget.booking?.quote == null) || (DataManager().workspaceClient == false && widget.booking?.quote != null)) {
+                  // Afficher seulement le bouton "Annuler"
+                  return [
+                    ElevatedButton(
+                      onPressed: () {
+                        refuseBooking();
+                      },
+                      child: Text('Annuler'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                      ),
+                    ),
+                  ];
+                } else {
+                  // Afficher les boutons "Refuser" et "Accepter"
+                  return [
+                    ElevatedButton(
+                      onPressed: () {
+                        refuseBooking();
+                      },
+                      child: Text('Refuser'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        validateBooking();
+                      },
+                      child: Text('Accepter'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                      ),
+                    ),
+                  ];
+                }
+              })(),
             ),
+
           ],
         ),
       ),

@@ -16,6 +16,18 @@ class ServiceBooking{
     return null;
   }
 
+  Future<List<Booking?>?> getBookingByIdProWithWaitingFalse(int? idPro) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/bookings/pro/${idPro}/notwaiting');
+
+    var response = await client.get(uri);
+    if(response.statusCode==200){
+      var json = response.body;
+      return bookingFromJson(json);
+    }
+    return null;
+  }
+
   Future<List<Booking?>?> getBookingByIdProWithWaitingTrue(int? idPro) async{
     var client = http.Client();
     var uri = Uri.parse('https://api-colorblast.current.ovh/bookings/pro/${idPro}/waiting');

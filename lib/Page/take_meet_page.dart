@@ -1,4 +1,4 @@
-import 'dart:ffi';
+
 
 import 'package:color_blast/Model/booking.dart';
 import 'package:color_blast/Service/service_booking.dart';
@@ -204,6 +204,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
         for (var product in _selectedProducts) {
             await ServiceBooking().createProductBooking(bookingClass.id, product.id);
         }
+        Navigator.of(context).pop();
       }else{
         print("erreur");
       }
