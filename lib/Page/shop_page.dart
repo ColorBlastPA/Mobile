@@ -1,4 +1,6 @@
+import 'package:color_blast/Page/workspace_selection_page.dart';
 import 'package:flutter/material.dart';
+import '../Model/data_manager.dart';
 import '../Service/service_product.dart';
 import '../Model/product.dart';
 import '../Page/product_details_page.dart';
@@ -29,6 +31,35 @@ class _ShopPageState extends State<ShopPage> {
         filteredItems = loadedProducts;
       });
     });
+  }
+
+  _afficherDialogueDeconnexion(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Voulez-vous vous déconnecter ?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Non"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Oui"),
+              onPressed: () {
+                DataManager().reset();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WorkspaceSelectionPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -72,7 +103,8 @@ class _ShopPageState extends State<ShopPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        child: Scaffold(
       appBar: AppBar(
         title: const Text("Magasin"),
         flexibleSpace: Container(
@@ -144,7 +176,11 @@ class _ShopPageState extends State<ShopPage> {
           ),
         ],
       ),
-    );
+    ),
+        onWillPop:() async{
+          await _afficherDialogueDeconnexion(context);
+          return false;
+        });
   }
 
   Widget buildTag(String tagName, int index) {

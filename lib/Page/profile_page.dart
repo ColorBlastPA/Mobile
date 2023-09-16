@@ -137,12 +137,42 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  _afficherDialogueDeconnexion(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Voulez-vous vous déconnecter ?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Non"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Oui"),
+              onPressed: () {
+                DataManager().reset();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WorkspaceSelectionPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        child: Scaffold(
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
@@ -225,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                           IconButton(
                             onPressed: () {
-                                navigateToChildPage();
+                              navigateToChildPage();
                             },
                             icon: Icon(Icons.edit),
                           ),
@@ -348,7 +378,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                         ),
-                          SizedBox(height: 20,),
+                        SizedBox(height: 20,),
                         ElementAnimation(1.5,GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -411,8 +441,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
 
                         ),
-                          Container(
-                          ),
+                        Container(
+                        ),
                       ],
                     ),
                   ),
@@ -422,7 +452,11 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-    );
+    ),
+        onWillPop:() async{
+          await _afficherDialogueDeconnexion(context);
+          return false;
+        });
   }
 }
 

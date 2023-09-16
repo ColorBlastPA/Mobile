@@ -1,4 +1,5 @@
 import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Page/workspace_selection_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -31,65 +32,99 @@ class _MessagingProPageState extends State<MessagingProPage> {
     });
   }
 
+  _afficherDialogueDeconnexion(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Voulez-vous vous déconnecter ?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Non"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Oui"),
+              onPressed: () {
+                DataManager().reset();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WorkspaceSelectionPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Messagerie"),
-        centerTitle: true,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.deepOrange,
-                Colors.orange,
-                Colors.orangeAccent,
-              ],
+    return WillPopScope(
+        child:Scaffold(
+          appBar: AppBar(
+            title: Text("Messagerie"),
+            centerTitle: true,
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.deepOrange,
+                    Colors.orange,
+                    Colors.orangeAccent,
+                  ],
+                ),
+              ),
             ),
+            automaticallyImplyLeading: false,
           ),
-        ),
-        automaticallyImplyLeading: false,
-      ),
-      body: isLoading
-          ? Center(
+          body: isLoading
+              ? Center(
             child: CircularProgressIndicator(),
-      )
-          :discussions == null || discussions == []
-          ? Center(
+          )
+              :discussions == null || discussions == []
+              ? Center(
             child: Text("Vous n'avez aucune discussion"),
-      )
-          : ListView.builder(
+          )
+              : ListView.builder(
             itemCount: discussions?.length,
             itemBuilder: (BuildContext context, int index) {
-            return InkWell(
-            onTap: () {
-              _openChatPage(discussions![index]!);
+              return InkWell(
+                onTap: () {
+                  _openChatPage(discussions![index]!);
+                },
+                child: ListTile(
+                  leading: CircleAvatar(
+                    child: Text(getInitials(
+                        (discussions?[index]?.client.lastname ?? "") + " " + (discussions?[index]?.client.firstname ?? "")
+                    )),
+                  ),
+
+
+
+                  title: Text("${discussions?[index]?.client.lastname} ${discussions?[index]?.client.firstname}"),
+                  subtitle: Text("${discussions?[index]?.messagerie.lastMessage}"),
+                  trailing: Text(
+                    formatLastMessageDate(discussions?[index]?.messagerie.dLastMessage),
+                  ),
+
+                ),
+              );
             },
-              child: ListTile(
-                leading: CircleAvatar(
-                  child: Text(getInitials(
-                      (discussions?[index]?.client.lastname ?? "") + " " + (discussions?[index]?.client.firstname ?? "")
-                  )),
-                ),
-
-
-
-                title: Text("${discussions?[index]?.client.lastname} ${discussions?[index]?.client.firstname}"),
-                subtitle: Text("${discussions?[index]?.messagerie.lastMessage}"),
-                trailing: Text(
-                  formatLastMessageDate(discussions?[index]?.messagerie.dLastMessage),
-                ),
-
-            ),
-          );
-        },
-      ),
-    );
+          ),
+        ),
+        onWillPop:() async{
+          await _afficherDialogueDeconnexion(context);
+          return false;
+        });
   }
 
   void _openChatPage(MessagingPro messagerie) {

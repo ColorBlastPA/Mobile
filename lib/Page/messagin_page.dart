@@ -2,6 +2,7 @@ import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/messagerie.dart';
 import 'package:color_blast/Page/chat_page.dart';
 import 'package:color_blast/Page/shop_page.dart';
+import 'package:color_blast/Page/workspace_selection_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -33,12 +34,42 @@ class _MessagingPageState extends State<MessagingPage> {
     });
   }
 
+  _afficherDialogueDeconnexion(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Voulez-vous vous déconnecter ?"),
+          actions: <Widget>[
+            TextButton(
+              child: Text("Non"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Oui"),
+              onPressed: () {
+                DataManager().reset();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WorkspaceSelectionPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        child: Scaffold(
       appBar: AppBar(
         title: Text("Messagerie"),
         centerTitle: true,
@@ -59,39 +90,43 @@ class _MessagingPageState extends State<MessagingPage> {
       ),
       body: isLoading
           ? Center(
-            child: CircularProgressIndicator(),
-          )
+        child: CircularProgressIndicator(),
+      )
           :discussions == null || discussions == []
           ? Center(
-            child: Text("Vous n'avez aucune discussion"),
-          )
+        child: Text("Vous n'avez aucune discussion"),
+      )
           : ListView.builder(
-            itemCount: discussions?.length,
-            itemBuilder: (BuildContext context, int index) {
-            return InkWell(
+        itemCount: discussions?.length,
+        itemBuilder: (BuildContext context, int index) {
+          return InkWell(
             onTap: () {
               _openChatPage(discussions![index]!);
             },
-              child: ListTile(
-                leading: CircleAvatar(
-                  child: Text(getInitials(
-                      (discussions?[index]?.pro.lastname ?? "") + " " + (discussions?[index]?.pro.firstname ?? "")
-                  )),
-                ),
-
-
-
-                title: Text("${discussions?[index]?.pro.lastname} ${discussions?[index]?.pro.firstname}"),
-                subtitle: Text("${discussions?[index]?.messagerie.lastMessage}"),
-                trailing: Text(
-                  formatLastMessageDate(discussions?[index]?.messagerie.dLastMessage),
-                ),
-
+            child: ListTile(
+              leading: CircleAvatar(
+                child: Text(getInitials(
+                    (discussions?[index]?.pro.lastname ?? "") + " " + (discussions?[index]?.pro.firstname ?? "")
+                )),
               ),
+
+
+
+              title: Text("${discussions?[index]?.pro.lastname} ${discussions?[index]?.pro.firstname}"),
+              subtitle: Text("${discussions?[index]?.messagerie.lastMessage}"),
+              trailing: Text(
+                formatLastMessageDate(discussions?[index]?.messagerie.dLastMessage),
+              ),
+
+            ),
           );
         },
       ),
-    );
+    ),
+        onWillPop:() async{
+          await _afficherDialogueDeconnexion(context);
+          return false;
+        });
   }
 
   void _openChatPage(MessagerieClient messagerie) {

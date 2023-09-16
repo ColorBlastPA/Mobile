@@ -3,6 +3,7 @@ import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
 
 class WorkspaceSelectionPage extends StatefulWidget {
   const WorkspaceSelectionPage({Key? key}) : super(key: key);
@@ -12,6 +13,28 @@ class WorkspaceSelectionPage extends StatefulWidget {
 }
 
 class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
+
+  final channel = IOWebSocketChannel.connect('ws://api-colorblast.current.ovh/ws');
+  String receivedMessage = '';
+
+
+  void sendPing() {
+    // Envoyer le message "ping" au serveur WebSocket
+    channel.sink.add('ping');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Écoutez les messages WebSocket
+    channel.stream.listen((message) {
+      setState(() {
+        receivedMessage = message; // Stockez le message reçu
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,6 +93,7 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
             GestureDetector(
               onTap: () {
                 DataManager().workspaceClient = false;
+                sendPing();
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage(WorkspaceClient: false)),
@@ -96,6 +120,8 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
                 ),
               ),
             ),
+            SizedBox(height: 20,),
+            Text('Message reçu du serveur: $receivedMessage'),
           ],
         ),
       ),)

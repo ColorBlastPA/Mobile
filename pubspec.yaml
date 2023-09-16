@@ -58,6 +58,7 @@ dependencies:
   cell_calendar: ^0.8.0
   syncfusion_flutter_datepicker: ^19.1.57-beta
   file_picker: ^5.3.1
+  web_socket_channel: ^2.4.0
 
 
 dev_dependencies:
