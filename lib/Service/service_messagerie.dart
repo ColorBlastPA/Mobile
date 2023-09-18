@@ -20,13 +20,14 @@ class ServiceMessagerie{
     return null;
   }
 
-  Future<MessagerieClient?> getMessageriesByIdClientAndPro(int? idClient, int? idPro) async{
+  Future<MessagerieClass?> getMessageriesByIdClientAndPro(int? idClient, int? idPro) async{
     var client = http.Client();
     var uri = Uri.parse('https://api-colorblast.current.ovh/messagerie/get/${idClient}/${idPro}');
 
     var response = await client.get(uri);
     if(response.statusCode==200){
       var json = response.body;
+      print(json);
       return messagerieFromJson(json);
     }
     return null;

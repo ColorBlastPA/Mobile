@@ -56,9 +56,9 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       widget.booking?.booking.waiting = false;
       var response = await ServiceBooking().updateBooking(widget.booking!.booking.id, widget.booking!.booking);
       if(response == 200){
-        MessagerieClient? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
+        MessagerieClass? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
 
-        await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.messagerie.id, mail: "", lastname: "Color", firstname: "Blast", content: "Le client accepte le service.", date: DateTime.now()));
+        await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.id, mail: "", lastname: "Color", firstname: "Blast", content: "Le client accepte le service.", date: DateTime.now()));
 
         Navigator.of(context).pop(true);
       }else{
@@ -103,9 +103,11 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         var response = await request.send();
 
         if (response.statusCode == 200) {
-          MessagerieClient? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
+          print(widget.booking?.booking.idClient);
+          print(widget.booking?.booking.idPro);
+          MessagerieClass? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
 
-          await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.messagerie.id, mail: "", lastname: "Color", firstname: "Blast", content: "Cette demande possède un devis.", date: DateTime.now()));
+          await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.id, mail: "", lastname: "Color", firstname: "Blast", content: "Cette demande possède un devis.", date: DateTime.now()));
 
           Navigator.of(context).pop(true);
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");

@@ -58,12 +58,13 @@ class _RequestBookingPageState extends State<RequestBookingPage> {
       body: isLoading
           ? Center(child: CircularProgressIndicator()) // Afficher le spinner
           : Container(
-        height: 500, // Ajustez cette valeur selon vos besoins
+            height: 500, // Ajustez cette valeur selon vos besoins
             child: ListView.builder(
-          itemCount: booking!.length,
-          itemBuilder: (context, index) {
+              itemCount: booking!.length,
+              itemBuilder: (context, index) {
             final currentBooking = booking![index];
             final hasQuote = currentBooking?.quote != null;
+
 
               return ListTile(
                 title: Text('${currentBooking?.booking.firstname} ${currentBooking?.booking.lastname}'),

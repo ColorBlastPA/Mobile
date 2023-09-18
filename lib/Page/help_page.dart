@@ -17,10 +17,13 @@ class _HelpPageState extends State<HelpPage> {
   final TextEditingController textEditingController = TextEditingController();
 
   Future<void> sendMail() async {
+    print("send mail");
     if(DataManager().workspaceClient == true){
+      print("send mail"+DataManager().client!.mail);
       Help help = Help(mail: DataManager().client!.mail, content: textEditingController.text);
       var response = await ServiceEmail().sendHelpMail(help);
       if(response == 200){
+        print("good");
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -39,8 +42,9 @@ class _HelpPageState extends State<HelpPage> {
             );
           },
         );
-        Navigator.of(context).pop();
+
       }else{
+        print("pas good");
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -82,7 +86,7 @@ class _HelpPageState extends State<HelpPage> {
             );
           },
         );
-        Navigator.of(context).pop();
+
       }else{
         showDialog(
           context: context,
@@ -126,49 +130,60 @@ class _HelpPageState extends State<HelpPage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: ElementAnimation(0.6,
-          Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 16.0),
-            const Text(
-              "En cas de problème, veuillez nous envoyer un message. Nous vous répondrons dans les plus brefs délais.",
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ElementAnimation(
+            0.6,
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  SizedBox(height: 16.0),
+                  const Text(
+                    "En cas de problème, veuillez nous envoyer un message. Nous vous répondrons dans les plus brefs délais.",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 150.0),
+                  TextField(
+                    controller: textEditingController,
+                    decoration: InputDecoration(
+                      hintText: "Écrivez votre message ici...",
+                    ),
+                    maxLines: null,
+                  ),
+                  SizedBox(height: 100.0), // Espacement entre le champ texte et le bouton
+                  GestureDetector(
+                    onTap: () {
+                      sendMail();
+                    },
+                    child: Container(
+                      height: 50,
+                      margin: EdgeInsets.symmetric(horizontal: 50),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: Colors.orange[900],
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Valider",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 150.0),
-            TextField(
-              controller: textEditingController,
-              decoration: InputDecoration(
-                hintText: "Écrivez votre message ici...",
-              ),
-              maxLines: null,
-            ),
-            SizedBox(height: 100.0), // Espacement entre le champ texte et le bouton
-            GestureDetector(
-              onTap: () {
-                sendMail();
-              },
-              child: Container(
-                height: 50,
-                margin: EdgeInsets.symmetric(horizontal: 50),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.orange[900]
-                ),
-                child: Center(
-                  child: Text("Valider", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                ),
-              ),
-            ),
-          ],
-        ),),
-      ),
+          ),
+        ),
+
     );
   }
 

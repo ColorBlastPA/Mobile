@@ -50,7 +50,7 @@ class _SignupPage2State extends State<SignupPage2> {
       Navigator.push(context,
           MaterialPageRoute<void>(
               builder:(BuildContext context) {
-                return LoginPage();
+                return LoginPage(WorkspaceClient: true);
               }));
     }else{
       print("erreur");
