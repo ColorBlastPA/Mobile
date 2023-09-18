@@ -1,7 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Model/line.dart';
+import 'package:color_blast/Model/messagerie.dart';
 import 'package:color_blast/Service/service_booking.dart';
+import 'package:color_blast/Service/service_line.dart';
+import 'package:color_blast/Service/service_messagerie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -52,6 +56,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       widget.booking?.booking.waiting = false;
       var response = await ServiceBooking().updateBooking(widget.booking!.booking.id, widget.booking!.booking);
       if(response == 200){
+        MessagerieClient? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
+
+        await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.messagerie.id, mail: "", lastname: "Color", firstname: "Blast", content: "Le client accepte le service.", date: DateTime.now()));
+
         Navigator.of(context).pop(true);
       }else{
         showDialog(
@@ -95,6 +103,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         var response = await request.send();
 
         if (response.statusCode == 200) {
+          MessagerieClient? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
+
+          await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.messagerie.id, mail: "", lastname: "Color", firstname: "Blast", content: "Cette demande possède un devis.", date: DateTime.now()));
+
           Navigator.of(context).pop(true);
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
 

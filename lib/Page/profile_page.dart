@@ -6,6 +6,7 @@ import 'package:color_blast/Model/professionnel.dart';
 import 'package:color_blast/Model/update_result_pro.dart';
 import 'package:color_blast/Model/user_pro.dart';
 import 'package:color_blast/Page/details_profile.dart';
+import 'package:color_blast/Page/help_page.dart';
 import 'package:color_blast/Page/planning_page.dart';
 import 'package:color_blast/Page/request_booking_page.dart';
 import 'package:color_blast/Page/update_password_page.dart';
@@ -404,6 +405,32 @@ class _ProfilePageState extends State<ProfilePage> {
                                   :
                               Text(
                                 "Demande de devis",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ),
+                        SizedBox(height: 20,),
+                        ElementAnimation(1.5,GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => HelpPage()),
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.help_outline,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                "Aide ",
                                 style: TextStyle(
                                   color: Colors.grey,
                                 ),

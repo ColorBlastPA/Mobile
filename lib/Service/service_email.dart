@@ -4,6 +4,8 @@ import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:http/http.dart' as http;
 
+import '../Model/help.dart';
+
 class ServiceEmail{
 
   Future<int> forgotPassword(String email, bool workspaceClient) async{
@@ -21,6 +23,25 @@ class ServiceEmail{
     var response = await client.get(uri);
     return response.statusCode;
 
+  }
+
+  Future<int> sendHelpMail(Help help) async {
+    final response = await http.post(
+      Uri.parse('https://api-colorblast.current.ovh/helpMail'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "mail":help.mail,
+        "content" : help.content
+      }),
+    );
+
+    if(response.statusCode==200){
+      return response.statusCode;
+    }else{
+      return response.statusCode;
+    }
   }
 
   Future<void> getCommentProductEmail(String email, String key) async{

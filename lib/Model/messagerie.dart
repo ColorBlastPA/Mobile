@@ -4,8 +4,9 @@
 
 import 'dart:convert';
 
-List<MessagerieClient> messagerieFromJson(String str) => List<MessagerieClient>.from(json.decode(str).map((x) => MessagerieClient.fromJson(x)));
+List<MessagerieClient> messagerieListFromJson(String str) => List<MessagerieClient>.from(json.decode(str).map((x) => MessagerieClient.fromJson(x)));
 
+MessagerieClient messagerieFromJson(String str) => MessagerieClient.fromJson(json.decode(str));
 String messagerieToJson(List<MessagerieClient> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class MessagerieClient {

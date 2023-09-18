@@ -1,7 +1,9 @@
 
 
 import 'package:color_blast/Model/booking.dart';
+import 'package:color_blast/Model/messagerie.dart';
 import 'package:color_blast/Service/service_booking.dart';
+import 'package:color_blast/Service/service_messagerie.dart';
 import 'package:flutter/material.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -204,6 +206,8 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
         for (var product in _selectedProducts) {
             await ServiceBooking().createProductBooking(bookingClass.id, product.id);
         }
+        MessagerieClass messagerieClass = MessagerieClass(id: 1, idClient: DataManager().client!.id, idPro: widget.professionnel.id, lastMessage: "Nouvelle discussion", dLastMessage: DateTime.now(), dlastMessage: DateTime.now());
+        var responseMessagerie = await ServiceMessagerie().createMessagerie(messagerieClass);
         Navigator.of(context).pop();
       }else{
         print("erreur");
