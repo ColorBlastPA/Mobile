@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import 'booking_details_page.dart';
+
 
 
 
@@ -35,7 +37,7 @@ class _PlanningPageState extends State<PlanningPage> {
   List<Event> _events = [];
 
   void _createEventsFromBookings(List<Booking?>? bookings) {
-    _events.clear(); // Effacez les événements précédents si nécessaire
+    _events.clear();
 
     if (bookings != null) {
       for (var booking in bookings) {
@@ -192,7 +194,7 @@ class BookingInfoDialog extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.person),
             title: Text(
-              'Nom complet : ${booking.booking.lastname} ${booking.booking.firstname}',
+              'Nom du client : ${booking.booking.lastname} ${booking.booking.firstname}',
             ),
           ),
           ListTile(
@@ -219,19 +221,22 @@ class BookingInfoDialog extends StatelessWidget {
             leading: Icon(Icons.date_range),
             title: Text('Date de fin : ${booking.booking.dhFin.toString()}'),
           ),
-          ListTile(
-            leading: Icon(Icons.hourglass_empty),
-            title: Text(
-                'En attente : ${booking.booking.waiting ? 'Oui' : 'Non'}'),
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text('ID du client : ${booking.booking.idClient}'),
-          ),
+
           // Vous pouvez ajouter d'autres informations de réservation ici
         ],
       ),
       actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                builder: (context) => BookingDetailsPage(booking: booking),
+              ),
+            );
+          },
+          child: Text('Détails'),
+        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();

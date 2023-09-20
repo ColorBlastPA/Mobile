@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/professionnel.dart';
+import 'package:color_blast/Model/user_pro.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -62,6 +63,42 @@ class ServicePro{
       return response;
     }else{
       return response;
+    }
+  }
+
+  Future<int> updatePro(Pro pro) async {
+    final response = await http.put(
+      Uri.parse('https://api-colorblast.current.ovh/professionnel'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "id": pro.id,
+        "lastname": pro.lastname,
+        "firstname": pro.firstname,
+        "mail": pro.mail,
+        "password": pro.password,
+        "country": pro.country,
+        "department": pro.department,
+        "postal_code": pro.postalCode,
+        "city": pro.city,
+        "avatar": pro.avatar,
+        "company_name": pro.companyName,
+        "price": pro.price,
+        "phone": pro.phone,
+        "note": 0,
+        "description": pro.description,
+        "idCertificate": pro.idCertificate,
+        "waiting": false
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var json = response.body;
+      DataManager().pro?.pro =  proFromJson(json);
+      return response.statusCode;
+    } else {
+      return response.statusCode;
     }
   }
 

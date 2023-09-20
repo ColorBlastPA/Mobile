@@ -8,6 +8,9 @@ UserPro userProFromJson(String str) => UserPro.fromJson(json.decode(str));
 
 String userProToJson(UserPro data) => json.encode(data.toJson());
 
+Pro proFromJson(String str) => Pro.fromJson(json.decode(str));
+
+
 class UserPro {
   Pro pro;
   Certificate certificate;

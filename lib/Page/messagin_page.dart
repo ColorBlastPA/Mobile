@@ -29,6 +29,7 @@ class _MessagingPageState extends State<MessagingPage> {
 
   getData() async {
     discussions = await ServiceMessagerie().getMessageriesByIdClient(DataManager().client?.id);
+    discussions?.sort((a, b) => b!.messagerie.dLastMessage.compareTo(a!.messagerie.dLastMessage));
     setState(() {
       isLoading = false;
     });

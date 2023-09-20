@@ -5,9 +5,10 @@ import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:color_blast/Model/update_result_pro.dart';
 import 'package:color_blast/Model/user_pro.dart';
-import 'package:color_blast/Page/details_profile.dart';
+import 'package:color_blast/Page/details_client_profile.dart';
 import 'package:color_blast/Page/help_page.dart';
 import 'package:color_blast/Page/planning_page.dart';
+import 'package:color_blast/Page/profile_pro_page.dart';
 import 'package:color_blast/Page/request_booking_page.dart';
 import 'package:color_blast/Page/update_password_page.dart';
 import 'package:color_blast/Page/workspace_selection_page.dart';
@@ -122,20 +123,38 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void navigateToChildPage() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ProfileDetails()),
-    );
-
-    if (result is UpdateResultClient) {
+    if(DataManager().workspaceClient == true){
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfileClientDetails()),
+      );
+      if (result is UpdateResultClient) {
         setState(() {
           this.client = result.client;
         });
-    }else if(result is UpdateResultPro){
-      setState(() {
-        this.pro = result.pro;
-      });
+      }else if(result is UpdateResultPro){
+        setState(() {
+          this.pro = result.pro;
+        });
+      }
+    }else{
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfileProPage()),
+      );
+      if (result is UpdateResultClient) {
+        setState(() {
+          this.client = result.client;
+        });
+      }else if(result is UpdateResultPro){
+        setState(() {
+          this.pro = result.pro;
+        });
+      }
     }
+
+
+
   }
 
   _afficherDialogueDeconnexion(BuildContext context) async {

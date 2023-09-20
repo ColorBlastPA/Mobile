@@ -27,6 +27,8 @@ class _MessagingProPageState extends State<MessagingProPage> {
 
   getData() async {
     discussions = await ServiceMessagerie().getMessageriesByIdPro(DataManager().pro?.pro.id);
+    discussions?.sort((a, b) => b!.messagerie.dLastMessage.compareTo(a!.messagerie.dLastMessage));
+
     setState(() {
       isLoading = false;
     });

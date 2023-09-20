@@ -124,7 +124,7 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
               ),
             ),
             SizedBox(height: 20,),
-            Text('Message reçu du serveur: $receivedMessage'),
+            //Text('Message reçu du serveur: $receivedMessage'),
           ],
         ),
       ),)

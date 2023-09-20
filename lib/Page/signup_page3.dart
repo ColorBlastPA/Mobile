@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 
 import 'dart:convert';
@@ -77,13 +78,14 @@ class _SignupPage3State extends State<SignupPage3> {
         var response = await request.send();
 
         if (response.statusCode == 200) {
-          // Le fichier a été téléchargé avec succès
+          showNotification();
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
           Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) {
             return LoginPage(WorkspaceClient: false);
           }));
+
         } else {
-          // Gérer les erreurs de téléchargement du fichier
+
           print("Erreur lors du téléchargement du fichier PDF : ${response.statusCode}");
           print(await response.stream.bytesToString());
           showDialog(
@@ -109,6 +111,50 @@ class _SignupPage3State extends State<SignupPage3> {
       print("Erreur lors de la création du professionnel");
       // Gérer l'erreur lors de la création du professionnel
     }
+  }
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  FlutterLocalNotificationsPlugin();
+
+  Future<void> configureLocalNotifications() async {
+    final AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings("@mipmap/launcher_icon");
+
+
+    final InitializationSettings initializationSettings = InitializationSettings(
+      android: androidInitializationSettings,
+    );
+
+
+    await flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+    );
+  }
+
+  Future<void> showNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      'your_channel_id',
+      'Your Channel Name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // ID de la notification
+      'Titre de la notification',
+      'Contenu de la notification',
+      platformChannelSpecifics,
+    );
+  }
+
+// Appelez configureLocalNotifications dans initState
+  @override
+  void initState() {
+    super.initState();
+    configureLocalNotifications();
   }
 
 

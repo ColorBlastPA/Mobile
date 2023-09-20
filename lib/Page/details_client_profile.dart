@@ -8,14 +8,14 @@ import '../Model/data_manager.dart';
 import '../Model/update_result_client.dart';
 import '../Service/service_client.dart';
 
-class ProfileDetails extends StatefulWidget {
-  const ProfileDetails({Key? key}) : super(key: key);
+class ProfileClientDetails extends StatefulWidget {
+  const ProfileClientDetails({Key? key}) : super(key: key);
 
   @override
-  State<ProfileDetails> createState() => _ProfileDetailsState();
+  State<ProfileClientDetails> createState() => _ProfileClientDetailsState();
 }
 
-class _ProfileDetailsState extends State<ProfileDetails> {
+class _ProfileClientDetailsState extends State<ProfileClientDetails> {
   Client? client = DataManager().client;
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();

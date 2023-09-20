@@ -1,5 +1,6 @@
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/profile_page.dart';
+import 'package:color_blast/Service/service_pro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -42,8 +43,15 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
         },
       );
     }else{
-      DataManager().client?.password = newPasswordController.text;
-      var response = await ServiceClient().updateClient(DataManager().client!);
+      var response = 0;
+      if(DataManager().workspaceClient == true){
+        DataManager().client?.password = newPasswordController.text;
+        response = await ServiceClient().updateClient(DataManager().client!);
+      }else{
+        DataManager().pro?.pro.password = newPasswordController.text;
+        response = await ServicePro().updatePro(DataManager().pro!.pro);
+      }
+
       if (response == 200) {
         showDialog(
           context: context,
@@ -143,7 +151,12 @@ class _UpdatePasswordPageState extends State<UpdatePasswordPage> {
                           controller: oldPasswordController,
                           onChanged: (value) {
                             setState(() {
-                              isOldPasswordValid = value == DataManager().client?.password;
+                              if(DataManager().workspaceClient == true){
+                                isOldPasswordValid = value == DataManager().client?.password;
+                              }else{
+                                isOldPasswordValid = value == DataManager().pro?.pro.password;
+                              }
+
                             });
                           },
                           decoration: InputDecoration(
