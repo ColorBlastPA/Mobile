@@ -82,7 +82,7 @@ class _RequestBookingPageState extends State<RequestBookingPage> {
                   final updated = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => BookingDetailsPage(booking: currentBooking),
+                      builder: (context) => BookingDetailsPage(booking: currentBooking, context: false,),
                     ),
                   );
 

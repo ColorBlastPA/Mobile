@@ -50,14 +50,25 @@ class _PlanningPageState extends State<PlanningPage> {
 
 
 
+  // Dans PlanningPage
   Future<void> _showBookingInfoDialog(BuildContext context, Booking booking) async {
-    await showDialog(
+    final updated = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return BookingInfoDialog(booking: booking);
+        return BookingInfoDialog(booking: booking, onUpdate: () async {
+          // Mettre à jour la liste des réservations
+          await getBooking();
+          // Renvoyer true pour indiquer la mise à jour
+          return true;
+        });
       },
     );
+
+    if (updated != null && updated is bool && updated) {
+      // La popup a été mise à jour, vous pouvez effectuer des actions supplémentaires si nécessaire.
+    }
   }
+
 
   List<Event> _getEventsForDay(DateTime date) {
     final events = _events.where((event) {
@@ -177,8 +188,9 @@ class Event {
 
 class BookingInfoDialog extends StatelessWidget {
   final Booking booking;
+  final Function onUpdate;
 
-  BookingInfoDialog({required this.booking});
+  BookingInfoDialog({required this.booking, required this.onUpdate});
 
   @override
   Widget build(BuildContext context) {
@@ -227,13 +239,21 @@ class BookingInfoDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                builder: (context) => BookingDetailsPage(booking: booking),
+          onPressed: () async {
+            final updated = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BookingDetailsPage(booking: booking, context: true,),
               ),
             );
+
+            if (updated != null && updated is bool && updated) {
+              // Utilisez le callback onUpdate pour mettre à jour la liste et fermer la popup
+              final shouldUpdate = await onUpdate();
+              if (shouldUpdate) {
+                Navigator.of(context).pop(true);
+              }
+            }
           },
           child: Text('Détails'),
         ),

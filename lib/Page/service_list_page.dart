@@ -41,7 +41,10 @@ class _ServiceListPageState extends State<ServiceListPage> {
       filteredData = pro!
           .where((person) =>
       person!.lastname.toLowerCase().contains(query.toLowerCase()) ||
-          person.firstname.toLowerCase().contains(query.toLowerCase()))
+          person.firstname.toLowerCase().contains(query.toLowerCase()) ||
+          person.department.toLowerCase().contains(query.toLowerCase()) ||
+          person.postalCode.toLowerCase().contains(query.toLowerCase()) ||
+          person.city.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }

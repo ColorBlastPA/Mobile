@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/line.dart';
 import 'package:color_blast/Model/messagerie.dart';
+import 'package:color_blast/Page/profile_page.dart';
 import 'package:color_blast/Service/service_booking.dart';
+import 'package:color_blast/Service/service_email.dart';
 import 'package:color_blast/Service/service_line.dart';
 import 'package:color_blast/Service/service_messagerie.dart';
 import 'package:file_picker/file_picker.dart';
@@ -15,8 +17,9 @@ import 'package:http_parser/http_parser.dart';
 
 class BookingDetailsPage extends StatefulWidget {
   final Booking? booking;
+  final bool context;
 
-  BookingDetailsPage({required this.booking});
+  BookingDetailsPage({required this.booking, required this.context});
 
   @override
   _BookingDetailsPageState createState() => _BookingDetailsPageState();
@@ -25,6 +28,7 @@ class BookingDetailsPage extends StatefulWidget {
 class _BookingDetailsPageState extends State<BookingDetailsPage> {
   File? selectedFile;
   String selectedFileName = '';
+
 
   Future<void> refuseBooking() async {
     var response = await ServiceBooking().deleteBooking(widget.booking?.booking.id);
@@ -157,6 +161,32 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
 
   }
 
+  Future<void> terminateBooking() async{
+    await ServiceEmail().getCommentProEmail(widget.booking?.booking.idClient ?? 0, widget.booking?.booking.idPro ?? 0);
+    var response = await ServiceBooking().deleteBooking(widget.booking?.booking.id);
+    if(response == 200){
+      Navigator.of(context).pop(true);
+    }else{
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Erreur"),
+            content: Text("Une erreur est survenue."),
+            actions: [
+              TextButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -281,7 +311,6 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             Center(
               child: (() {
                 if (DataManager().workspaceClient == false && widget.booking?.quote == null) {
-                  // Afficher le bouton de sélection de fichier PDF
                   return ElevatedButton(
                     onPressed: () async {
                       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -320,10 +349,10 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       ),
                     ),
                   );
-                } else if ((DataManager().workspaceClient == false && widget.booking?.quote != null) || (DataManager().workspaceClient == true && widget.booking?.quote == null)) {
+                } else if ((DataManager().workspaceClient == true && widget.booking?.quote == null)) {
                   // Ne pas afficher le bouton
                   return SizedBox.shrink();
-                } else if (DataManager().workspaceClient == true && widget.booking?.quote != null) {
+                } else if ((DataManager().workspaceClient == true && widget.booking?.quote != null) || (DataManager().workspaceClient == false && widget.booking?.quote != null)) {
                   // Afficher les informations de devis
                   return InkWell(
                     onTap: () {
@@ -363,9 +392,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: (() {
-                if ((DataManager().workspaceClient == true && widget.booking?.quote == null) || (DataManager().workspaceClient == false && widget.booking?.quote != null)) {
-                  // Afficher seulement le bouton "Annuler"
-                  return [
+                if (DataManager().workspaceClient == true && widget.context == true) {
+                  // Ne pas afficher de bouton si DataManager().workspaceClient == true && widget.context == true
+                  return <Widget>[];
+                } else if (DataManager().workspaceClient == true && widget.context == false && widget.booking?.quote == null) {
+                  // Afficher le bouton "Annuler" si DataManager().workspaceClient == true && widget.context == false && widget.booking?.quote == null
+                  return <Widget>[
                     ElevatedButton(
                       onPressed: () {
                         refuseBooking();
@@ -376,9 +408,9 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       ),
                     ),
                   ];
-                } else {
-                  // Afficher les boutons "Refuser" et "Accepter"
-                  return [
+                } else if (DataManager().workspaceClient == true && widget.context == false && widget.booking?.quote != null) {
+                  // Afficher les boutons "Refuser" et "Accepter" si DataManager().workspaceClient == true && widget.context == false && widget.booking?.quote != null
+                  return <Widget>[
                     ElevatedButton(
                       onPressed: () {
                         refuseBooking();
@@ -398,9 +430,62 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
                       ),
                     ),
                   ];
+                } else if (DataManager().workspaceClient == false && widget.context == true) {
+                  // Afficher le bouton "Terminer" si DataManager().workspaceClient == false && widget.context == true
+                  return <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        terminateBooking();
+                      },
+                      child: Text('Terminer'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                      ),
+                    ),
+                  ];
+                } else if (DataManager().workspaceClient == false && widget.context == false && widget.booking?.quote == null) {
+                  // Afficher les boutons "Refuser" et "Accepter" si DataManager().workspaceClient == false && widget.context == false && widget.booking?.quote == null
+                  return <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        refuseBooking();
+                      },
+                      child: Text('Refuser'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        validateBooking();
+                      },
+                      child: Text('Accepter'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.green,
+                      ),
+                    ),
+                  ];
+                } else if (DataManager().workspaceClient == false && widget.context == false && widget.booking?.quote != null) {
+                  // Afficher le bouton "Annuler" si DataManager().workspaceClient == false && widget.context == false && widget.booking?.quote != null
+                  return <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        refuseBooking();
+                      },
+                      child: Text('Annuler'),
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.red,
+                      ),
+                    ),
+                  ];
+                } else {
+                  // Par défaut, retournez une boîte vide
+                  return <Widget>[];
                 }
               })(),
             ),
+
+
 
           ],
         ),

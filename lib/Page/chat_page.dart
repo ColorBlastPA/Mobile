@@ -116,11 +116,31 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget buildMessageItem(Line line) {
-    bool isMe = line.mail == DataManager().client?.mail;
+    bool isMe = false;
+    if (DataManager().workspaceClient == true) {
+      isMe = line.mail == DataManager().client?.mail;
+    } else {
+      isMe = line.mail == DataManager().pro?.pro.mail;
+    }
+
+    // Vérifiez si le champ mail est null ou vide
+    bool isMessageOnly = line.mail == null || line.mail == "";
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
+      child: isMessageOnly
+          ? Align(
+        alignment: Alignment.center,
+        child: Text(
+          line.content,
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 12.0, // Taille de police plus petite
+          ),
+        ),
+      )
+          : Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isMe ? Colors.blue : Colors.grey.shade200,
@@ -147,11 +167,13 @@ class _ChatPageState extends State<ChatPage> {
               style: TextStyle(color: isMe ? Colors.white70 : Colors.black54),
             ),
           ],
-
         ),
       ),
     );
   }
+
+
+
 
   String formatMessageDate(DateTime dateTime) {
     final now = DateTime.now();
@@ -168,16 +190,30 @@ class _ChatPageState extends State<ChatPage> {
 
 
   void sendMessage() {
-    if (_textEditingController.text.isNotEmpty) {
-      setState(() {
-        String content = _textEditingController.text;
-        DateTime date = DateTime.now();
-        Line newLine = Line(id: 1, idMessagerie: idMessagerie, lastname: DataManager().client!.lastname, firstname: DataManager().client!.firstname, content: content, date: date, mail:DataManager().client!.mail );
-        lines?.add(newLine);
-        appendLine(newLine);
-        _textEditingController.clear();
-      });
+    if(DataManager().workspaceClient == true){
+      if (_textEditingController.text.isNotEmpty) {
+        setState(() {
+          String content = _textEditingController.text;
+          DateTime date = DateTime.now();
+          Line newLine = Line(id: 1, idMessagerie: idMessagerie, lastname: DataManager().client!.lastname, firstname: DataManager().client!.firstname, content: content, date: date, mail:DataManager().client!.mail );
+          lines?.add(newLine);
+          appendLine(newLine);
+          _textEditingController.clear();
+        });
+      }
+    }else{
+      if (_textEditingController.text.isNotEmpty) {
+        setState(() {
+          String content = _textEditingController.text;
+          DateTime date = DateTime.now();
+          Line newLine = Line(id: 1, idMessagerie: idMessagerie, lastname: DataManager().pro!.pro.lastname, firstname: DataManager().pro!.pro.firstname, content: content, date: date, mail:DataManager().pro!.pro.mail );
+          lines?.add(newLine);
+          appendLine(newLine);
+          _textEditingController.clear();
+        });
+      }
     }
+
   }
 
 

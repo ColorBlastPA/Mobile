@@ -52,6 +52,14 @@ class ServiceEmail{
 
   }
 
+  Future<void> getCommentProEmail(int idClient, int idPro) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/commentPro/${idClient}/${idPro}');
+
+    var response = await client.get(uri);
+
+  }
+
 
 
 
