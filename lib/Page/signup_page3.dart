@@ -7,7 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:http/http.dart' as http;
 
 import 'dart:convert';
@@ -15,6 +15,7 @@ import 'package:http_parser/http_parser.dart';
 
 
 import '../Animation/animation.dart';
+import '../Controller/notification_service.dart';
 import '../Model/data_manager.dart';
 import 'login_page.dart';
 
@@ -78,7 +79,7 @@ class _SignupPage3State extends State<SignupPage3> {
         var response = await request.send();
 
         if (response.statusCode == 200) {
-          showNotification();
+          NotificationService().showNotification(1, "ColorBlast", "Votre compte est en attente de validation, vous recevrez un mail lorsque celui-ci sera disponible.", 3);
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
           Navigator.push(context, MaterialPageRoute<void>(builder: (BuildContext context) {
             return LoginPage(WorkspaceClient: false);
@@ -113,48 +114,12 @@ class _SignupPage3State extends State<SignupPage3> {
     }
   }
 
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
-
-  Future<void> configureLocalNotifications() async {
-    final AndroidInitializationSettings androidInitializationSettings = AndroidInitializationSettings("@mipmap/launcher_icon");
-
-
-    final InitializationSettings initializationSettings = InitializationSettings(
-      android: androidInitializationSettings,
-    );
-
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
-  }
-
-  Future<void> showNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails(
-      'your_channel_id',
-      'Your Channel Name',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(
-      0, // ID de la notification
-      'Titre de la notification',
-      'Contenu de la notification',
-      platformChannelSpecifics,
-    );
-  }
 
 // Appelez configureLocalNotifications dans initState
   @override
   void initState() {
     super.initState();
-    configureLocalNotifications();
+    tz.initializeTimeZones();
   }
 
 

@@ -1,5 +1,3 @@
-
-
 import 'package:color_blast/Model/booking.dart';
 import 'package:color_blast/Model/messagerie.dart';
 import 'package:color_blast/Service/service_booking.dart';
@@ -7,7 +5,10 @@ import 'package:color_blast/Service/service_messagerie.dart';
 import 'package:flutter/material.dart';
 import 'package:multiselect_formfield/multiselect_formfield.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
+
+import '../Controller/notification_service.dart';
 import '../Model/client.dart';
 import '../Model/data_manager.dart';
 import '../Model/planning.dart';
@@ -15,6 +16,7 @@ import '../Model/product.dart';
 import '../Model/professionnel.dart';
 import '../Service/service_planning.dart';
 import '../Service/service_product.dart';
+
 
 class TakeMeetPage extends StatefulWidget {
 
@@ -51,6 +53,8 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
     _adresseController.text = client?.address ?? "";
     getProduct();
     getPlanning();
+    tz.initializeTimeZones();
+
   }
 
   @override
@@ -66,14 +70,12 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
   void getPlanning() async {
     planning = await ServicePlanning().getPlanningByIdPro(5005);
 
-    // Créez une liste de PickerDateRange à partir des données de planning
     List<PickerDateRange> selectedDateRanges = [];
     for (var planning in planning!) {
       PickerDateRange pickerDateRange = PickerDateRange(planning?.ddate, planning?.fdate);
       selectedDateRanges.add(pickerDateRange);
     }
 
-    // Définissez les intervalles de dates dans le controller
     setState(() {
       _datePickerController.selectedRanges = selectedDateRanges;
     });
@@ -208,6 +210,8 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
         }
         MessagerieClass messagerieClass = MessagerieClass(id: 1, idClient: DataManager().client!.id, idPro: widget.professionnel.id, lastMessage: "Nouvelle discussion", dLastMessage: DateTime.now(), dlastMessage: DateTime.now());
         var responseMessagerie = await ServiceMessagerie().createMessagerie(messagerieClass);
+        NotificationService().showNotification(1, "ColorBlast", "Votre demande à bien été pris en compte. Une messagerie à été créer avec le professionnel.", 3);
+
         Navigator.of(context).pop();
       }else{
         print("erreur");

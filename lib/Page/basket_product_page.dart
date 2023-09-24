@@ -12,6 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:timezone/data/latest.dart' as tz;
+
+
+import '../Controller/notification_service.dart';
 
 class BasketProductPage extends StatefulWidget {
   const BasketProductPage({Key? key}) : super(key: key);
@@ -101,6 +105,8 @@ class _BasketProductPageState extends State<BasketProductPage> {
   void initState() {
     super.initState();
     getData();
+    tz.initializeTimeZones();
+
 
   }
 
@@ -126,6 +132,8 @@ class _BasketProductPageState extends State<BasketProductPage> {
 
     await ServiceEmail().getCommentProductEmail("claude@yopmail.fr", key);
     setState(() {
+      NotificationService().showNotification(1, "ColorBlast", "Vos achats à bien été pris en compte. Vous allez recevoir un mail de satisfaction.", 3);
+
       panier?.clear();
     });
 

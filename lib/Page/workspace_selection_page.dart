@@ -79,7 +79,7 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
           children: <Widget>[
             GestureDetector(
               onTap: () {
-                //NotificationService().showNotification(1, "title", "body", 5);
+
                 DataManager().workspaceClient = true;
                 Navigator.push(
                   context,

@@ -11,9 +11,12 @@ import 'package:color_blast/Service/service_messagerie.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../Controller/notification_service.dart';
 import '../Model/booking.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:timezone/data/latest.dart' as tz;
+
 
 class BookingDetailsPage extends StatefulWidget {
   final Booking? booking;
@@ -29,10 +32,18 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
   File? selectedFile;
   String selectedFileName = '';
 
+  @override
+  void initState() {
+    super.initState();
+    tz.initializeTimeZones();
+
+  }
+
 
   Future<void> refuseBooking() async {
     var response = await ServiceBooking().deleteBooking(widget.booking?.booking.id);
     if(response == 200){
+      NotificationService().showNotification(1, "ColorBlast", "Votre refus à bien été pris en compte.", 3);
       Navigator.of(context).pop(true);
     }else{
       showDialog(
@@ -63,6 +74,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         MessagerieClass? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
 
         await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.id, mail: "", lastname: "Color", firstname: "Blast", content: "Le client accepte le service.", date: DateTime.now()));
+        NotificationService().showNotification(1, "ColorBlast", "Vous avez accepté ce service. Vous pourrez voir les détails du service sur votre planning.", 3);
 
         Navigator.of(context).pop(true);
       }else{
@@ -112,6 +124,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
           MessagerieClass? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
 
           await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.id, mail: "", lastname: "Color", firstname: "Blast", content: "Cette demande possède un devis.", date: DateTime.now()));
+          NotificationService().showNotification(1, "ColorBlast", "Votre devis à bien été enregistré.", 3);
 
           Navigator.of(context).pop(true);
           print("Fichier PDF téléchargé avec succès : ${selectedFile!.path}");
@@ -165,6 +178,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     await ServiceEmail().getCommentProEmail(widget.booking?.booking.idClient ?? 0, widget.booking?.booking.idPro ?? 0);
     var response = await ServiceBooking().deleteBooking(widget.booking?.booking.id);
     if(response == 200){
+      NotificationService().showNotification(1, "ColorBlast", "Vous avez bien mis fin au service.", 3);
       Navigator.of(context).pop(true);
     }else{
       showDialog(
