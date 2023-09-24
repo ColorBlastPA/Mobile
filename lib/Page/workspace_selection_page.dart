@@ -1,10 +1,13 @@
 import 'package:color_blast/Animation/animation.dart';
+import 'package:color_blast/Controller/notification_service.dart';
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 class WorkspaceSelectionPage extends StatefulWidget {
   const WorkspaceSelectionPage({Key? key}) : super(key: key);
@@ -29,6 +32,9 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
   @override
   void initState() {
     super.initState();
+    tz.initializeTimeZones();
+    requestNotificationPermission();
+
 
     // Écoutez les messages WebSocket
     channel.stream.listen((message) {
@@ -36,6 +42,15 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
         receivedMessage = message; // Stockez le message reçu
       });
     });
+  }
+
+  Future<void> requestNotificationPermission() async {
+    PermissionStatus status = await Permission.notification.request();
+    if (status.isGranted) {
+      // Autorisation accordée, vous pouvez afficher des notifications
+    } else {
+      // L'autorisation n'a pas été accordée, gérez le cas d'utilisation en conséquence
+    }
   }
 
   @override
@@ -64,6 +79,7 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
           children: <Widget>[
             GestureDetector(
               onTap: () {
+                //NotificationService().showNotification(1, "title", "body", 5);
                 DataManager().workspaceClient = true;
                 Navigator.push(
                   context,

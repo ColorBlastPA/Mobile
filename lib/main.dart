@@ -1,12 +1,20 @@
 import 'package:color_blast/Page/workspace_selection_page.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+
+import 'Controller/notification_service.dart';
 
 
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
+  await Firebase.initializeApp();
+  //FirebaseCrashlytics.instance.crash();
   Stripe.publishableKey='pk_test_51NIrKYCJoeQc9GZJfcBZzkPPVhjiTegipqcnxtZFtiqpHzjSjif38iRjkUSc097ZVLU984Hg4oxiCV8Mb15XGKSU0039XcrFtf';
   runApp(const MyApp());
 }
