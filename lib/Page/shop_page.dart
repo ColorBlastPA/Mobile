@@ -18,7 +18,7 @@ class _ShopPageState extends State<ShopPage> {
   List<Product?>? filteredItems = [];
   List<Product?>? allProducts = [];
   List<bool> selectedCategories = [false, false, false]; // EXTERN, INTERN, ACCESSORY
-  List<String> selectedCategoryNames = ['EXTERN', 'INTERN', 'ACCESSORY']; // Names of the categories
+  List<String> selectedCategoryNames = ['Extérieur', 'Intérieur', 'Accessoire']; // Names of the categories
   TextEditingController searchController = TextEditingController();
 
   @override

@@ -23,6 +23,9 @@ class _HelpPageState extends State<HelpPage> {
       Help help = Help(mail: DataManager().client!.mail, content: textEditingController.text);
       var response = await ServiceEmail().sendHelpMail(help);
       if(response == 200){
+        setState(() {
+          textEditingController.text = "";
+        });
         print("good");
         showDialog(
           context: context,
@@ -68,6 +71,9 @@ class _HelpPageState extends State<HelpPage> {
       Help help = Help(mail: DataManager().pro!.pro.mail, content: textEditingController.text);
       var response = await ServiceEmail().sendHelpMail(help);
       if(response == 200){
+        setState(() {
+          textEditingController.text = "";
+        });
         showDialog(
           context: context,
           builder: (BuildContext context) {

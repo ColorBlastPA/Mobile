@@ -42,7 +42,7 @@ class _SignupPage3State extends State<SignupPage3> {
   final TextEditingController textDescriptionController = TextEditingController();
   bool isPhoneValid = true;
   RegExp phoneRegex = RegExp(r'^0[1-9]\d{8}$');
-
+  bool isCreatingAccount = false;
 
   File? selectedFile;
 
@@ -311,7 +311,14 @@ class _SignupPage3State extends State<SignupPage3> {
                     1.6,
                     GestureDetector(
                       onTap: () {
-                        createAccount();
+                        setState(() {
+                          isCreatingAccount = true;
+                        });
+                        createAccount().then((_) {
+                          setState(() {
+                            isCreatingAccount = false;
+                          });
+                        });
                       },
                       child: Container(
                         height: 50,
@@ -321,9 +328,16 @@ class _SignupPage3State extends State<SignupPage3> {
                           color: Colors.orange[900],
                         ),
                         child: Center(
-                          child: Text(
+                          child: isCreatingAccount
+                              ? CircularProgressIndicator( // Affichez le spinner lorsque isCreatingAccount est vrai.
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                              : Text(
                             "Valider",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

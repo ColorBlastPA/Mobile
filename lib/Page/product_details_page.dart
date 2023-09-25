@@ -42,14 +42,31 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   addPanier(int count) async {
     final clientId = DataManager().client?.id;
     final productId = this.product?.id;
-
+    int response = 0;
     for (int i = 0; i < count; i++) {
-      final response = await ServicePanier().createPanier(clientId, productId);
-      if (response == 201) {
-        print("ajout effectué");
-      } else {
-        print("erreur");
-      }
+      response = await ServicePanier().createPanier(clientId, productId);
+
+    }
+    if (response == 201) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Succès"),
+            content: Text("Vos produits ont bien été ajoutés à votre panier."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      print("erreur");
     }
   }
 
