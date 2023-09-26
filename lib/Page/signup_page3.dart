@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:http/http.dart' as http;
 
@@ -45,14 +46,75 @@ class _SignupPage3State extends State<SignupPage3> {
   bool isCreatingAccount = false;
 
   File? selectedFile;
+  File? _image;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().getImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      //await uploadImage(_image!, client!.id);
+    }
+    Navigator.pop(context);
+  }
+
+  Future<void> _showImageSourceDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Ajouter une photo :"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                GestureDetector(
+                  child: Text("Depuis l'appareil photo"),
+                  onTap: () {
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+                Padding(padding: EdgeInsets.all(8.0)),
+                GestureDetector(
+                  child: Text("Depuis le téléphone"),
+                  onTap: () {
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> uploadImage(File imageFile, int idPro) async {
+    //print("idClient"+idClient.toString());
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api-colorblast.current.ovh/api/setImagePro/$idPro'),
+      );
+
+      print("path"+imageFile.path);
+      var image = await http.MultipartFile.fromPath('file', imageFile.path);
+      request.files.add(image);
+
+      var response = await request.send();
+
+    } catch (error) {
+      print(error);
+    }
+  }
 
   Future<void> createAccount() async {
-    Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text, idCertificate: null, avatar: '', waiting: true);
+    Professionnel newPro = Professionnel(id: 1, lastname: this.pro!.lastname, firstname: this.pro!.firstname, mail: this.pro!.mail, password: this.pro!.password, country: this.pro!.country, department: this.pro!.department, postalCode: this.pro!.postalCode, city: this.pro!.city, companyName: textNameCompanyController.text, price: double.tryParse(textPriceController.text) ?? 0, phone: textTelController.text, note: 0, description: textDescriptionController.text, idCertificate: null, avatar: '', waiting: true, image: null);
     var response = await ServicePro().createPro(newPro);
     if (response.statusCode == 200) {
       newPro = professionnelFromJson(response.body);
       print("ID =" + newPro.id.toString());
-
+      await uploadImage(_image!, newPro.id);
       // Vérifiez si un fichier a été sélectionné
       if (selectedFile != null) {
         var request = http.MultipartRequest(
@@ -303,10 +365,35 @@ class _SignupPage3State extends State<SignupPage3> {
                     ),
 
                   ),
-
                   SizedBox(height: 10),
                   Text(selectedFileName),
-                  SizedBox(height: 20),
+                  SizedBox(height: 15),
+                  ElementAnimation(
+                    1.6,
+                    ElevatedButton(
+                      onPressed: () {
+                        _showImageSourceDialog();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.orange[900],
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
+                      child: Container(
+                        height: 50,
+                        margin: EdgeInsets.symmetric(horizontal: 50),
+                        child: Center(
+                          child: Text(
+                            "Sélectionner une image pour le service",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 20,),
                   ElementAnimation(
                     1.6,
                     GestureDetector(

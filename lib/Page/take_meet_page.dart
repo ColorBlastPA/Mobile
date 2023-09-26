@@ -210,7 +210,12 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
         }
         MessagerieClass messagerieClass = MessagerieClass(id: 1, idClient: DataManager().client!.id, idPro: widget.professionnel.id, lastMessage: "Nouvelle discussion", dLastMessage: DateTime.now(), dlastMessage: DateTime.now());
         var responseMessagerie = await ServiceMessagerie().createMessagerie(messagerieClass);
-        NotificationService().showNotification(1, "ColorBlast", "Votre demande à bien été pris en compte. Une messagerie à été créer avec le professionnel.", 3);
+        if(responseMessagerie == 409){
+          NotificationService().showNotification(1, "ColorBlast", "Votre demande à bien été pris en compte.", 3);
+
+        }else{
+          NotificationService().showNotification(1, "ColorBlast", "Votre demande à bien été pris en compte. Une messagerie à été créer avec le professionnel.", 3);
+        }
 
         Navigator.of(context).pop();
       }else{

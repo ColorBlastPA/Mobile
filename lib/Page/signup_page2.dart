@@ -58,7 +58,7 @@ class _SignupPage2State extends State<SignupPage2> {
   }
 
   Future<void> goToSign3() async {
-    Professionnel pro = Professionnel(id: 1, lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", companyName: "", price: 0, phone: "", note: 0, description: "", idCertificate: null, avatar: '', waiting: true);
+    Professionnel pro = Professionnel(id: 1, lastname: this.lastname, firstname: this.firstname, mail: this.mail, password: this.password, country: this.pays ?? "", department: this.departement ?? "", postalCode: this.codePostal ?? "", city: this.ville ?? "", companyName: "", price: 0, phone: "", note: 0, description: "", idCertificate: null, avatar: '', waiting: true, image: null);
 
     Navigator.push(context,
         MaterialPageRoute<void>(

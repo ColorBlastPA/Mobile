@@ -27,6 +27,7 @@ class Professionnel {
   String description;
   int? idCertificate;
   String? avatar;
+  String? image;
   bool waiting;
 
   Professionnel({
@@ -46,6 +47,7 @@ class Professionnel {
     required this.description,
     required this.idCertificate,
     required this.avatar,
+    required this.image,
     required this.waiting,
   });
 
@@ -66,6 +68,7 @@ class Professionnel {
     description: json["description"],
     idCertificate: json["idCertificate"],
     avatar: json["avatar"],
+    image: json["image"],
     waiting: json["waiting"],
 
   );
@@ -87,6 +90,7 @@ class Professionnel {
     "description": description,
     "idCertificate": idCertificate,
     "avatar": avatar,
+    "image": image,
     "waiting":waiting,
   };
 }

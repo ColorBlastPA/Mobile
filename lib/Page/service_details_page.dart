@@ -78,9 +78,6 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
   }
 
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -122,6 +122,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                               builder: (context) => ServiceDetailsPage(
                                 companyName: filteredData![index]!.companyName,
                                 imageUrl:
+                                    filteredData![index]!.image ??
                                 "https://www.batiperform.com/fichiers_site/a6178bat/contenu_pages/entreprise-generale-batiment-1.jpg",
                                 professionnel: filteredData![index]!,
                               ),
