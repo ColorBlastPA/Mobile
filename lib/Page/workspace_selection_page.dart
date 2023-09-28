@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 class WorkspaceSelectionPage extends StatefulWidget {
@@ -18,16 +17,10 @@ class WorkspaceSelectionPage extends StatefulWidget {
 
 class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
 
-  final channel = WebSocketChannel.connect(
-    Uri.parse('wss://echo.websocket.events'),
-  );
-  String receivedMessage = '';
 
 
-  void sendPing() {
-    // Envoyer le message "ping" au serveur WebSocket
-    channel.sink.add('ping');
-  }
+
+
 
   @override
   void initState() {
@@ -36,12 +29,7 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
     requestNotificationPermission();
 
 
-    // Écoutez les messages WebSocket
-    channel.stream.listen((message) {
-      setState(() {
-        receivedMessage = message; // Stockez le message reçu
-      });
-    });
+
   }
 
   Future<void> requestNotificationPermission() async {
@@ -112,7 +100,7 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
             GestureDetector(
               onTap: () {
                 DataManager().workspaceClient = false;
-                sendPing();
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage(WorkspaceClient: false)),

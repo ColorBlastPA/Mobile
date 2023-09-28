@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:color_blast/Animation/animation.dart';
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Service/service_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
 import '../Model/line.dart';
 
@@ -20,6 +25,8 @@ class _ChatPageState extends State<ChatPage> {
   int idMessagerie = 0;
   List<Line?>? lines;
   bool isLoading = true;
+  Function? unsubscribeFn;
+  late StompClient stompClient;
   _ChatPageState(int idMessagerie){
     this.idMessagerie = idMessagerie;
   }
@@ -28,6 +35,66 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     getData();
+    stompClient = StompClient(
+      config: StompConfig(
+        url: 'wss://api-colorblast.current.ovh/websocket-endpoint',
+        onConnect: onConnectCallback,
+      ),
+    );
+    stompClient.activate();
+
+  }
+
+  @override
+  void dispose() {
+    stompClient.deactivate();
+    super.dispose();
+  }
+
+  void onConnectCallback(StompFrame frame) {
+    print('Connecté au serveur WebSocket STOMP');
+    subscribeToChannel(idMessagerie);
+  }
+
+  Function? subscribeToChannel(int channelId) {
+    // Désabonnez-vous du canal précédent (s'il y en a un)
+    if (unsubscribeFn != null) {
+      unsubscribeFn!(unsubscribeHeaders: <String, String>{});
+    }
+
+    // Abonnez-vous au nouveau canal
+    unsubscribeFn = stompClient.subscribe(
+      destination: '/topic/chatroom/$channelId',
+      callback: (StompFrame frame) {
+        final lineEntity = Line.fromJson(jsonDecode(frame.body ?? ""));
+        setState(() {
+          lines?.add(lineEntity);
+        });
+      },
+    );
+
+    /*setState(() {
+      selectedChannel = channelId;
+      chatMessages.clear();
+    });*/
+
+    return unsubscribeFn;
+  }
+
+  void _sendMessage(Line newLine) {
+
+      final lineEntity = LineEntity(
+        idMessagerie: newLine.idMessagerie,
+        content: newLine.content,
+        mail: newLine.mail,
+        lastname: newLine.lastname,
+        firstname: newLine.firstname,
+        date: newLine.date.toIso8601String(),
+      );
+      stompClient.send(
+        destination: '/app/chat/sendMessage/$idMessagerie',
+        body: jsonEncode(lineEntity.toJson()),
+      );
 
   }
 
@@ -196,8 +263,8 @@ class _ChatPageState extends State<ChatPage> {
           String content = _textEditingController.text;
           DateTime date = DateTime.now();
           Line newLine = Line(id: 1, idMessagerie: idMessagerie, lastname: DataManager().client!.lastname, firstname: DataManager().client!.firstname, content: content, date: date, mail:DataManager().client!.mail );
-          lines?.add(newLine);
-          appendLine(newLine);
+          //lines?.add(newLine);
+          _sendMessage(newLine);
           _textEditingController.clear();
         });
       }
@@ -207,8 +274,8 @@ class _ChatPageState extends State<ChatPage> {
           String content = _textEditingController.text;
           DateTime date = DateTime.now();
           Line newLine = Line(id: 1, idMessagerie: idMessagerie, lastname: DataManager().pro!.pro.lastname, firstname: DataManager().pro!.pro.firstname, content: content, date: date, mail:DataManager().pro!.pro.mail );
-          lines?.add(newLine);
-          appendLine(newLine);
+
+          _sendMessage(newLine);
           _textEditingController.clear();
         });
       }
@@ -216,7 +283,37 @@ class _ChatPageState extends State<ChatPage> {
 
   }
 
+}
+//lines?.add(newLine);
+class LineEntity {
+  int idMessagerie;
+  final String content;
+  final String? mail;
+  final String lastname;
+  final String firstname;
+  final String date;
 
+  LineEntity({
+    required this.idMessagerie,
+    required this.content,
+    required this.mail,
+    required this.lastname,
+    required this.firstname,
+    required this.date,
+  });
+
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      "idMessagerie": idMessagerie,
+      'content': content,
+      'mail': mail,
+      'lastname': lastname,
+      'firstname': firstname,
+      'date': date,
+    };
+  }
 }
 
 

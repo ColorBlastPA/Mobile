@@ -24,6 +24,7 @@ class Line {
     required this.date,
   });
 
+
   factory Line.fromJson(Map<String, dynamic> json) => Line(
     id: json["id"],
     idMessagerie: json["idMessagerie"],

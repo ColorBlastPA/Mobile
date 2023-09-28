@@ -58,10 +58,10 @@ dependencies:
   cell_calendar: ^0.8.0
   syncfusion_flutter_datepicker: ^19.1.57-beta
   file_picker: ^5.3.1
-  web_socket_channel: ^2.4.0
   flutter_local_notifications: ^15.0.0+1
   timezone: ^0.9.0
   firebase_crashlytics: ^3.3.6
+  stomp_dart_client: ^1.0.0
 
 
 
