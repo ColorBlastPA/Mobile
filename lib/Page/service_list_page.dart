@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/service_details_page.dart';
 import 'package:color_blast/Page/workspace_selection_page.dart';
@@ -29,7 +31,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
   }
 
   getData() async {
-    pro = await ServicePro().getAllPro();
+    pro = await ServicePro().getAllProWaitingFalse();
     setState(() {
       filteredData = pro;
       isLoading = false;
@@ -141,7 +143,8 @@ class _ServiceListPageState extends State<ServiceListPage> {
                           title: Text(
                               '${filteredData![index]!.lastname} ${filteredData![index]!.firstname}'),
                           subtitle: Text(
-                              '${filteredData![index]!.country}, ${filteredData![index]!.city}'),
+                              '${filteredData![index]!.country}, ${utf8.decode(filteredData![index]!.city.runes.toList())}'),
+
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

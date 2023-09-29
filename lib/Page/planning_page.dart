@@ -41,6 +41,10 @@ class _PlanningPageState extends State<PlanningPage> {
 
     if (bookings != null) {
       for (var booking in bookings) {
+        print("debut");
+        print(booking?.booking.dhDebut);
+        print("fin");
+        print(booking?.booking.dhFin);
         if (booking != null) {
           _events.add(Event(booking));
         }
@@ -73,7 +77,7 @@ class _PlanningPageState extends State<PlanningPage> {
   List<Event> _getEventsForDay(DateTime date) {
     final events = _events.where((event) {
       final booking = event.booking;
-      return booking.booking.dhDebut.isBefore(date) && booking.booking.dhFin.isAfter(date);
+      return booking.booking.dhDebut.isBefore(date) && booking.booking.dhFin.add(Duration(days: 1)).isAfter(date);
     }).toList();
 
     return events;
@@ -227,14 +231,14 @@ class BookingInfoDialog extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.date_range),
-            title: Text('Date de début : ${booking.booking.dhDebut.toString()}'),
+            title: Text('Date de début : ${booking.booking.dhDebut.day}/${booking.booking.dhDebut.month}/${booking.booking.dhDebut.year}'),
           ),
           ListTile(
             leading: Icon(Icons.date_range),
-            title: Text('Date de fin : ${booking.booking.dhFin.toString()}'),
+            title: Text('Date de fin : ${booking.booking.dhFin.day}/${booking.booking.dhFin.month}/${booking.booking.dhFin.year}'),
           ),
 
-          // Vous pouvez ajouter d'autres informations de réservation ici
+
         ],
       ),
       actions: [

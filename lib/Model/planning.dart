@@ -9,6 +9,7 @@ class Planning {
   int id;
   int idClient;
   int idPro;
+  int idBooking;
   DateTime ddate;
   DateTime fdate;
   bool actif;
@@ -17,6 +18,7 @@ class Planning {
     required this.id,
     required this.idClient,
     required this.idPro,
+    required this.idBooking,
     required this.ddate,
     required this.fdate,
     required this.actif,
@@ -26,6 +28,7 @@ class Planning {
     id: json["id"],
     idClient: json["idClient"],
     idPro: json["idPro"],
+    idBooking: json["idBooking"],
     ddate: DateTime.parse(json["ddate"]),
     fdate: DateTime.parse(json["fdate"]),
     actif: json["actif"],
@@ -35,6 +38,7 @@ class Planning {
     "id": id,
     "idClient": idClient,
     "idPro": idPro,
+    "idBooking": idBooking,
     "ddate": ddate.toIso8601String(),
     "fdate": fdate.toIso8601String(),
     "actif": actif,

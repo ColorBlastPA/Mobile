@@ -3,11 +3,13 @@ import 'dart:typed_data';
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Model/line.dart';
 import 'package:color_blast/Model/messagerie.dart';
+import 'package:color_blast/Model/planning.dart';
 import 'package:color_blast/Page/profile_page.dart';
 import 'package:color_blast/Service/service_booking.dart';
 import 'package:color_blast/Service/service_email.dart';
 import 'package:color_blast/Service/service_line.dart';
 import 'package:color_blast/Service/service_messagerie.dart';
+import 'package:color_blast/Service/service_planning.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -72,7 +74,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
       var response = await ServiceBooking().updateBooking(widget.booking!.booking.id, widget.booking!.booking);
       if(response == 200){
         MessagerieClass? messagerieClass = await ServiceMessagerie().getMessageriesByIdClientAndPro(widget.booking?.booking.idClient, widget.booking?.booking.idPro);
-
+        await ServicePlanning().createPlanning(Planning(id: 1, idClient: widget.booking!.booking.idClient, idPro: widget.booking!.booking.idPro, ddate: widget.booking!.booking.dhDebut, fdate: widget.booking!.booking.dhFin, actif: true, idBooking: widget.booking!.booking.id));
         await ServiceLine().appendLine(Line(id: 1, idMessagerie: messagerieClass!.id, mail: "", lastname: "Color", firstname: "Blast", content: "Le client accepte le service.", date: DateTime.now()));
         NotificationService().showNotification(1, "ColorBlast", "Vous avez accepté ce service. Vous pourrez voir les détails du service sur votre planning.", 3);
 
@@ -178,6 +180,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
     await ServiceEmail().getCommentProEmail(widget.booking?.booking.idClient ?? 0, widget.booking?.booking.idPro ?? 0);
     var response = await ServiceBooking().deleteBooking(widget.booking?.booking.id);
     if(response == 200){
+      await ServicePlanning().deletePlanning(widget.booking?.booking.id);
       NotificationService().showNotification(1, "ColorBlast", "Vous avez bien mis fin au service.", 3);
       Navigator.of(context).pop(true);
     }else{
@@ -276,7 +279,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               children: [
                 Icon(Icons.date_range, size: 24.0),
                 SizedBox(width: 8.0),
-                Text('Date de début: ${widget.booking?.booking.dhDebut.toString()}'),
+                Text('Date de début: ${widget.booking?.booking.dhDebut.day}/${widget.booking?.booking.dhDebut.month}/${widget.booking?.booking.dhDebut.year}'),
               ],
             ),
             SizedBox(height: 8.0),
@@ -285,12 +288,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               children: [
                 Icon(Icons.date_range, size: 24.0),
                 SizedBox(width: 8.0),
-                Text('Date de fin: ${widget.booking?.booking.dhFin.toString()}'),
+                Text('Date de fin: ${widget.booking?.booking.dhFin.day}/${widget.booking?.booking.dhFin.month}/${widget.booking?.booking.dhFin.year}'),
               ],
             ),
-            SizedBox(height: 16.0), // Espacement
+            SizedBox(height: 16.0),
 
-            // Liste des produits sous forme de cartes
+
             ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,

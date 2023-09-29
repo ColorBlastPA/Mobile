@@ -130,7 +130,7 @@ class _BasketProductPageState extends State<BasketProductPage> {
       await removeElement(panierItem?.idPanier);
     }
 
-    await ServiceEmail().getCommentProductEmail("claude@yopmail.fr", key);
+    await ServiceEmail().getCommentProductEmail(DataManager().client?.mail, key);
     setState(() {
       NotificationService().showNotification(1, "ColorBlast", "Vos achats à bien été pris en compte. Vous allez recevoir un mail de satisfaction.", 3);
 

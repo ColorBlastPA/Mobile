@@ -20,16 +20,35 @@ class _FavorisListPageState extends State<FavorisListPage> {
   @override
   void initState() {
     super.initState();
-    favoris = DataManager().favoris;
-
+    getData();
+//favoris = DataManager().favoris;
   }
 
-  getData() async {
+  Future<void> getData() async {
     favoris = await ServicePro().getProFavorisById(DataManager().client?.id);
     setState(() {
       isLoading = false;
     });
   }
+
+  void _navigateToServiceDetails(Professionnel professionnel) async {
+    // Naviguer vers la page des détails du service.
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ServiceDetailsPage(
+          companyName: professionnel.companyName,
+          imageUrl: professionnel.image ?? "https://www.batiperform.com/fichiers_site/a6178bat/contenu_pages/entreprise-generale-batiment-1.jpg",
+          professionnel: professionnel,
+          refreshCallback: refreshData,
+        ),
+      ),
+    );
+
+    // Après avoir navigué de la page des détails du service, rafraîchissez les données si nécessaire.
+    getData();
+  }
+
 
   Future<void> refreshData() async {
     setState(() {
@@ -43,9 +62,9 @@ class _FavorisListPageState extends State<FavorisListPage> {
     return RefreshIndicator(
       onRefresh: refreshData,
       child: isLoading
-          ? Center(
-        child: CircularProgressIndicator(),
-      )
+              ? Center(
+                child: CircularProgressIndicator(),
+            )
           : favoris?.isEmpty ?? true
           ? Center(
             child: Text("Vous n'avez pas de favoris"),
@@ -55,17 +74,19 @@ class _FavorisListPageState extends State<FavorisListPage> {
             itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
+              _navigateToServiceDetails(favoris![index]!);
+              /*Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ServiceDetailsPage(
                     companyName: favoris![index]!.companyName,
                     imageUrl:
+                        favoris![index]!.image ??
                     "https://www.batiperform.com/fichiers_site/a6178bat/contenu_pages/entreprise-generale-batiment-1.jpg",
                     professionnel: favoris![index]!,
                   ),
                 ),
-              );
+              );*/
             },
             child: ListTile(
               leading: favoris![index]!.avatar != null && favoris![index]!.avatar != ""

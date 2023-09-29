@@ -13,8 +13,9 @@ class ServiceDetailsPage extends StatefulWidget {
   final String companyName;
   final String imageUrl;
   final Professionnel professionnel;
+  final VoidCallback? refreshCallback;
 
-  ServiceDetailsPage({required this.companyName, required this.imageUrl, required this.professionnel});
+  ServiceDetailsPage({required this.companyName, required this.imageUrl, required this.professionnel, this.refreshCallback});
 
   @override
   _ServiceDetailsPageState createState() => _ServiceDetailsPageState();
@@ -55,10 +56,12 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
   }
 
   removeFavoris() async {
+
     int response = await ServiceFavoris().removeFavoris(DataManager().client?.id, widget.professionnel);
     if(response == 200){
       //faire un truc
     }
+    widget.refreshCallback!();
   }
 
 

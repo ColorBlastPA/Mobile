@@ -28,7 +28,7 @@ class ServiceFavoris{
   Future<int> removeFavoris(int? idClient, Professionnel pro) async{
 
     var response = await http.post(
-      Uri.parse('https://api-colorblast.current.ovh/favoris'),
+      Uri.parse('https://api-colorblast.current.ovh/favoris/delete'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -37,6 +37,7 @@ class ServiceFavoris{
         'id_pro': pro.id
       }),
     );
+
     if(response.statusCode==200){
       DataManager().favoris?.removeWhere((element) => element?.id == pro.id);
     }

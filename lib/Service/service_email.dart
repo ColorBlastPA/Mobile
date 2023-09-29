@@ -44,7 +44,7 @@ class ServiceEmail{
     }
   }
 
-  Future<void> getCommentProductEmail(String email, String key) async{
+  Future<void> getCommentProductEmail(String? email, String key) async{
     var client = http.Client();
     var uri = Uri.parse('https://api-colorblast.current.ovh/commentProduct/${email}/${key}');
 

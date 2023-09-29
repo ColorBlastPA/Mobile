@@ -68,7 +68,8 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
   }
 
   void getPlanning() async {
-    planning = await ServicePlanning().getPlanningByIdPro(5005);
+    print(widget.professionnel.id);
+    planning = await ServicePlanning().getPlanningByIdPro(widget.professionnel.id);
 
     List<PickerDateRange> selectedDateRanges = [];
     for (var planning in planning!) {
@@ -201,7 +202,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
         },
       );
     }else{
-      BookingClass bookingClass = BookingClass(id:1, idPro: widget.professionnel.id, lastname: _lastNameController.text, firstname: _firstNameController.text, city: _villeController.text, address: _adresseController.text, category: getCategorie(), surface: double.parse(_surfaceController.text), dhDebut: _selectedDateRanges.first.startDate!, dhFin: _selectedDateRanges.first.endDate!, waiting: true, idClient: DataManager().client!.id);
+      BookingClass bookingClass = BookingClass(id:1, idPro: widget.professionnel.id, lastname: _lastNameController.text, firstname: _firstNameController.text, city: _villeController.text, address: _adresseController.text, category: getCategorie(), surface: double.parse(_surfaceController.text), dhDebut: _selectedDateRanges.first.startDate!, dhFin: _selectedDateRanges.first.endDate!.add(Duration(hours: 1)), waiting: true, idClient: DataManager().client!.id);
       var response = await ServiceBooking().createBooking(bookingClass);
       if(response.statusCode == 200){
         bookingClass = bookingClassFromJson(response.body);
@@ -347,6 +348,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                     onChanged: (value) {
                       setState(() {
                         _isOutdoorSelected = value!;
+                        _selectedProducts.clear();
                       });
                     },
                   ),
@@ -357,6 +359,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                     onChanged: (value) {
                       setState(() {
                         _isIndoorSelected = value!;
+                        _selectedProducts.clear();
                       });
                     },
                   ),
@@ -447,21 +450,21 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                                 },
                                 monthCellStyle: const DateRangePickerMonthCellStyle(
                                   textStyle: TextStyle(
-                                    color: Colors.black, // Couleur du texte du mois
-                                    fontSize: 16.0, // Taille de la police du mois
+                                    color: Colors.black,
+                                    fontSize: 16.0,
                                   ),
                                   todayTextStyle: TextStyle(
-                                    color: Colors.blue, // Couleur du texte pour la date d'aujourd'hui
-                                    fontWeight: FontWeight.bold, // Gras pour la date d'aujourd'hui
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   disabledDatesTextStyle: TextStyle(
-                                    color: Colors.grey, // Couleur du texte pour les dates désactivées
+                                    color: Colors.grey,
                                   ),
                                 ),
                                 yearCellStyle: const DateRangePickerYearCellStyle(
                                   textStyle: TextStyle(
-                                    color: Colors.black, // Couleur du texte de l'année
-                                    fontSize: 16.0, // Taille de la police de l'année
+                                    color: Colors.black,
+                                    fontSize: 16.0,
                                   ),
                                 ),
                               ),
@@ -514,7 +517,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
-                            'Période ${index + 1}: ${dateRange.startDate?.toLocal()} - ${dateRange.endDate?.toLocal()}',
+                            'Période: ${dateRange.startDate?.day}/${dateRange.startDate?.month}/${dateRange.startDate?.year} - ${dateRange.endDate?.day}/${dateRange.endDate?.month}/${dateRange.endDate?.year}',
                             style: TextStyle(fontSize: 16),
                           ),
                         );

@@ -13,7 +13,8 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import '../Model/line.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage(this.idMessagerie);
+  const ChatPage(this.idMessagerie,this.refreshCallback);
+  final Function refreshCallback;
 
   final int idMessagerie;
   @override
@@ -48,7 +49,13 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     stompClient.deactivate();
+    _someMethodThatUpdatesData();
     super.dispose();
+  }
+
+  void _someMethodThatUpdatesData() {
+    widget.refreshCallback();
+
   }
 
   void onConnectCallback(StompFrame frame) {
@@ -133,6 +140,7 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
       ),
+
       body: ElementAnimation(
         0.5,
         Column(

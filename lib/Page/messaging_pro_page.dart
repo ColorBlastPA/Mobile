@@ -25,6 +25,10 @@ class _MessagingProPageState extends State<MessagingProPage> {
 
   }
 
+  void refreshData() {
+    getData();
+  }
+
   getData() async {
     discussions = await ServiceMessagerie().getMessageriesByIdPro(DataManager().pro?.pro.id);
     discussions?.sort((a, b) => b!.messagerie.dLastMessage.compareTo(a!.messagerie.dLastMessage));
@@ -132,7 +136,7 @@ class _MessagingProPageState extends State<MessagingProPage> {
   void _openChatPage(MessagingPro messagerie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatPage(messagerie.messagerie.id)),
+      MaterialPageRoute(builder: (context) => ChatPage(messagerie.messagerie.id,refreshData)),
     );
   }
 
