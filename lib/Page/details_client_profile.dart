@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:color_blast/Page/profile_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,9 +35,18 @@ class _ProfileClientDetailsState extends State<ProfileClientDetails> {
     lastNameController.text = client?.lastname ?? "";
     emailController.text = client?.mail ?? "";
     countryController.text = client?.country ?? "";
-    departmentController.text = client?.department ?? "";
+    departmentController.text = utf8.decode(
+      List<int>.from(
+        client?.department.runes.toList() ?? [],
+      ),
+    );
     postalCodeController.text = client?.postalCode ?? "";
-    cityController.text = client?.city ?? "";
+    cityController.text = utf8.decode(
+      List<int>.from(
+        client?.city?.runes.toList() ?? [],
+      ),
+    );
+
     addressController.text = client?.address ?? "";
   }
 
@@ -231,26 +242,6 @@ class _ProfileClientDetailsState extends State<ProfileClientDetails> {
                   ),
                 ),
                 ),
-                /*SizedBox(height: 40,),
-                ElementAnimation(1.6,GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ProfilePage()),
-                    );
-                  },
-                  child: Container(
-                    height: 50,
-                    margin: EdgeInsets.symmetric(horizontal: 50),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.orange[900]
-                    ),
-                    child: Center(
-                      child: Text("Modifier", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                    ),
-                  ),
-                )),*/
               ],
             ),
           ),

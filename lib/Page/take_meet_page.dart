@@ -202,7 +202,7 @@ class _TakeMeetPageState extends State<TakeMeetPage> {
         },
       );
     }else{
-      BookingClass bookingClass = BookingClass(id:1, idPro: widget.professionnel.id, lastname: _lastNameController.text, firstname: _firstNameController.text, city: _villeController.text, address: _adresseController.text, category: getCategorie(), surface: double.parse(_surfaceController.text), dhDebut: _selectedDateRanges.first.startDate!, dhFin: _selectedDateRanges.first.endDate!.add(Duration(hours: 1)), waiting: true, idClient: DataManager().client!.id);
+      BookingClass bookingClass = BookingClass(id:1, idPro: widget.professionnel.id, lastname: _lastNameController.text, firstname: _firstNameController.text, city: _villeController.text, address: _adresseController.text, category: getCategorie(), surface: double.parse(_surfaceController.text), dhDebut: _selectedDateRanges.first.startDate!, dhFin: _selectedDateRanges.first.endDate!.add(Duration(hours: 1)), waiting: true, idClient: DataManager().client!.id, proLastname: widget.professionnel.lastname,proFirstname: widget.professionnel.firstname);
       var response = await ServiceBooking().createBooking(bookingClass);
       if(response.statusCode == 200){
         bookingClass = bookingClassFromJson(response.body);

@@ -26,20 +26,43 @@ class _WorkspaceSelectionPageState extends State<WorkspaceSelectionPage> {
   void initState() {
     super.initState();
     tz.initializeTimeZones();
-    requestNotificationPermission();
+    requestNotificationAndStoragePermissions();
 
 
 
   }
 
-  Future<void> requestNotificationPermission() async {
-    PermissionStatus status = await Permission.notification.request();
-    if (status.isGranted) {
-      // Autorisation accordée, vous pouvez afficher des notifications
+  Future<void> requestNotificationAndStoragePermissions() async {
+    PermissionStatus notificationStatus = await Permission.notification.request();
+    PermissionStatus cameraStatus = await Permission.camera.request();
+    PermissionStatus galleryStatus = await Permission.photos.request();
+    PermissionStatus filesStatus = await Permission.storage.request();
+
+    if (notificationStatus.isGranted) {
+
     } else {
-      // L'autorisation n'a pas été accordée, gérez le cas d'utilisation en conséquence
+
+    }
+
+    if (cameraStatus.isGranted) {
+
+    } else {
+
+    }
+
+    if (galleryStatus.isGranted) {
+
+    } else {
+
+    }
+
+    if (filesStatus.isGranted) {
+
+    } else {
+
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

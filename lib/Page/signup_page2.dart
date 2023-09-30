@@ -160,9 +160,18 @@ class _SignupPage2State extends State<SignupPage2> {
                             textAdresseController.text = adresse ?? '';
                           });
                         },
-                        child: Text(
-                          "Géolocalise moi",
-                          style: TextStyle(color: Colors.white, fontSize: 15),
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.white, // Couleur de la bordure grise
+                            ),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            "Géolocalise moi",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
                         ),
                       )),
                     ],

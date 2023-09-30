@@ -81,7 +81,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         Item(
           headerValue: 'Description',
           expandedValue:
-          'Magnifique pot de peinture rouge de bonne qualité. En vrai achete-le c\'est trop bien',
+          product?.description,
           isExpanded: false,
         ),
         Item(

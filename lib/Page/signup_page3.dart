@@ -44,6 +44,7 @@ class _SignupPage3State extends State<SignupPage3> {
   bool isPhoneValid = true;
   RegExp phoneRegex = RegExp(r'^0[1-9]\d{8}$');
   bool isCreatingAccount = false;
+  bool isImageSelected = false;
 
   File? selectedFile;
   File? _image;
@@ -53,6 +54,7 @@ class _SignupPage3State extends State<SignupPage3> {
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
+        isImageSelected = true;
       });
       //await uploadImage(_image!, client!.id);
     }
@@ -392,7 +394,11 @@ class _SignupPage3State extends State<SignupPage3> {
                       ),
                     ),
                   ),
-
+                  SizedBox(height: 7,),
+                  Text(
+                    isImageSelected ? 'Vous avez bien sélectionné une image' : '', // Affichez le message si une image a été sélectionnée.
+                    style: TextStyle(color: Colors.green), // Style du texte
+                  ),
                   SizedBox(height: 20,),
                   ElementAnimation(
                     1.6,

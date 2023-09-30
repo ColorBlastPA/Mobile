@@ -36,6 +36,8 @@ class BookingClass {
   int idPro;
   String lastname;
   String firstname;
+  String proLastname;
+  String proFirstname;
   String city;
   String address;
   int category;
@@ -50,6 +52,8 @@ class BookingClass {
     required this.idPro,
     required this.lastname,
     required this.firstname,
+    required this.proLastname,
+    required this.proFirstname,
     required this.city,
     required this.address,
     required this.category,
@@ -65,6 +69,8 @@ class BookingClass {
     idPro: json["idPro"],
     lastname: json["lastname"],
     firstname: json["firstname"],
+    proLastname: json["proLastname"],
+    proFirstname: json["proFirstname"],
     city: json["city"],
     address: json["address"],
     category: json["category"],
@@ -80,6 +86,8 @@ class BookingClass {
     "idPro": idPro,
     "lastname": lastname,
     "firstname": firstname,
+    "proLastname": proLastname,
+    "proFirstname": proFirstname,
     "city": city,
     "address": address,
     "category": category,

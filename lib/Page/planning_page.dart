@@ -69,7 +69,7 @@ class _PlanningPageState extends State<PlanningPage> {
     );
 
     if (updated != null && updated is bool && updated) {
-      // La popup a été mise à jour, vous pouvez effectuer des actions supplémentaires si nécessaire.
+
     }
   }
 
@@ -209,8 +209,8 @@ class BookingInfoDialog extends StatelessWidget {
         children: [
           ListTile(
             leading: Icon(Icons.person),
-            title: Text(
-              'Nom du client : ${booking.booking.lastname} ${booking.booking.firstname}',
+            title: Text( DataManager().workspaceClient == true ?
+              'Nom du client : ${booking.booking.proLastname} ${booking.booking.proFirstname}' : 'Nom du client : ${booking.booking.lastname} ${booking.booking.firstname}',
             ),
           ),
           ListTile(

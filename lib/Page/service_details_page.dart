@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:color_blast/Animation/animation.dart';
 import 'package:color_blast/Page/take_meet_page.dart';
 import 'package:color_blast/Service/service_favoris.dart';
@@ -183,7 +185,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                 ),
                 children: [
                   TextSpan(
-                    text: widget.professionnel.description,
+                    text: utf8.decode(widget.professionnel.description.runes.toList()),
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
                       decoration: TextDecoration.none,
@@ -211,7 +213,7 @@ class _ServiceDetailsPageState extends State<ServiceDetailsPage> {
                         ),
                         children: [
                           TextSpan(
-                            text: widget.professionnel.department + ", " + widget.professionnel.country,
+                            text: utf8.decode(widget.professionnel.department.runes.toList()) + ", " + utf8.decode(widget.professionnel.country.runes.toList()),
                             style: TextStyle(
                               fontWeight: FontWeight.normal,
                               decoration: TextDecoration.none,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:color_blast/Animation/animation.dart';
 import 'package:color_blast/Model/data_manager.dart';
+import 'package:color_blast/Service/service_email.dart';
 import 'package:color_blast/Service/service_line.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,22 +14,25 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 import '../Model/line.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage(this.idMessagerie,this.refreshCallback);
+  const ChatPage(this.idMessagerie,this.refreshCallback,this.mail);
   final Function refreshCallback;
 
   final int idMessagerie;
+  final String mail;
   @override
-  State<ChatPage> createState() => _ChatPageState(this.idMessagerie);
+  State<ChatPage> createState() => _ChatPageState(this.idMessagerie, this.mail);
 }
 
 
 class _ChatPageState extends State<ChatPage> {
   int idMessagerie = 0;
+  String mail = "";
   List<Line?>? lines;
   bool isLoading = true;
   Function? unsubscribeFn;
   late StompClient stompClient;
-  _ChatPageState(int idMessagerie){
+  _ChatPageState(int idMessagerie, String mail){
+    this.mail = mail;
     this.idMessagerie = idMessagerie;
   }
 
@@ -76,17 +80,30 @@ class _ChatPageState extends State<ChatPage> {
         final lineEntity = Line.fromJson(jsonDecode(frame.body ?? ""));
         setState(() {
           lines?.add(lineEntity);
+          checkDateLastMessage();
         });
       },
     );
 
-    /*setState(() {
-      selectedChannel = channelId;
-      chatMessages.clear();
-    });*/
-
     return unsubscribeFn;
   }
+
+  Future<void> checkDateLastMessage() async {
+    if (lines != null && lines!.length >= 2) {
+      DateTime now = DateTime.now();
+      DateTime previousLineDate = lines![lines!.length - 2]?.date ?? now; // L'avant-dernière ligne
+      Duration difference = now.difference(previousLineDate);
+
+      if (difference.inHours >= 24) {
+        if(DataManager().workspaceClient == true){
+          await ServiceEmail().getMessageForProEmail(mail, DataManager().client?.id);
+        }else{
+          await ServiceEmail().getMessageForClientEmail(mail, DataManager().pro?.pro.id);
+        }
+      }
+    }
+  }
+
 
   void _sendMessage(Line newLine) {
 
@@ -208,7 +225,7 @@ class _ChatPageState extends State<ChatPage> {
           ? Align(
         alignment: Alignment.center,
         child: Text(
-          line.content,
+          utf8.decode(line.content.runes.toList()),
           style: TextStyle(
             color: Colors.black54,
             fontSize: 12.0, // Taille de police plus petite

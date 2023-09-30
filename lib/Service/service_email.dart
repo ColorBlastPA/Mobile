@@ -60,6 +60,22 @@ class ServiceEmail{
 
   }
 
+  Future<void> getMessageForProEmail(String? email, int? idClient) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/messageForPro/${email}/${idClient}');
+
+    var response = await client.get(uri);
+
+  }
+
+  Future<void> getMessageForClientEmail(String? email, int? idPro) async{
+    var client = http.Client();
+    var uri = Uri.parse('https://api-colorblast.current.ovh/messageForClient/${email}/${idPro}');
+
+    var response = await client.get(uri);
+
+  }
+
 
 
 

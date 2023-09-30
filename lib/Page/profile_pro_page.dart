@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:color_blast/Model/professionnel.dart';
 import 'package:color_blast/Model/update_result_pro.dart';
 import 'package:color_blast/Model/user_pro.dart';
@@ -41,13 +43,33 @@ class _ProfileProPageState extends State<ProfileProPage> {
     lastNameController.text = pro?.pro.lastname ?? "";
     emailController.text = pro?.pro.mail ?? "";
     countryController.text = pro?.pro.country ?? "";
-    departmentController.text = pro?.pro.department ?? "";
+    departmentController.text = utf8.decode(
+      List<int>.from(
+        pro?.pro.department?.runes.toList() ?? [],
+      ),
+    );
+
     postalCodeController.text = pro?.pro.postalCode ?? "";
-    cityController.text = pro?.pro.city ?? "";
-    nameCompanyController.text = pro?.pro.companyName ?? "";
+    cityController.text = utf8.decode(
+      List<int>.from(
+        pro?.pro.city?.runes.toList() ?? [],
+      ),
+    );
+
+    nameCompanyController.text = utf8.decode(
+      List<int>.from(
+        pro?.pro.companyName?.runes.toList() ?? [],
+      ),
+    );
+
     telController.text = pro?.pro.phone.toString() ?? "";
     priceController.text = pro?.pro.price.toString() ?? "";
-    DescriptionController.text = pro?.pro.description ?? "";
+    DescriptionController.text = utf8.decode(
+      List<int>.from(
+        pro?.pro.description?.runes.toList() ?? [],
+      ),
+    );
+
 
   }
 

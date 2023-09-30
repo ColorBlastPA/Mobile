@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:color_blast/Model/data_manager.dart';
 import 'package:color_blast/Page/service_details_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -97,9 +99,9 @@ class _FavorisListPageState extends State<FavorisListPage> {
                     child: Text(favoris![index]!.lastname[0] + favoris![index]!.firstname[0]),
               ),
               title: Text(
-                  '${favoris![index]!.lastname} ${favoris![index]!.firstname}'),
+                  '${utf8.decode(favoris![index]!.lastname.runes.toList())} ${utf8.decode(favoris![index]!.firstname.runes.toList())}'),
               subtitle: Text(
-                  '${favoris![index]!.country}, ${favoris![index]!.city}'),
+                  '${utf8.decode(favoris![index]!.country.runes.toList())}, ${utf8.decode(favoris![index]!.city.runes.toList())}'),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

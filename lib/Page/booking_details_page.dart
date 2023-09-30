@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:color_blast/Model/data_manager.dart';
@@ -228,12 +229,12 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Informations de nom, prénom, ville et adresse avec des icônes
+
             Row(
               children: [
                 Icon(Icons.person, size: 24.0),
                 SizedBox(width: 8.0),
-                Text('Nom: ${widget.booking?.booking.lastname}'),
+                Text(DataManager().workspaceClient == true ? 'Nom: ${widget.booking?.booking.proLastname}' : 'Nom: ${widget.booking?.booking.lastname}' ),
               ],
             ),
             SizedBox(height: 8.0),
@@ -242,7 +243,7 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               children: [
                 Icon(Icons.person, size: 24.0),
                 SizedBox(width: 8.0),
-                Text('Prénom: ${widget.booking?.booking.firstname}'),
+                Text(DataManager().workspaceClient == true ? 'Prénom: ${widget.booking?.booking.proFirstname}' : 'Prénom: ${widget.booking?.booking.firstname}'),
               ],
             ),
             SizedBox(height: 8.0),
@@ -251,7 +252,8 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               children: [
                 Icon(Icons.location_city, size: 24.0),
                 SizedBox(width: 8.0),
-                Text('Ville: ${widget.booking?.booking.city}'),
+                Text('Ville: ${utf8.decode(widget.booking?.booking.city?.codeUnits ?? [])}'),
+
               ],
             ),
             SizedBox(height: 8.0),
@@ -260,12 +262,13 @@ class _BookingDetailsPageState extends State<BookingDetailsPage> {
               children: [
                 Icon(Icons.location_on, size: 24.0),
                 SizedBox(width: 8.0),
-                Text('Adresse: ${widget.booking?.booking.address}'),
+                Text('Adresse: ${utf8.decode(widget.booking?.booking.address?.codeUnits ?? [])}'),
+
               ],
             ),
             SizedBox(height: 8.0),
 
-            // Informations de surface, dhDébut et dhFin avec des icônes
+
             Row(
               children: [
                 Icon(Icons.square_foot, size: 24.0),

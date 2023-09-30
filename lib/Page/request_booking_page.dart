@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import '../Model/booking.dart';
@@ -67,14 +69,16 @@ class _RequestBookingPageState extends State<RequestBookingPage> {
 
 
               return ListTile(
-                title: Text('${currentBooking?.booking.firstname} ${currentBooking?.booking.lastname}'),
-                subtitle: Text('${currentBooking?.booking.city}, ${currentBooking?.booking.address}'),
+                title: Text(DataManager().workspaceClient == true
+                    ? '${currentBooking?.booking.proFirstname} ${currentBooking?.booking.proLastname}'
+                    : '${currentBooking?.booking.firstname} ${currentBooking?.booking.lastname}'),
+                subtitle: Text('${utf8.decode(currentBooking?.booking.city?.codeUnits ?? [])}, ${utf8.decode(currentBooking?.booking.address?.codeUnits ?? [])}'),
                 trailing: hasQuote
                     ? Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.green),
-                    SizedBox(width: 4.0),
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                      Icon(Icons.check_circle, color: Colors.green),
+                      SizedBox(width: 4.0),
                   ],
                 )
                     : null,
@@ -91,7 +95,8 @@ class _RequestBookingPageState extends State<RequestBookingPage> {
                   }
                 },
               );
-          },
+
+              },
         ),
       ),
     );

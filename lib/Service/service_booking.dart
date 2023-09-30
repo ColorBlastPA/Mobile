@@ -74,6 +74,8 @@ class ServiceBooking{
         "idPro": bookingClass.idPro,
         "lastname": bookingClass.lastname,
         "firstname": bookingClass.firstname,
+        "proLastname": bookingClass.proLastname,
+        "proFirstname": bookingClass.proFirstname,
         "city": bookingClass.city,
         "address": bookingClass.address,
         "category": bookingClass.category,

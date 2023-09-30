@@ -138,7 +138,7 @@ class _MessagingPageState extends State<MessagingPage> {
   void _openChatPage(MessagerieClient messagerie) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatPage(messagerie.messagerie.id, refreshData)),
+      MaterialPageRoute(builder: (context) => ChatPage(messagerie.messagerie.id, refreshData, messagerie.pro.mail)),
     );
   }
 
